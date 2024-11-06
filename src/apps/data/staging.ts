@@ -24,6 +24,7 @@ const stagingConfigs: Record<StagingIdentifier, AppConfig> = {
       favicon: '/favicons/chompy-house.ico',
     },
     liffId: '1657566651-WnrXragZ',
+    promotionEnabled: false,
   },
   'ikinaristeak-demo': {
     tenantUidHeader: 'wQwAvAIqkUt6vfoWKv4C',
