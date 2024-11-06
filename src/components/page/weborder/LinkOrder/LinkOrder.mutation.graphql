@@ -1,0 +1,9 @@
+mutation LinkOrder($input: LinkOrderInput!) {
+  linkOrder(input: $input) {
+    clientMutationId
+
+    resultMainText
+    resultSubText
+    cautionText
+  }
+}

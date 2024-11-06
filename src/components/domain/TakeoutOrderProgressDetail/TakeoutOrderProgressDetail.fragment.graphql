@@ -1,0 +1,9 @@
+fragment TakeoutOrderProgressDetailParts on Progress {
+    currentStep
+    lastStep
+    stepSubject
+    scheduledTime
+    tel
+    prepared
+    caution
+}

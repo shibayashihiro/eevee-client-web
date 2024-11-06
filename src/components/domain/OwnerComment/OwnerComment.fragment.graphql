@@ -1,0 +1,7 @@
+fragment OwnerCommentParts on OwnerComment {
+  owner {
+    name
+    icon
+  }
+  comment
+}

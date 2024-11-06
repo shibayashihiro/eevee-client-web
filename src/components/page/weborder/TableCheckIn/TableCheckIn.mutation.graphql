@@ -1,0 +1,5 @@
+mutation CheckInTable($input: CheckInTableInput!) {
+  checkInTable(input: $input) {
+    clientMutationId
+  }
+}

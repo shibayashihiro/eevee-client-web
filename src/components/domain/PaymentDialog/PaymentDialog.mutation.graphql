@@ -1,0 +1,15 @@
+mutation updateDefaultPayment($input: UpdateDefaultPaymentInput!) {
+    updateDefaultPayment(input: $input) {
+        payment {
+            __typename
+        }
+    }
+}
+
+mutation removePayment($input: RemovePaymentInput!) {
+    removePayment(input: $input) {
+        payment {
+            __typename
+        }
+    }
+}

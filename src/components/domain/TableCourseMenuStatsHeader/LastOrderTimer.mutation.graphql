@@ -1,0 +1,5 @@
+mutation updateUserCourseMenuNoticeStatus($input: UpdateUserCourseMenuNoticeStatusInput!) {
+  updateUserCourseMenuNoticeStatus(input: $input) {
+    clientMutationId
+  }
+}

@@ -1,0 +1,46 @@
+/*
+ * Globalに使いたい変数はここに記述します。
+ * 各scssファイルからは @import 'variables.module.scss'; のようにしてimportできます。
+ */
+
+$container-max-width: 640px;
+
+/**
+ * Colors
+ */
+$mono-primary: #333;
+$mono-secondary: #888;
+$mono-hint: #bbb;
+$mono-background: #efefef;
+$mono-background-light: rgb(239 239 239 / 30%);
+$mono-white: #fff;
+$mono-divider: #ddd;
+$mono-error: #ff4a3d;
+$error-background: #ff000020;
+
+/**
+ * Typography
+ */
+$text-micro: 10px;
+$text-extra-small: 12px;
+$text-small: 14px;
+$text-medium: 16px;
+$text-large: 18px;
+$text-extra-large: 20px;
+$text-2xl: 22px;
+$text-3xl: 24px;
+$text-32px: 32px;
+
+/* JSから直接読みたい変数はここでexportする */
+:export {
+  monoPrimary: $mono-primary;
+  monoSecondary: $mono-secondary;
+  monoBackGround: $mono-background;
+  monoBackGroundLight: $mono-background-light;
+  monoWhite: $mono-white;
+  monoDivider: $mono-divider;
+  monoHint: $mono-hint;
+  monoError: $mono-error;
+  errorBackground: $error-background;
+  containerMaxWidth: $container-max-width;
+}

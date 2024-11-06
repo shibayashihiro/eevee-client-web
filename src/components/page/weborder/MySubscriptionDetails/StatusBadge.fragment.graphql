@@ -1,0 +1,4 @@
+fragment UserSubscriptionStatusBadge on UserSubscriptionPlan {
+  status
+  expiresAt
+}

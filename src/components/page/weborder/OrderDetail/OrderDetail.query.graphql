@@ -1,0 +1,25 @@
+query GetOrderDetail($facilityID: ID!, $orderID: ID!) {
+  tenant: viewing {
+    ...NavbarViewingParts
+  }
+
+  order: node(id: $orderID) {
+    ...OrderDetailParts
+    ... on DeliveryOrder {
+      progress {
+        ...DeliveryOrderProgressDetailParts
+      }
+    }
+    ... on TakeoutOrder {
+      progress {
+        ...TakeoutOrderProgressDetailParts
+      }
+    }
+  }
+  viewer {
+    ...NavbarViewerParts
+  }
+  facility: node(id: $facilityID) {
+    ...NavbarMenuFacility
+  }
+}

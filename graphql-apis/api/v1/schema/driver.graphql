@@ -1,0 +1,5 @@
+type Driver {
+    name: String!
+    selfIntroduction: String!
+    image: String!
+}

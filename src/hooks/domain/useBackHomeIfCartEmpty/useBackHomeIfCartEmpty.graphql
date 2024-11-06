@@ -1,0 +1,3 @@
+fragment BackHomeIfCartEmptyParts on Cart {
+  totalQuantity
+}

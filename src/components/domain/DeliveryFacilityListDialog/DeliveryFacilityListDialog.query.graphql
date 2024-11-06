@@ -1,0 +1,16 @@
+query GetDeliveryAvailableFacilities($location: LatLngInput!) {
+  deliveryAvailableFacilities(location: $location) {
+    id
+    shortName
+    image
+
+    availableOrderTypes {
+      ...AvailableOrderTypeBadgeParts
+    }
+
+    metaByLocation(location: $location) {
+      distance
+      deliveryEstimatedArrivalTimeLabel
+    }
+  }
+}

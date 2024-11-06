@@ -1,0 +1,7 @@
+mutation RemoveCartCourseMenuItem($input: RemoveCourseMenuItemFromCartInput!) {
+  removeCourseMenuItemFromCart(input: $input) {
+    cart {
+      __typename
+    }
+  }
+}

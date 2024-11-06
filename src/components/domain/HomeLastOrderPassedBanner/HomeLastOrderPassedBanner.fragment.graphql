@@ -1,0 +1,6 @@
+fragment HomeLastOrderPassedBanner on TableCourseMenu {
+  lastOrderAt
+  courseMenu {
+    name
+  }
+}

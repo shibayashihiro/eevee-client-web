@@ -1,0 +1,4 @@
+fragment PaymentIntentForConfirmCardPayment on PaymentIntent {
+  clientSecret
+  status
+}

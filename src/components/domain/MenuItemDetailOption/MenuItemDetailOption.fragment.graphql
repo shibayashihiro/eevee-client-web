@@ -1,0 +1,11 @@
+fragment MenuItemDetailOptionParts on MenuItemOption {
+  id
+  name
+  ...OptionIsRequiredChipParts
+  items {
+    id
+    ...OptionItemSelectListItemParts
+
+    ...OptionItemSubOptionEditDialogParts
+  }
+}

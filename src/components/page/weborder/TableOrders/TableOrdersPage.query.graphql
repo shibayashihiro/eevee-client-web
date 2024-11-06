@@ -1,0 +1,20 @@
+query TableOrdersPageQuery($facilityID: ID!) {
+  viewer {
+    table(facilityID: $facilityID) {
+      ...TableNumberMainHeaderParts
+      ...TableOrdersPageOrderListParts
+      charge {
+        ...ChargeDetailsFullListParts
+      }
+    }
+  }
+
+  facility: node(id: $facilityID) {
+    ... on Facility {
+      featureFlags {
+        showPriceExcludingTax
+        ...FeatureFlagsForProvider
+      }
+    }
+  }
+}

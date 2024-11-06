@@ -1,0 +1,16 @@
+fragment CartCourseMenuItem on OrderCourseMenuItem {
+  id
+  courseMenu {
+    id
+    category {
+      name
+    }
+    name
+  }
+  entry {
+    id
+    name
+  }
+  quantity
+  totalPrice
+}

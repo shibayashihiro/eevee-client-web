@@ -1,0 +1,14 @@
+query GetFacilityLocation($facilityID: ID!) {
+  facility: node(id: $facilityID) {
+    ... on Facility {
+      name
+      address1
+      address2
+      postalCode
+      latLng {
+        latitude
+        longitude
+      }
+    }
+  }
+}

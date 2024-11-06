@@ -1,0 +1,14 @@
+fragment DeliveryOrderProgressDetailParts on Progress {
+    currentStep
+    lastStep
+    stepSubject
+    scheduledTime
+    contactType
+    tel
+    driver {
+        name
+        selfIntroduction
+        image
+    }
+    waypointId
+}

@@ -1,0 +1,207 @@
+{
+  "hosting": [
+    {
+      "site": "eevee-client-web-dev",
+      "public": "public",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**", "**/mocks/**", "mockServiceWorker.js"],
+      "rewrites": [
+        {
+          "source": "**",
+          "function": "eeveeClientWebStaging"
+        }
+      ]
+    },
+    {
+      "site": "eevee-client-web-dev2",
+      "public": "public",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**", "**/mocks/**", "mockServiceWorker.js"],
+      "rewrites": [
+        {
+          "source": "**",
+          "function": "eeveeClientWebStaging2"
+        }
+      ]
+    },
+    {
+      "site": "eevee-client-web-dev3",
+      "public": "public",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**", "**/mocks/**", "mockServiceWorker.js"],
+      "rewrites": [
+        {
+          "source": "**",
+          "function": "eeveeClientWebStaging3"
+        }
+      ]
+    },
+    {
+      "site": "eevee-client",
+      "public": "out",
+      "ignore": [],
+      "headers": [
+        {
+          "source": "**/*.html",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "max-age=0, s-maxage=0, must-revalidate"
+            }
+          ]
+        }
+      ],
+      "rewrites": [
+        {
+          "source": "/demo/privacy",
+          "destination": "/demo/privacy/index.html"
+        },
+        {
+          "source": "/**/f/**/survey/**/start",
+          "destination": "/[tenantIdentifier]/f/[facilityId]/survey/[surveyId]/start/index.html"
+        },
+        {
+          "source": "/**/f/**/survey/**/end",
+          "destination": "/[tenantIdentifier]/f/[facilityId]/survey/[surveyId]/end/index.html"
+        },
+        {
+          "source": "/**/f/**/survey/**",
+          "destination": "/[tenantIdentifier]/f/[facilityId]/survey/[surveyId]/index.html"
+        },
+        {
+          "source": "/**/f/**/table/**/checkin",
+          "destination": "/[tenantIdentifier]/f/[facilityId]/table/[tableId]/checkin/index.html"
+        },
+        {
+          "source": "/**/f/**/table/**/menus",
+          "destination": "/[tenantIdentifier]/f/[facilityId]/table/[tableId]/menus/index.html"
+        },
+        {
+          "source": "/**/f/**/table/**/menus/cart",
+          "destination": "/[tenantIdentifier]/f/[facilityId]/table/[tableId]/menus/cart/index.html"
+        },
+        {
+          "source": "/**/f/**/table/**/menus/**/suggestions",
+          "destination": "/[tenantIdentifier]/f/[facilityId]/table/[tableId]/menus/[courseMenuId]/suggestions/index.html"
+        },
+        {
+          "source": "/**/f/**/table/**/menus/**",
+          "destination": "/[tenantIdentifier]/f/[facilityId]/table/[tableId]/menus/[courseMenuId]/index.html"
+        },
+        {
+          "source": "/**/f/**/cart",
+          "destination": "/[tenantIdentifier]/f/[facilityId]/cart/index.html"
+        },
+        {
+          "source": "/**/f/**/coursemenu/**",
+          "destination": "/[tenantIdentifier]/f/[facilityId]/coursemenu/[id]/index.html"
+        },
+        {
+          "source": "/**/f/**/delivery",
+          "destination": "/[tenantIdentifier]/f/[facilityId]/delivery/index.html"
+        },
+        {
+          "source": "/**/f/**/eatin",
+          "destination": "/[tenantIdentifier]/f/[facilityId]/eatin/index.html"
+        },
+        {
+          "source": "/**/f/**/takeout",
+          "destination": "/[tenantIdentifier]/f/[facilityId]/takeout/index.html"
+        },
+        {
+          "source": "/**/f/**/stampcard",
+          "destination": "/[tenantIdentifier]/f/[facilityId]/stampcard/index.html"
+        },
+        {
+          "source": "/**/f/**/menucategory/**",
+          "destination": "/[tenantIdentifier]/f/[facilityId]/menucategory/[id]/index.html"
+        },
+        {
+          "source": "/**/f/**/menuitem/**",
+          "destination": "/[tenantIdentifier]/f/[facilityId]/menuitem/[id]/index.html"
+        },
+        {
+          "source": "/**/f/**/order/**",
+          "destination": "/[tenantIdentifier]/f/[facilityId]/order/[id]/index.html"
+        },
+        {
+          "source": "/**/f/**",
+          "destination": "/[tenantIdentifier]/f/[facilityId]/index.html"
+        },
+        {
+          "source": "/**/liff",
+          "destination": "/[tenantIdentifier]/liff/index.html"
+        },
+        {
+          "source": "/**/liff/**",
+          "destination": "/[tenantIdentifier]/liff/[env]/index.html"
+        },
+        {
+          "source": "/**/coupon",
+          "destination": "/[tenantIdentifier]/coupon/index.html"
+        },
+        {
+          "source": "/**/coupon_add",
+          "destination": "/[tenantIdentifier]/coupon_add/index.html"
+        },
+        {
+          "source": "/**/credit_card_add",
+          "destination": "/[tenantIdentifier]/credit_card_add/index.html"
+        },
+        {
+          "source": "/**/delivery/address_add",
+          "destination": "/[tenantIdentifier]/delivery/address_add/index.html"
+        },
+        {
+          "source": "/**/login",
+          "destination": "/[tenantIdentifier]/login/index.html"
+        },
+        {
+          "source": "/**/password_reset",
+          "destination": "/[tenantIdentifier]/password_reset/index.html"
+        },
+        {
+          "source": "/**/shops",
+          "destination": "/[tenantIdentifier]/shops/index.html"
+        },
+        {
+          "source": "/**/signup",
+          "destination": "/[tenantIdentifier]/signup/index.html"
+        },
+        {
+          "source": "/webview/**/privacy",
+          "destination": "/webview/[tenantId]/privacy/index.html"
+        },
+        {
+          "source": "/**/privacy",
+          "destination": "/[tenantIdentifier]/privacy/index.html"
+        },
+        {
+          "source": "/404",
+          "destination": "/404/index.html"
+        },
+        {
+          "source": "/**",
+          "destination": "/[tenantIdentifier]/index.html"
+        },
+        {
+          "source": "/",
+          "destination": "/index.html"
+        }
+      ]
+    }
+  ],
+  "functions": {
+    "source": "functions",
+    "ignore": ["**/build/cache/**", "**/node_modules/**"],
+    "predeploy": [
+      "npm --prefix \"$PROJECT_DIR\" run clean:function",
+      "npm --prefix \"$PROJECT_DIR\" run build:function",
+      "cp \"$PROJECT_DIR\"/package*.json \"$RESOURCE_DIR\"/",
+      "npm --prefix \"$RESOURCE_DIR\" install --production --ignore-scripts"
+    ],
+    "runtime": "nodejs18"
+  },
+  "emulators": {
+    "hosting": {
+      "port": "8080"
+    }
+  }
+}

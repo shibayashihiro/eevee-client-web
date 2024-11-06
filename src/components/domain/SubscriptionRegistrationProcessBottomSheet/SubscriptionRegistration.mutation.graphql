@@ -1,0 +1,12 @@
+mutation SubmitSubscribe($input: SubscribeInput!) {
+  subscribe(input: $input) {
+    subscription {
+      currentPlan {
+        ...UserSubscriptionPlanForRegistrationCompleted
+      }
+    }
+    paymentIntent {
+      ...PaymentIntentForConfirmCardPayment
+    }
+  }
+}

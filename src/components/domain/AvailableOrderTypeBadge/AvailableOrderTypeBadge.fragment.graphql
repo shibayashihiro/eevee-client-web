@@ -1,0 +1,4 @@
+fragment AvailableOrderTypeBadgeParts on AvailableOrderType {
+  label
+  orderType
+}

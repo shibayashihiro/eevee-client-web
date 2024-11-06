@@ -1,0 +1,24 @@
+fragment LoyaltyCardSystem on UserLoyaltyCard {
+  loyaltyCard {
+    hasRankUp
+    pointCondition {
+      condition
+      caution
+    }
+    ranks {
+      name
+      colorRGB
+      rankUpCondition
+      benefit
+      stampCardRewards
+    }
+    cautions
+  }
+  currentRank {
+    name
+  }
+  expiration {
+    description
+    expiredAt
+  }
+}

@@ -1,0 +1,21 @@
+mutation SubmitEatInOrder($input: SubmitOrderInput!) {
+  submitOrder(input: $input) {
+    # submit後に取得する必要がないためこれ1つだけ指定
+    clientMutationId
+    order {
+      # refetchしてほしいためtypenameを指定
+      __typename
+    }
+  }
+}
+
+mutation SubmitSeatNumberOnOrderSubmit($input: SetSeatNumberInput!) {
+  setSeatNumber(input: $input) {
+    cart {
+      order {
+        # refetchしてほしいためtypenameを指定
+        __typename
+      }
+    }
+  }
+}

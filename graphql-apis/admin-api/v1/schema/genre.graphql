@@ -1,0 +1,8 @@
+extend type Query {
+    genres(ids: [String!]): [Genre]
+}
+
+type Genre {
+    id: String!
+    name: String!
+}

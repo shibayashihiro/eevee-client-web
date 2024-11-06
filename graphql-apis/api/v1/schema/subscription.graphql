@@ -1,0 +1,34 @@
+# "Subscription" という名前はGraphQLの機能として予約されているため、
+# Tenant(ブランド)のサブスクリプションという意味も込めてTenantSubscriptionと命名している
+type TenantSubscription {
+  id: ID!
+  title: String!
+  description: String!
+  features: [SubscriptionFeature!]!
+  plans: [SubscriptionPlan!]!
+  termsOfUseUrl: String!
+  helpUrl: String!
+  specialAgreementUrl: String!
+  contactUrl: String!
+  # サブスク加入した場合の有効期間(日数)
+  availableDays: Int!
+}
+
+type SubscriptionFeature {
+  icon: String!
+  title: String!
+  description: String!
+}
+
+type SubscriptionPlan {
+  id: ID!
+  title: String!
+  price: Int!
+  recommendedComment: String!
+  benefits: [SubscriptionBenefit!]!
+}
+
+type SubscriptionBenefit {
+  id: ID!
+  title: String!
+}

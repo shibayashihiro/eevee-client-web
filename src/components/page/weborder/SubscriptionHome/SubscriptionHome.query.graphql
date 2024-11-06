@@ -1,0 +1,9 @@
+query GetSubscriptionHome {
+  viewer {
+    subscription {
+      currentPlan {
+        status
+      }
+    }
+  }
+}

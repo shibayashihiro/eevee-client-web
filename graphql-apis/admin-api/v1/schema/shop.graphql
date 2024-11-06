@@ -1,0 +1,17 @@
+extend type Query {
+  shops(ids: [String!]!): [Shop!]!
+}
+
+type Shop {
+  id: String!
+  status: Int!
+  name: String!
+  nameKana: String!
+  postalCode: String!
+  prefecture: String!
+  address1: String!
+  address2: String!
+  phoneNumber: String!
+  rating: Float!
+  reviewCount: Int!
+}

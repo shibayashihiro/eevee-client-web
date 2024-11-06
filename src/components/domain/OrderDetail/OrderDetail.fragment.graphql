@@ -1,0 +1,29 @@
+fragment OrderDetailParts on Order {
+  shortIds
+  charge {
+    amount
+    details {
+      name
+      amount
+    }
+  }
+  items {
+    ...CartMenuItem
+  }
+  facility {
+    name
+    latLng {
+      latitude
+      longitude
+    }
+  }
+  ... on DeliveryOrder {
+    deliveryAddress {
+      prefecture
+      addressLine
+      buildingName
+      roomNumber
+      memo
+    }
+  }
+}

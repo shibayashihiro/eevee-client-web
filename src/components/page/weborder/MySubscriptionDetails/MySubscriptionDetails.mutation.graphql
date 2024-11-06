@@ -1,0 +1,19 @@
+mutation Unsubscribe($input: UnsubscribeInput!) {
+  unsubscribe(input: $input) {
+    clientMutationId
+    subscription {
+      # キャッシュの更新だけしたいため __typename だけ取得
+      __typename
+    }
+  }
+}
+
+mutation CancelUnsubscribe($input: CancelUnsubscribeInput!) {
+  cancelUnsubscribe(input: $input) {
+    clientMutationId
+    subscription {
+      # キャッシュの更新だけしたいため __typename だけ取得
+      __typename
+    }
+  }
+}

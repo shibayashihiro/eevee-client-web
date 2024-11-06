@@ -1,0 +1,13 @@
+fragment OptionItemSubOptionEditDialogParts on OptionItem {
+  id
+  name
+
+  subOptions {
+    id
+    name
+    ...OptionIsRequiredChipParts
+    items {
+      ...SubOptionItemParts
+    }
+  }
+}

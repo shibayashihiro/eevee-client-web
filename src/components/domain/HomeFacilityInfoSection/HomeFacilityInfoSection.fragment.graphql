@@ -1,0 +1,10 @@
+fragment HomeFacilityInfoSectionParts on FacilityInfoSection {
+  facility {
+    shortName
+  }
+  hasOtherFacilities(orderType: $orderType)
+}
+
+fragment HomeFacilityInfoSectionCurrentTableParts on Table {
+  name
+}

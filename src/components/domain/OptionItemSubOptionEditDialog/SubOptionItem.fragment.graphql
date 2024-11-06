@@ -1,0 +1,4 @@
+fragment SubOptionItemParts on OptionItem {
+  id
+  ...OptionItemSelectListItemParts
+}

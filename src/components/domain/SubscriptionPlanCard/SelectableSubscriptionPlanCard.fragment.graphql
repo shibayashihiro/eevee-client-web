@@ -1,0 +1,4 @@
+fragment SelectableSubscriptionPlanCard on SubscriptionPlan {
+  id
+  ...SubscriptionPlanCard
+}

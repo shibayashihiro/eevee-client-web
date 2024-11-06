@@ -1,0 +1,8 @@
+mutation AddDeliveryAddress($input: AddDeliveryAddressInput!) {
+  addDeliveryAddress(input: $input) {
+    clientMutationId
+    deliveryAddress {
+      __typename
+    }
+  }
+}

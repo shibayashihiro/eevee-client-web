@@ -1,0 +1,50 @@
+query GetMySubscriptionDetailsPage {
+  viewing {
+    subscription {
+      ...TenantSubscriptionForMySubscriptionDetailsPage
+    }
+  }
+  viewer {
+    subscription {
+      ...UserSubscriptionForDetailsPage
+    }
+  }
+}
+
+fragment TenantSubscriptionForMySubscriptionDetailsPage on TenantSubscription {
+  title
+  helpUrl
+  contactUrl
+}
+
+fragment UserSubscriptionForDetailsPage on UserSubscription {
+  currentPlan {
+    plan {
+      title
+      price
+      benefits {
+        title
+      }
+    }
+    startedAt
+    expiresAt
+    ...UserSubscriptionStatusBadge
+  }
+  paymentHistories {
+    paidAt
+    planTitle
+    amount
+  }
+  payment {
+    ...PaymentItemParts
+  }
+  ...UserSubscriptionStatusDescription
+  ...UserSubscriptionForRouteGuard
+}
+
+fragment UserSubscriptionStatusDescription on UserSubscription {
+  payment {
+    brand
+    last4
+  }
+}

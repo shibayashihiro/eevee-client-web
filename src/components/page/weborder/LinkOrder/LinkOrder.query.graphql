@@ -1,0 +1,8 @@
+query LinkOrderPage {
+  viewing {
+    ...NavbarViewingParts
+  }
+  viewer {
+    ...NavbarViewerParts
+  }
+}

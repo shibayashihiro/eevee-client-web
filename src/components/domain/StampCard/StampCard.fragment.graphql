@@ -1,0 +1,5 @@
+fragment StampCardParts on StampCard {
+  reward
+  currentPoints
+  maxPointPerPage
+}

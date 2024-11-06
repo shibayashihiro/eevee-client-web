@@ -1,0 +1,10 @@
+fragment StampCardsCarousel on UserLoyaltyCard {
+  currentRank {
+    name
+    colorRGB
+  }
+
+  activeStampCards {
+    ...StampCardParts
+  }
+}

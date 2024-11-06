@@ -1,0 +1,23 @@
+query GetCourseMenusCartPage($tableId: ID!, $facilityId: ID!) {
+  table: node(id: $tableId) {
+    ... on Table {
+      ...TableNumberMainHeaderParts
+    }
+  }
+
+  facility: node(id: $facilityId) {
+    ... on Facility {
+      ...CartFacilityNameParts
+      featureFlags {
+        ...FeatureFlagsForProvider
+      }
+    }
+  }
+
+  viewing {
+    ...NavbarViewingParts
+  }
+  viewer {
+    ...NavbarViewerParts
+  }
+}

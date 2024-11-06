@@ -1,0 +1,11 @@
+mutation SubmitTakeoutOrder($input: SubmitOrderInput!) {
+  submitOrder(input: $input) {
+    order {
+      # refetchしてほしいためtypenameを指定
+      __typename
+    }
+    paymentIntent {
+      ...PaymentIntentForConfirmCardPayment
+    }
+  }
+}

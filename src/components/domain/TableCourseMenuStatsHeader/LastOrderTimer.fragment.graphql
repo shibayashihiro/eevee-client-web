@@ -1,0 +1,9 @@
+fragment TableCourseMenuForTimer on TableCourseMenu {
+  lastOrderAt
+  noticeReadStatus
+  courseMenu {
+    category {
+      name
+    }
+  }
+}

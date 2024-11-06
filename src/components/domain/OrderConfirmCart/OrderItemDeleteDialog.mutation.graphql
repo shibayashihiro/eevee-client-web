@@ -1,0 +1,7 @@
+mutation RemoveOrderItem($input: RemoveOrderItemFromCartInput!) {
+  removeOrderItemFromCart(input: $input) {
+    cart {
+      __typename
+    }
+  }
+}

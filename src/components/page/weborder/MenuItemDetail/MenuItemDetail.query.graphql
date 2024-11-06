@@ -1,0 +1,42 @@
+query GetMenuItemDetail(
+  $facilityID: ID!
+  $menuItemID: ID!
+  $orderType: OrderType!
+  $withOrderItem: Boolean!
+  $isEatIn: Boolean!
+  $orderItemID: ID!
+) {
+  tenant: viewing {
+    ...NavbarViewingParts
+  }
+
+  menuItem: node(id: $menuItemID) {
+    ...MenuItemDetailParts
+  }
+
+  viewer {
+    cart(facilityID: $facilityID, orderType: $orderType) {
+      id
+
+      item(id: $orderItemID) @include(if: $withOrderItem) {
+        ...InitialOrderItemForCartItemEdit
+      }
+    }
+    deliveryAddresses {
+      __typename
+    }
+    table(facilityID: $facilityID) @include(if: $isEatIn) {
+      id
+    }
+    ...NavbarViewerParts
+  }
+
+  facility: node(id: $facilityID) {
+    ... on Facility {
+      ...NavbarMenuFacility
+      featureFlags {
+        ...FeatureFlagsForProvider
+      }
+    }
+  }
+}

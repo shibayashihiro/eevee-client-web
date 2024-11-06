@@ -1,0 +1,6 @@
+query getGenres($ids: [String!]) {
+  genres(ids: $ids) {
+    id
+    name
+  }
+}

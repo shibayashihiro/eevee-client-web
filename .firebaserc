@@ -1,0 +1,7 @@
+{
+  "projects": {
+    "default": "chompy-dev",
+    "staging": "chompy-dev",
+    "production": "chompy-jp"
+  }
+}

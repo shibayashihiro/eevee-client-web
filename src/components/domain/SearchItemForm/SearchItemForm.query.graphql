@@ -1,0 +1,5 @@
+query GetMenuItemByItemCode($facilityId: ID!, $itemCode: String!, $orderType: OrderType!) {
+  menuItem: menuItemByItemCode(facilityId: $facilityId, itemCode: $itemCode,orderType: $orderType) {
+    id
+  }
+}

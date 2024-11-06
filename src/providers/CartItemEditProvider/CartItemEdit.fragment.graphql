@@ -1,0 +1,42 @@
+fragment MenuItemForCartItemEditParts on MenuItem {
+  id
+  description
+  price(orderType: $orderType)
+  taxRateType
+
+  options {
+    ...MenuItemOptionForSelectOptions
+
+    items {
+      price(orderType: $orderType)
+      taxRateType
+      subOptions {
+        items {
+          price(orderType: $orderType)
+          taxRateType
+        }
+        ...MenuItemOptionForSelectOptions
+      }
+    }
+  }
+}
+
+fragment InitialOrderItemForCartItemEdit on OrderItem {
+  id
+  quantity
+
+  selectedOptionItems {
+    optionId
+    quantity
+    optionItem {
+      id
+    }
+    subOptionItems {
+      optionId
+      quantity
+      optionItem {
+        id
+      }
+    }
+  }
+}

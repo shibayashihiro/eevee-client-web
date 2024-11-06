@@ -1,0 +1,19 @@
+query GetAppPromotions {
+  tenant: viewing {
+    accountRegistrationIncentives {
+      incentive
+      title
+      name
+    }
+    iosDownloadUrl
+    androidDownloadUrl
+    appPromotion {
+      title
+      items {
+        title
+        description
+        icon
+      }
+    }
+  }
+}

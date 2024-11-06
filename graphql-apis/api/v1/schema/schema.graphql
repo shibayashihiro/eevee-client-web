@@ -1,0 +1,639 @@
+scalar DateTime
+
+# RelayにしたがったNodeの定義。idはグルーバルユニークなIDとなる。
+interface Node {
+  id: ID!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  endCursor: String
+}
+
+type Query {
+  node(id: ID!): Node
+  viewer: User!
+  viewing: Tenant!
+  placePredictions(keyword: String!): [PlacePrediction!]!
+  placeAddress(placeId: String!): PlaceAddress!
+  deliveryAvailableFacilities(location: LatLngInput!): [Facility!]!
+  customerAttributes(facilityId: ID!): [CustomerAttribute!]!
+  courseMenuCategories(facilityId: ID!): [CourseMenuCategory!]!
+  """
+  テーブルを取得する。テーブルがマージされている場合も、マージされた適切なテーブルを返す。
+  """
+  tableWithMergeSupport(tableId: ID!): Table!
+  """
+  品番から商品情報を取得する。
+  """
+  menuItemByItemCode(facilityId: ID!, itemCode: String!, orderType: OrderType!): MenuItem!
+}
+
+# Relayの使用に則り、MutationのInputとPayloadには必ずclientMutationIdを設定する。(ただし、Relayの最新仕様では廃止されているらしい）
+# clientMutationIdはサーバー側では冪等キーとして使われることを想定しており、クライアントはリクエスト毎にランダムな文字列を設定することが求められる。
+# クライアント側では非同期処理などでリクエストとレスポンスを紐づけるためのIDとして使用できる。
+type Mutation {
+  addMenuItemToCart(input: AddMenuItemToCartInput!): AddMenuItemToCartPayload!
+  removeOrderItemFromCart(input: RemoveOrderItemFromCartInput!): RemoveOrderItemFromCartPayload!
+  modifyOrderItem(input: ModifyOrderItemInput!): ModifyOrderItemPayload!
+  submitOrder(input: SubmitOrderInput!): SubmitOrderPayload!
+  submitTableOrder(input: SubmitTableOrderInput!): SubmitTableOrderPayload!
+  setSeatNumber(input: SetSeatNumberInput!): SetSeatNumberPayload!
+  updateMemo(input: UpdateMemoInput!): UpdateMemoPayload!
+  updateUsingDeliveryAddress(input: UpdateUsingDeliveryAddressInput!): UpdateUsingDeliveryAddressPayload!
+  removeDeliveryAddress(input: RemoveDeliveryAddressInput!): RemoveDeliveryAddressPayload!
+  updateDeliveryAddressMemo(input: UpdateDeliveryAddressMemoInput!): UpdateDeliveryAddressMemoPayload!
+  updateDefaultPayment(input: UpdateDefaultPaymentInput!): UpdateDefaultPaymentPayload!
+  addPayment(input: AddPaymentInput!): AddPaymentPayload!
+  removePayment(input: RemovePaymentInput!): RemovePaymentPayload!
+  signIn(input: SignInInput!): SignInPayload!
+  requestAuthCodeBySMS(input: RequestAuthCodeBySMSInput!): RequestAuthCodeBySMSPayload!
+  requestAuthCodeByPhone(input: RequestAuthCodeByPhoneInput!): RequestAuthCodeByPhonePayload!
+  verifySMSAuthCode(input: VerifySMSAuthCodeInput!): VerifySMSAuthCodePayload!
+  signUp(input: SignUpInput!): SignUpPayload!
+  addCoupon(input: AddCouponInput!): AddCouponPayload!
+  selectCoupon(input: SelectCouponInput!): SelectCouponPayload!
+  addDeliveryAddress(input: AddDeliveryAddressInput!): AddDeliveryAddressPayload!
+  requestProxyPhoneNumber(input: RequestProxyPhoneNumberInput!): RequestProxyPhoneNumberPayload!
+  updateDisposableItem(input: UpdateDisposableItemInput!): UpdateDisposableItemPayload!
+  # Deprecated: 匿名ユーザーとしてのサインインの流れでLINE情報を送信するようにしたため、Clientは今は使っていない。
+  updateTenantUserLINEConfig(input: UpdateTenantUserLINEConfigInput!): UpdateTenantUserLINEConfigPayload!
+  updateScheduledOrderTime(input: UpdateScheduledOrderTimeInput!): UpdateScheduledOrderTimePayload!
+  receiveOrder(input: ReceiveOrderInput!): ReceiveOrderPayload!
+  # 後払い用。テーブルを決定する。
+  checkInTable(input: CheckInTableInput!): CheckInTablePayload!
+  addCourseMenuToCart(input: AddCourseMenuToCartInput!): AddCourseMenuToCartPayload!
+  removeCourseMenuItemFromCart(input: RemoveCourseMenuItemFromCartInput!): RemoveCourseMenuItemFromCartPayload!
+  modifyCourseMenuOnCart(input: ModifyCourseMenuOnCartInput!): ModifyCourseMenuOnCartPayload!
+  submitCourseMenus(input: SubmitCourseMenusInput!): SubmitCourseMenusPayload!
+  updateUserCourseMenuNoticeStatus(
+    input: UpdateUserCourseMenuNoticeStatusInput!
+  ): UpdateUserCourseMenuNoticeStatusPayload!
+  # 利用中のユーザーと、Orderを紐づける。スタンプ獲得などのCRM機能のために利用できる。
+  linkOrder(input: LinkOrderInput!): LinkOrderPayload!
+  # サブスク登録
+  subscribe(input: SubscribeInput!): SubscribePayload!
+  # サブスク解約
+  unsubscribe(input: UnsubscribeInput!): UnsubscribePayload!
+  # サブスク解約をキャンセル
+  cancelUnsubscribe(input: CancelUnsubscribeInput!): CancelUnsubscribePayload!
+  sendCompletedSurvey(input: SendCompletedSurveyInput!): SendCompletedSurveyPayload!
+  # サブスクを利用する
+  useSubscriptionBenefit(input: UseSubscriptionBenefitInput!): UseSubscriptionBenefitPayload!
+}
+
+input LatLngInput {
+  latitude: Float!
+  longitude: Float!
+}
+
+input SelectedOptionItemInput {
+  id: ID!
+  quantity: Int!
+
+  subOptionItems: [SelectedOptionItemInput!]!
+}
+
+input AddMenuItemToCartInput {
+  clientMutationId: String
+
+  cartId: ID!
+  menuItemId: ID!
+  quantity: Int!
+  selectedOptionItems: [SelectedOptionItemInput!]!
+}
+
+type AddMenuItemToCartPayload {
+  clientMutationId: String
+
+  cart: Cart!
+}
+
+input RemoveOrderItemFromCartInput {
+  clientMutationId: String
+
+  cartId: ID!
+  orderItemId: ID!
+}
+
+type RemoveOrderItemFromCartPayload {
+  clientMutationId: String
+
+  cart: Cart!
+}
+
+input ModifyOrderItemInput {
+  clientMutationId: String
+
+  cartId: ID!
+  orderItemId: ID!
+  """
+  更新時にはquantityが1以上である必要がある。
+  """
+  quantity: Int!
+  selectedOptionItems: [SelectedOptionItemInput!]!
+}
+
+type ModifyOrderItemPayload {
+  clientMutationId: String
+
+  cart: Cart!
+}
+
+input AddCourseMenuItemToCart {
+  clientMutationId: String
+
+  cartId: ID!
+  courseMenuId: ID!
+  courseMenuEntryId: ID!
+  quantity: Int!
+}
+
+type AddCourseMenuItemToCartPayload {
+  clientMutationId: String
+
+  cart: Cart!
+}
+
+input SubmitOrderInput {
+  clientMutationId: String
+
+  orderId: ID!
+
+  # 匿名ユーザーでテイクアウト注文する場合に使用する
+  lastNameKana: String
+  phoneNumber: String
+  email: String
+
+  # LINEユーザーだった場合に使用する
+  liffAccessToken: String
+}
+
+type SubmitOrderPayload {
+  clientMutationId: String
+
+  order: Order!
+  paymentIntent: PaymentIntent
+}
+
+input SubmitTableOrderInput {
+  clientMutationId: String
+}
+
+type SubmitTableOrderPayload {
+  clientMutationId: String
+
+  order: Order!
+  """
+  注文後メッセージ
+  """
+  postOrderMessage: PostOrderMessage
+}
+
+input SetSeatNumberInput {
+  clientMutationId: String
+
+  cartId: ID!
+  seatNumber: String!
+}
+
+type SetSeatNumberPayload {
+  clientMutationId: String
+
+  cart: Cart!
+}
+
+input UpdateMemoInput {
+  clientMutationId: String
+
+  cartId: ID!
+  memo: String!
+  # 複数shopに対応したらshopIDを送る必要がある
+}
+
+type UpdateMemoPayload {
+  clientMutationId: String
+
+  cart: Cart!
+}
+
+input UpdateUsingDeliveryAddressInput {
+  clientMutationId: String
+
+  deliveryAddressId: ID!
+}
+
+type UpdateUsingDeliveryAddressPayload {
+  clientMutationId: String
+
+  deliveryAddress: DeliveryAddress!
+}
+
+input RemoveDeliveryAddressInput {
+  clientMutationId: String
+
+  deliveryAddressId: ID!
+}
+
+type RemoveDeliveryAddressPayload {
+  clientMutationId: String
+
+  deliveryAddress: DeliveryAddress!
+}
+
+input UpdateDeliveryAddressMemoInput {
+  clientMutationId: String
+
+  deliveryAddressId: ID!
+  memo: String!
+}
+
+type UpdateDeliveryAddressMemoPayload {
+  clientMutationId: String
+
+  deliveryAddress: DeliveryAddress!
+}
+
+input UpdateDefaultPaymentInput {
+  clientMutationId: String
+
+  paymentId: ID!
+}
+
+type UpdateDefaultPaymentPayload {
+  clientMutationId: String
+
+  payment: Payment!
+}
+
+input AddPaymentInput {
+  clientMutationId: String
+
+  token: String!
+}
+
+type AddPaymentPayload {
+  clientMutationId: String
+
+  payment: Payment!
+}
+
+input RemovePaymentInput {
+  clientMutationId: String
+
+  paymentId: ID!
+}
+
+type RemovePaymentPayload {
+  clientMutationId: String
+
+  payment: Payment!
+}
+
+input SignInInput {
+  clientMutationId: String
+}
+
+type SignInPayload {
+  clientMutationId: String
+}
+
+input RequestAuthCodeBySMSInput {
+  clientMutationId: String
+  phoneNumber: String!
+}
+
+type RequestAuthCodeBySMSPayload {
+  clientMutationId: String
+}
+
+input RequestAuthCodeByPhoneInput {
+  clientMutationId: String
+  phoneNumber: String!
+}
+
+type RequestAuthCodeByPhonePayload {
+  clientMutationId: String
+}
+
+input VerifySMSAuthCodeInput {
+  clientMutationId: String
+  phoneNumber: String!
+  authCode: String!
+}
+
+type VerifySMSAuthCodePayload {
+  clientMutationId: String
+}
+
+input SignUpInput {
+  clientMutationId: String
+
+  anonymousUserID: String!
+  firstName: String!
+  lastName: String!
+  firstNameKana: String!
+  lastNameKana: String!
+  phoneNumber: String!
+  email: String!
+  password: String!
+}
+
+type SignUpPayload {
+  clientMutationId: String
+}
+
+input AddCouponInput {
+  clientMutationId: String
+
+  code: String!
+}
+
+type AddCouponPayload {
+  clientMutationId: String
+
+  coupon: Coupon!
+}
+
+input SelectCouponInput {
+  clientMutationId: String
+
+  cartId: ID!
+  couponId: ID
+}
+
+type SelectCouponPayload {
+  clientMutationId: String
+
+  cart: Cart!
+}
+
+input AddDeliveryAddressInput {
+  clientMutationId: String
+
+  prefecture: String!
+  addressLine: String!
+  buildingName: String!
+  memo: String!
+}
+
+type AddDeliveryAddressPayload {
+  clientMutationId: String
+
+  deliveryAddress: DeliveryAddress!
+}
+
+input RequestProxyPhoneNumberInput {
+  clientMutationId: String
+
+  waypointId: ID!
+}
+
+type RequestProxyPhoneNumberPayload {
+  clientMutationId: String
+
+  phoneNumber: String!
+}
+
+input UpdateDisposableItemInput {
+  clientMutationId: String
+
+  cartId: ID!
+  disposableItemId: ID!
+}
+
+type UpdateDisposableItemPayload {
+  clientMutationId: String
+
+  cart: Cart!
+}
+
+input UpdateTenantUserLINEConfigInput {
+  clientMutationId: String
+
+  lineIdToken: String!
+}
+
+type UpdateTenantUserLINEConfigPayload {
+  clientMutationId: String
+}
+
+input UpdateScheduledOrderTimeInput {
+  clientMutationId: String
+
+  facilityId: ID!
+  orderType: OrderType!
+  type: ScheduledOrderTimeType!
+  date: DateInput
+  minArrival: String
+  maxArrival: String
+}
+
+input DateInput {
+  year: Int!
+  month: Int!
+  day: Int!
+}
+
+type UpdateScheduledOrderTimePayload {
+  clientMutationId: String
+
+  scheduledOrderTime: ScheduledOrderTime!
+}
+
+input ReceiveOrderInput {
+  clientMutationId: String
+
+  orderId: ID!
+}
+
+type ReceiveOrderPayload {
+  clientMutationId: String
+
+  order: Order!
+}
+
+input CheckInTableInput {
+  clientMutationId: String
+
+  facilityId: ID!
+  tableId: ID!
+
+  customerAttributes: [CustomerAttributeInput!]!
+}
+
+input CustomerAttributeInput {
+  customerAttributeDetailId: ID!
+  value: Int!
+}
+
+type CheckInTablePayload {
+  clientMutationId: String
+}
+
+input AddCourseMenuToCartInput {
+  clientMutationId: String
+
+  cartId: ID!
+  courseMenuId: ID!
+  entries: [CourseMenuEntryInput!]!
+}
+
+input CourseMenuEntryInput {
+  id: ID!
+  quantity: Int!
+}
+
+type AddCourseMenuToCartPayload {
+  clientMutationId: String
+
+  cart: Cart!
+}
+
+# NOTE: カートからの削除は1個ずつ（"大人"など）おこなう
+input RemoveCourseMenuItemFromCartInput {
+  clientMutationId: String
+
+  cartId: ID!
+  courseMenuItemId: ID!
+}
+
+type RemoveCourseMenuItemFromCartPayload {
+  clientMutationId: String
+
+  cart: Cart!
+}
+
+# NOTE: カート内の更新は、コースメニュー単位("飲み放題"など)でおこなう
+input ModifyCourseMenuOnCartInput {
+  clientMutationId: String
+
+  cartId: ID!
+  courseMenuId: ID!
+  entries: [CourseMenuEntryInput!]!
+}
+
+type ModifyCourseMenuOnCartPayload {
+  clientMutationId: String
+
+  cart: Cart!
+}
+
+input SubmitCourseMenusInput {
+  clientMutationId: String
+
+  facilityId: ID!
+  tableId: ID!
+  items: [SubmitCourseMenusItemInput!]!
+}
+
+input SubmitCourseMenusItemInput {
+  courseMenuId: ID!
+  courseMenuEntryId: ID!
+  quantity: Int!
+}
+
+type SubmitCourseMenusPayload {
+  clientMutationId: String
+
+  """
+  注文後メッセージ
+  """
+  postOrderMessage: PostOrderMessage
+}
+
+input UpdateUserCourseMenuNoticeStatusInput {
+  clientMutationId: String
+
+  status: UserCourseMenuNoticeStatus!
+}
+
+enum UserCourseMenuNoticeStatus {
+  READ_10_MINUTES_NOTICE
+  READ_END_NOTICE
+}
+
+type UpdateUserCourseMenuNoticeStatusPayload {
+  clientMutationId: String
+}
+
+type PostOrderMessage {
+  title: String!
+  message: String!
+}
+
+input LinkOrderInput {
+  clientMutationId: String
+
+  orderId: ID!
+}
+
+type LinkOrderPayload {
+  clientMutationId: String
+
+  resultMainText: String!
+  resultSubText: String
+  cautionText: String
+}
+
+input SubscribeInput {
+  clientMutationId: String
+
+  planId: ID!
+}
+
+type SubscribePayload {
+  clientMutationId: String
+
+  subscription: UserSubscription!
+  paymentIntent: PaymentIntent!
+}
+
+input UnsubscribeInput {
+  clientMutationId: String
+}
+
+type UnsubscribePayload {
+  clientMutationId: String
+
+  subscription: UserSubscription!
+}
+
+input CancelUnsubscribeInput {
+  clientMutationId: String
+}
+
+type CancelUnsubscribePayload {
+  clientMutationId: String
+
+  subscription: UserSubscription!
+}
+
+input CompletedSurveyInput {
+  question: String!
+  answers: [String!]!
+}
+
+input SendCompletedSurveyInput {
+  clientMutationId: String
+  surveyID: ID!
+  completedSurvey: [CompletedSurveyInput!]!
+}
+
+type SendCompletedSurveyPayload {
+  clientMutationId: String
+}
+
+input UseSubscriptionInput {
+  clientMutationId: String
+}
+
+input UseSubscriptionBenefitInput {
+  clientMutationId: String
+  benefitId: ID!
+}
+
+type UseSubscriptionBenefitPayload {
+  clientMutationId: String
+  benefitUsage: UserSubscriptionBenefitUsage!
+}

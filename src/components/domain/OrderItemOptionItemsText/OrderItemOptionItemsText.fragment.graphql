@@ -1,0 +1,10 @@
+fragment OrderItemOptionItemsTextParts on OrderItem {
+  selectedOptionItems {
+    name
+    quantity
+    subOptionItems {
+      name
+      quantity
+    }
+  }
+}

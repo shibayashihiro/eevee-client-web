@@ -1,0 +1,30 @@
+query GetMyCoupons($facilityID: ID!, $first: Int, $after: String, $isAvailable: Boolean!) {
+    viewing {
+        ...NavbarViewingParts
+    }
+
+    viewer {
+        coupons(first: $first, after: $after, isAvailable: $isAvailable) {
+            nodes {
+                id
+                title
+                subTitle
+                statusLabel
+                image
+                details {
+                    name
+                    value
+                }
+            }
+            pageInfo {
+                hasNextPage
+                endCursor
+            }
+        }
+        ...NavbarViewerParts
+    }
+
+    facility: node(id: $facilityID) {
+        ...NavbarMenuFacility
+    }
+}

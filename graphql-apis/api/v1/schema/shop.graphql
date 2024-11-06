@@ -1,0 +1,182 @@
+type MenuCategory implements Node {
+  id: ID!
+  name: String!
+  items(orderType: OrderType!, first: Int, after: String): MenuItemConnection!
+}
+
+type MenuItemConnection {
+  nodes: [MenuItem!]!
+  pageInfo: PageInfo!
+}
+
+type MenuItem implements Node {
+  id: ID!
+  name: String!
+  price(orderType: OrderType!): Int!
+  priceExcludingTax(orderType: OrderType!): Int!
+  description: String
+  image: String!
+  ownerComment: OwnerComment
+  options: [MenuItemOption!]!
+  status: MenuItemStatus!
+  orderStatus(orderType: OrderType!): MenuItemOrderStatus!
+  alcoholicBeverage: Boolean!
+  taxRateType: TaxRateType!
+}
+
+type MenuItemStatus {
+  available: Boolean!
+  """
+  available = falseのときだけ返る
+  """
+  labelUnavailable: String
+}
+
+type MenuItemOrderStatus {
+  viewerCanAddToCart: Boolean!
+  reasonViewerCannotAddToCart: String
+}
+
+type MenuItemOption {
+  id: ID!
+  name: String!
+  items: [OptionItem!]!
+  minSelectCount: Int
+  maxSelectCount: Int
+  maxSelectCountPerItem: Int
+}
+
+"""
+コースメニューのカテゴリ (例: 単品メニュー、食べ飲み放題、....)
+"""
+type CourseMenuCategory implements Node {
+  id: ID!
+  name: String!
+  description: String
+  courses: [CourseMenu!]!
+}
+
+"""
+コースメニュー(単品メニュー、食べ放題スタンダード、食べ放題プレミアム、...)
+"""
+type CourseMenu implements Node {
+  id: ID!
+  name: String!
+  # コースメニューの説明
+  description: String
+  # お一人様あたりの金額
+  pricePerPerson: CourseMenuPricePerPerson
+  minSelectCount: Int!
+  entries: [CourseMenuEntry!]!
+  # カート追加後にサジェストするコースメニュー
+  suggestedCourses: [CourseMenu!]!
+  ruleDescriptions: [String!]!
+  # Suggestionの時のみnullになるのでnullableにしている
+  category: CourseMenuCategory
+}
+
+union CourseMenuPricePerPerson = CourseMenuFixedPricePerPerson | CourseMenuRangePricePerPerson
+"""
+お一人様あたり として表示する金額（固定値）
+"""
+type CourseMenuFixedPricePerPerson {
+  price: Int!
+  """
+  税抜き価格。※CourseMenuをイートイン以外でも提供するようになった場合には、OrderTypeの参照も必要
+  """
+  priceExcludingTax: Int!
+}
+"""
+お一人様あたり として表示する金額（範囲。例: ¥1,000~ のようにする場合）
+"""
+type CourseMenuRangePricePerPerson {
+  # 一旦最小値しか使わないため、最小値のみ
+  minPrice: Int!
+  """
+  税抜き価格。※CourseMenuをイートイン以外でも提供するようになった場合には、OrderTypeの参照も必要
+  """
+  minPriceExcludingTax: Int!
+}
+
+"""
+コースメニューの注文単位。（例: 大人¥1000, 子供¥500, ...）
+"""
+type CourseMenuEntry {
+  id: ID!
+  name: String!
+  price: Int!
+  priceExcludingTax: Int!
+}
+
+type OptionItem {
+  id: ID!
+  name: String!
+  """
+  priceがない場合は無料
+  """
+  price(orderType: OrderType!): Int
+  priceExcludingTax(orderType: OrderType!): Int
+  status: OptionItemStatus!
+  description: String
+  image: String
+
+  subOptions: [MenuItemOption!]!
+  taxRateType: TaxRateType!
+}
+
+type OptionItemStatus {
+  available: Boolean!
+  """
+  available = falseのときだけ返る
+  """
+  labelUnavailable: String
+}
+
+type Owner {
+  name: String
+  icon: String!
+}
+
+type OwnerComment {
+  owner: Owner!
+  comment: String!
+}
+
+enum TaxRateType {
+  NORMAL
+  REDUCED
+}
+
+type Survey implements Node {
+  id: ID!
+  surveyConfig: SurveyConfig!
+}
+
+type SurveyConfig {
+  id: ID!
+  availableAt: DateTime!
+  surveyForm: SurveyForm!
+}
+
+# アンケートのフォーム
+type SurveyForm {
+  id: ID!
+  rows: [SurveyFormRow!]!
+}
+
+# アンケートの質問の単位
+type SurveyFormRow {
+  id: ID!
+  order: Int!
+  question: String!
+  required: Boolean!
+  answerType: AnswerType!
+  answers: [String!]!
+}
+
+enum AnswerType {
+  TEXT
+  CHECKBOX
+  TEXT_RADIO
+  NUMBER_RADIO
+}

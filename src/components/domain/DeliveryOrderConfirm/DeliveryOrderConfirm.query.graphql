@@ -1,0 +1,37 @@
+query GetCartForDeliveryOrderConfirm($facilityID: ID!, $orderType: OrderType!) {
+  facility: node(id: $facilityID) {
+    ... on Facility {
+      ...CartFacilityNameParts
+      featureFlags {
+        ...FeatureFlagsForProvider
+      }
+    }
+  }
+
+  viewer {
+    cart(facilityID: $facilityID, orderType: $orderType) {
+      id
+      totalQuantity
+
+      ...OrderConfirmCartParts
+      order {
+        id
+        ... on DeliveryOrder {
+          deliveryAddress {
+            id
+            prefecture
+            addressLine
+            buildingName
+            roomNumber
+            memo
+          }
+          scheduledTime
+          requirement
+          availablePayments {
+            ...PaymentDialogParts
+          }
+        }
+      }
+    }
+  }
+}

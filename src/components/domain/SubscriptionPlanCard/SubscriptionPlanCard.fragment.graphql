@@ -1,0 +1,8 @@
+fragment SubscriptionPlanCard on SubscriptionPlan {
+  title
+  price
+  recommendedComment
+  benefits {
+    title
+  }
+}

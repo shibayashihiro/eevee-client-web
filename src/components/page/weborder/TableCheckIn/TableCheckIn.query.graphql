@@ -1,0 +1,23 @@
+query TableCheckInPageQuery($facilityId: ID!, $tableId: ID!) {
+  table: tableWithMergeSupport(tableId: $tableId) {
+    id
+    isCustomerAttributesCollected
+  }
+
+  viewing {
+    ...NavbarViewingParts
+  }
+
+  viewer {
+    ...NavbarViewerParts
+  }
+
+  facility: node(id: $facilityId) {
+    ...NavbarMenuFacility
+    ... on Facility {
+      featureFlags {
+        ...FeatureFlagsForProvider
+      }
+    }
+  }
+}

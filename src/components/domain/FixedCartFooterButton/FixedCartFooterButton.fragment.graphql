@@ -1,0 +1,4 @@
+fragment CartFooterButtonParts on Cart {
+  totalPrice
+  totalQuantity
+}

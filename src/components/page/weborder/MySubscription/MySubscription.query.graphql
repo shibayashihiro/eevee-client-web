@@ -1,0 +1,37 @@
+query GetMySubscriptionPage {
+  viewing {
+    subscription {
+      title
+    }
+  }
+  viewer {
+    profile {
+      displayName
+    }
+    subscription {
+      currentPlan {
+        ...UserSubscriptionPlanForMySubscriptionPage
+      }
+    }
+  }
+}
+
+# 1つのtsx内でComponentを分けたくfragmentにしているだけなので同じgraphqlファイル内に書いている。
+fragment UserSubscriptionPlanForMySubscriptionPage on UserSubscriptionPlan {
+  plan {
+    title
+  }
+  benefitUsages {
+    ...BenefitForMySubscriptionPage
+  }
+  subscriptionMonth
+}
+
+fragment BenefitForMySubscriptionPage on UserSubscriptionBenefitUsage {
+  benefit {
+    id
+    title
+  }
+  used
+  limit
+}

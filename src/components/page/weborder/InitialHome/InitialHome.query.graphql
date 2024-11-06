@@ -1,0 +1,22 @@
+query GetInitialHomePage(
+  $facilityId: ID! # $tableId: ID!
+) {
+  facility: node(id: $facilityId) {
+    ... on Facility {
+      ...CartFacilityNameParts
+      featureFlags {
+        ...FeatureFlagsForProvider
+      }
+      availableOrderTypes {
+        ...AvailableOrderTypeBadgeParts
+      }
+    }
+  }
+
+  viewing {
+    ...NavbarViewingParts
+  }
+  viewer {
+    ...NavbarViewerParts
+  }
+}

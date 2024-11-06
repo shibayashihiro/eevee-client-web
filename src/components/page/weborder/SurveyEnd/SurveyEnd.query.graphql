@@ -1,0 +1,9 @@
+query SurveyEnd {
+  viewing {
+    ...NavbarViewingParts
+  }
+
+  viewer {
+    ...NavbarViewerParts
+  }
+}

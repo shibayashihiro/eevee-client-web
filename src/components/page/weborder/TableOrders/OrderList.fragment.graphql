@@ -1,0 +1,32 @@
+fragment TableOrdersPageOrderListParts on Table {
+  orders {
+    ...TableOrdersPageOrderListItemParts
+  }
+  mainCourseMenu {
+    ...CourseMenuParts
+  }
+  subCourseMenus {
+    ...CourseMenuParts
+  }
+}
+
+fragment TableOrdersPageOrderListItemParts on TableOrder {
+  id
+  submittedAt
+  progress {
+    prepared
+  }
+  items {
+    ...CartMenuItem
+  }
+}
+
+fragment CourseMenuParts on TableCourseMenu {
+  courseMenu {
+    id
+    name
+  }
+  courseMenuItems {
+    ...CartCourseMenuItem
+  }
+}

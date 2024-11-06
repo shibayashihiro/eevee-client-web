@@ -1,0 +1,8 @@
+extend type Query {
+    facilities(ids: [String!]): [Facility]
+}
+
+type Facility {
+    id: String!
+    name: String!
+}

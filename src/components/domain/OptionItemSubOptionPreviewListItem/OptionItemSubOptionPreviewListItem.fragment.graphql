@@ -1,0 +1,9 @@
+fragment OptionItemSubOptionPreviewListItemParts on MenuItemOption {
+  id
+  name
+  items {
+    id
+    name
+    price(orderType: $orderType)
+  }
+}

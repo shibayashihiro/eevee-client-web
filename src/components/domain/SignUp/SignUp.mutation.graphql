@@ -1,0 +1,23 @@
+mutation RequestAuthCodeBySMS($input: RequestAuthCodeBySMSInput!) {
+  requestAuthCodeBySMS(input: $input) {
+    clientMutationId
+  }
+}
+
+mutation RequestAuthCodeByPhone($input: RequestAuthCodeByPhoneInput!) {
+  requestAuthCodeByPhone(input: $input) {
+    clientMutationId
+  }
+}
+
+mutation VerifyAuthCode($input: VerifySMSAuthCodeInput!) {
+  verifySMSAuthCode(input: $input) {
+    clientMutationId
+  }
+}
+
+mutation SignUp($input: SignUpInput!) {
+  signUp(input: $input) {
+    clientMutationId
+  }
+}

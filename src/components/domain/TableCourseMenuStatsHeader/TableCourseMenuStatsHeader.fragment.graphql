@@ -1,0 +1,15 @@
+fragment TableCourseMenuStatsHeader on Table {
+  mainCourseMenu {
+    lastOrderAt
+    courseMenu {
+      name
+      ruleDescriptions
+    }
+    ...TableCourseMenuForTimer
+  }
+  subCourseMenus {
+    courseMenu {
+      name
+    }
+  }
+}

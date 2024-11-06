@@ -1,0 +1,14 @@
+query GetWebHomeSectionsForTenantPage {
+  viewing {
+    helpUrl
+    termsOfUseUrl
+    specifiedCommercialTransactionActUrl
+    mainVisualImage
+    companyName
+    ...NavbarViewingParts
+  }
+
+  viewer {
+    ...NavbarViewerParts
+  }
+}

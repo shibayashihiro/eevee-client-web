@@ -1,0 +1,10 @@
+fragment CourseMenuAsMenuItemDetail_CourseMenuEntriesInput on CourseMenu {
+  id
+  minSelectCount
+  entries {
+    id
+    name
+    price
+    priceExcludingTax
+  }
+}

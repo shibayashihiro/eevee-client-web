@@ -1,0 +1,15 @@
+mutation AddCartItem($input: AddMenuItemToCartInput!) {
+  addMenuItemToCart(input: $input) {
+    cart {
+      __typename
+    }
+  }
+}
+
+mutation UpdateCartItem($input: ModifyOrderItemInput!) {
+  modifyOrderItem(input: $input) {
+    cart {
+      __typename
+    }
+  }
+}

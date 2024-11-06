@@ -1,0 +1,100 @@
+type WebHome {
+  sections: [WebHomeSection!]!
+}
+
+union WebHomeSection =
+  | MenuItemsSection
+  | MembershipCardSection
+  | MenuCategoriesSection
+  | MainVisualSection
+  | FacilityInfoSection
+  | StatusSection
+  | DeliverySection
+  | InProgressOrderSection
+  | SelectOrderTypeSection
+  | BannerSection
+  | CourseMenuCategoriesSection
+  | TakeoutSection
+
+
+type MenuItemsSection {
+  title: String!
+  items: [MenuItem!]!
+}
+
+type MenuCategoriesSection {
+  title: String!
+  categories: [MenuCategory!]!
+}
+
+type MainVisualSection {
+  image: String!
+}
+
+type MembershipCardSection {
+  logo: String!
+  """
+  会員読み取り(chompy-studio)用のQRコードデータ
+  スタンプなどのロイヤリティ機能が無くても、会員情報読み取り(注文との紐付け)はできて良いため
+  loyaltyCardとは別の概念として定義する。将来もしも「会員証」の概念が大きくなることが想定される場合には、MemberShipのようなTypeを追加する。
+  """
+  membershipQRCodeData: String!
+}
+
+type FacilityInfoSection {
+  facility: Facility!
+  hasOtherFacilities(orderType: OrderType!): Boolean!
+}
+
+type StatusSection {
+  title: String!
+}
+
+type DeliverySection {
+  scheduledTime: String!
+  deliveryFeeAmount: String!
+  isOutOfArea: Boolean!
+  caution: String
+  notice: String
+}
+
+type InProgressOrderSection {
+  orders: [Order!]!
+}
+
+type SelectOrderTypeSection {
+  orderTypes: [OrderType!]!
+}
+
+type BannerSection {
+  banners: [Banner!]!
+}
+
+# Homeに表示するバナー
+type Banner {
+  title: String!
+  message: String!
+  behavior: BannerInteractionBehavior!
+
+  # 追加でアイコンも必要になりそうだが、まだパターンは1つしかないため、必要になった時に追加する
+}
+
+# バナーの振る舞い
+enum BannerInteractionBehavior {
+  SHOW_ORDER_HISTORY
+}
+
+"""
+コースメニューのカテゴリーを表示するセクション
+
+理想的にはCourseMenuCategoryはMenuCategoryと同一なイメージだが、内部のデータ構造が異なるため、一旦別途定義した。
+"""
+type CourseMenuCategoriesSection {
+  # NOTE: MenuCategoryと違い、Titleは不要(カテゴリーの中の一部みたいな扱いのため。)
+
+  categories: [CourseMenuCategory!]!
+}
+
+type TakeoutSection {
+  selectedScheduledTime: String!
+}

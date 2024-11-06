@@ -1,0 +1,9 @@
+fragment ChargeDetailsFullListParts on Charge {
+  amount
+  details {
+    ... on ChargeDetail {
+      name
+      amount
+    }
+  }
+}

@@ -1,0 +1,27 @@
+query GetSuggestedCourseMenusSelectPeoplePage($facilityId: ID!, $courseMenuId: ID!) {
+  viewing {
+    ...NavbarViewingParts
+  }
+  viewer {
+    ...NavbarViewerParts
+  }
+
+  courseMenu: node(id: $courseMenuId) {
+    ... on CourseMenu {
+      suggestedCourses {
+        id
+        name
+        description
+        ...CourseMenuEntriesInput
+      }
+    }
+  }
+
+  facility: node(id: $facilityId) {
+    ... on Facility {
+      featureFlags {
+        ...FeatureFlagsForProvider
+      }
+    }
+  }
+}

@@ -1,0 +1,19 @@
+query GetTenantForNavbar($facilityId: ID!) {
+  tenant: viewing {
+    ...NavbarViewingParts
+  }
+
+  viewer {
+    deliveryAddresses {
+      ...DeliveryAddressDialogParts
+    }
+    payments {
+      ...PaymentDialogParts
+    }
+    ...NavbarViewerParts
+  }
+
+  facility: node(id: $facilityId) {
+    ...NavbarMenuFacility
+  }
+}

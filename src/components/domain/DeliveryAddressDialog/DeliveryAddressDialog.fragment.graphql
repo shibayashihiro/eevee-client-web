@@ -1,0 +1,8 @@
+fragment DeliveryAddressDialogParts on DeliveryAddress {
+    id
+    prefecture
+    addressLine
+    buildingName
+    memo
+    isUsing
+}

@@ -1,0 +1,49 @@
+type Tenant implements Node {
+  id: ID!
+  name: String!
+  logo: String!
+  layout: Layout!
+  accountRegistrationIncentives: [AccountRegistrationIncentive!]!
+  iosDownloadUrl: String!
+  androidDownloadUrl: String!
+  helpUrl: String!
+  termsOfUseUrl: String!
+  privacyPolicyUrl: String!
+  specifiedCommercialTransactionActUrl: String!
+  appPromotion: Promotion
+  """
+  本来は WebHome(MainVisualSection) を使えるようにするとよさそうだが、そちらは現状Facility用に実装されており
+  Tenantの情報だけ欲しい時に取得できないため一旦ここにフィールドを追加している
+  """
+  mainVisualImage: String!
+  """
+  Locationを付与すると距離を考慮して返却する
+  """
+  facilities(location: LatLngInput): [Facility!]!
+  lineAppName: String!
+  companyName: String!
+  companyAddress: String!
+  tecAlignment: Boolean!
+  subscription: TenantSubscription
+}
+
+type AccountRegistrationIncentive {
+  incentive: String!
+  title: String!
+  name: String!
+}
+
+type Promotion {
+  title: String!
+  items: [PromotionItem!]!
+}
+
+type PromotionItem {
+  title: String!
+  description: String!
+  icon: String!
+}
+
+type Layout {
+  webHome(facilityID: ID!, orderType: OrderType!): WebHome!
+}

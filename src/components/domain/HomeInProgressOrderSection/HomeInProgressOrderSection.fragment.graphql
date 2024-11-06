@@ -1,0 +1,10 @@
+fragment HomeInProgressOrderSectionParts on InProgressOrderSection {
+    orders {
+        id
+        shortIds
+        progress {
+            stepSubject
+            scheduledTime
+        }
+    }
+}

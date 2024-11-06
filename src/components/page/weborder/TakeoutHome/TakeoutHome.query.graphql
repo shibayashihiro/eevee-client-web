@@ -1,0 +1,41 @@
+query GetWebTakeoutHomeSections($facilityID: ID!, $orderType: OrderType!) {
+  tenant: viewing {
+    ...NavbarViewingParts
+    layout {
+      webHome(facilityID: $facilityID, orderType: $orderType) {
+        sections {
+          ... on MainVisualSection {
+            image
+          }
+          ... on StatusSection {
+            title
+          }
+          ... on TakeoutSection {
+            selectedScheduledTime
+          }
+          ...HomeMembershipCardSectionParts
+          ...HomeFacilityInfoSectionParts
+          ...HomeMenuItemsSectionParts
+          ...HomeMenuCategoriesSectionParts
+          ...SelectOrderTypeSectionParts
+          ...HomeInProgressOrderSectionParts
+        }
+      }
+    }
+  }
+
+  viewer {
+    cart(facilityID: $facilityID, orderType: $orderType) {
+      ...CartFooterButtonParts
+    }
+    ...NavbarViewerParts
+  }
+
+  facility: node(id: $facilityID) {
+    ... on Facility {
+      featureFlags {
+        ...FeatureFlagsForProvider
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+mutation SubmitEatInTableOrder($input: SubmitTableOrderInput!) {
+  submitTableOrder(input: $input) {
+    clientMutationId
+    # submit後にrefetchするために取得
+    order {
+      __typename
+    }
+    postOrderMessage {
+      title
+      message
+    }
+  }
+}

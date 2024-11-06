@@ -1,0 +1,3 @@
+fragment TableNumberMainHeaderParts on Table {
+  name
+}

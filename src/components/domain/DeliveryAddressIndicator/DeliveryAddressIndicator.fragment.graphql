@@ -1,0 +1,8 @@
+fragment DeliveryAddressIndicatorParts on DeliveryAddress {
+    id
+    prefecture
+    addressLine
+    buildingName
+    memo
+    isUsing
+}

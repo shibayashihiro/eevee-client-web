@@ -1,0 +1,9 @@
+fragment UserSubscriptionPlanForRegistrationCompleted on UserSubscriptionPlan {
+  plan {
+    title
+    benefits {
+      title
+    }
+  }
+  subscriptionMonth
+}

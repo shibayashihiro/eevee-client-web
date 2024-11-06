@@ -1,0 +1,11 @@
+fragment MyPageStampCard on UserLoyaltyCard {
+    currentRank {
+        name
+        colorRGB
+    }
+    activeStampCards {
+        currentPoints
+        maxPointPerPage
+        reward
+    }
+}

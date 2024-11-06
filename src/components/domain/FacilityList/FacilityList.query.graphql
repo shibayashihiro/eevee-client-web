@@ -1,0 +1,22 @@
+query GetFacilitiesForFacilityListPage($location: LatLngInput) {
+  viewing {
+    facilities(location: $location) {
+      id
+      shortName
+      image
+      address1
+      address2
+
+      availableOrderTypes {
+        ...AvailableOrderTypeBadgeParts
+      }
+      isFavorite
+      featureFlags {
+        itemCodeSearchEnabled
+      }
+      metaByLocation(location: $location) {
+        distance
+      }
+    }
+  }
+}

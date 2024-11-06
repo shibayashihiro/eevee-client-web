@@ -1,0 +1,5 @@
+mutation CheckInTableWhenCourseMenuAlreadySelected($input: CheckInTableInput!) {
+  checkInTable(input: $input) {
+    clientMutationId
+  }
+}

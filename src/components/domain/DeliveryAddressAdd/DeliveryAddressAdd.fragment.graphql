@@ -1,0 +1,4 @@
+fragment InputAddressesInitializeParts on PlaceAddress {
+  prefecture
+  addressLine
+}

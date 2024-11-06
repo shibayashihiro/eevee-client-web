@@ -1,0 +1,3 @@
+[submodule "graphql-apis"]
+path = graphql-apis
+url = https://github.com/syninc/graphql-apis.git

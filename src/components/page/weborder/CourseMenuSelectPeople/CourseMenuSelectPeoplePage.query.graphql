@@ -1,0 +1,29 @@
+query GetCourseMenuSelectPeoplePage($facilityId: ID!, $courseMenuId: ID!) {
+  viewing {
+    ...NavbarViewingParts
+  }
+  viewer {
+    ...NavbarViewerParts
+  }
+
+  courseMenu: node(id: $courseMenuId) {
+    ... on CourseMenu {
+      id
+      name
+      ...CourseMenuEntriesInput
+      suggestedCourses {
+        # 件数だけ取得
+        __typename
+      }
+    }
+  }
+
+  facility: node(id: $facilityId) {
+    ...NavbarMenuFacility
+    ... on Facility {
+      featureFlags {
+        ...FeatureFlagsForProvider
+      }
+    }
+  }
+}

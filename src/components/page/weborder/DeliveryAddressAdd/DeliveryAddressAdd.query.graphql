@@ -1,0 +1,5 @@
+query GetPlaceDetailsForInputAddress($placeId: String!) {
+  placeAddress(placeId: $placeId) {
+    ...InputAddressesInitializeParts
+  }
+}

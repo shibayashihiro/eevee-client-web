@@ -1,0 +1,29 @@
+query GetMyStampCardPage($facilityId: ID!) {
+  viewing {
+    ...NavbarViewingParts
+  }
+
+  viewer {
+    loyaltyCard {
+      loyaltyCard {
+        name
+      }
+
+      currentRank {
+        name
+        colorRGB
+      }
+      nextRank {
+        name
+      }
+
+      ...StampCardsCarousel
+      ...LoyaltyCardSystem
+    }
+    ...NavbarViewerParts
+  }
+
+  facility: node(id: $facilityId) {
+    ...NavbarMenuFacility
+  }
+}

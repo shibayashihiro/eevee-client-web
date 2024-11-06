@@ -1,0 +1,6 @@
+fragment CartDisposableItemParts on DisposableItem {
+    id
+    name
+    price
+    selected
+}

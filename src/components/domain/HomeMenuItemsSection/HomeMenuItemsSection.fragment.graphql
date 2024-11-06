@@ -1,0 +1,14 @@
+fragment HomeMenuItemsSectionParts on MenuItemsSection {
+  title
+  items {
+    id
+    name
+    price(orderType: $orderType)
+    priceExcludingTax(orderType: $orderType)
+    image
+    status {
+      available
+      labelUnavailable
+    }
+  }
+}

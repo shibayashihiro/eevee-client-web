@@ -1,0 +1,125 @@
+type User implements Node {
+  id: ID!
+  cart(facilityID: ID!, orderType: OrderType!): Cart! @restricted
+  deliveryAddresses: [DeliveryAddress!]! @restricted
+  payments: [Payment!]! @restricted
+  # couponsにフィルター要素を追加する際は右記参照 https://github.com/syninc/graphql-apis/pull/99#discussion_r1724137024
+  coupons(cartID: ID, first: Int, after: String, isAvailable: Boolean): CouponConnection! @restricted
+  """
+  匿名ユーザーの場合はnull
+  """
+  profile: Profile @restricted
+  table(facilityID: ID!): Table @restricted # 後払い用。現在のテーブル
+  loyaltyCard: UserLoyaltyCard @restricted
+  subscription: UserSubscription @restricted
+  membershipCard(facilityID: ID!): MembershipCard! @restricted
+  lastOrderInput: LastOrderInput @restricted
+}
+
+type DeliveryAddress {
+  id: ID!
+  prefecture: String! @restricted
+  addressLine: String! @restricted
+  buildingName: String! @restricted
+  roomNumber: String! @restricted
+  memo: String @restricted
+  isUsing: Boolean! @restricted
+  latLng: LatLng! @restricted
+}
+
+type LatLng {
+  latitude: Float!
+  longitude: Float!
+}
+
+type Profile {
+  displayName: String!
+  imageUrl: String!
+}
+
+type UserLoyaltyCard {
+  loyaltyCard: LoyaltyCard!
+  # 現在のランク
+  currentRank: LoyaltyCardRank! @restricted
+  # 次のランク
+  nextRank: LoyaltyCardRank @restricted
+  # 現在のスタンプカード
+  activeStampCards: [StampCard!]! @restricted
+  # 有効期限について
+  expiration: UserLoyaltyCardExpiration! @restricted
+}
+
+type UserLoyaltyCardExpiration {
+  description: String
+  expiredAt: DateTime
+}
+
+type StampCard {
+  # スタンプカード達成時の特典
+  reward: String!
+  # 現在のページ数
+  currentPage: Int!
+  # 現在のポイント数
+  currentPoints: Int!
+  # ページの最大ポイント数
+  maxPointPerPage: Int!
+}
+
+type UserSubscription {
+  currentPlan: UserSubscriptionPlan!
+  # Plan変更をおこなう場合に必要になる。未実装。
+  # nextPlan: UserSubscriptionPlan
+  paymentHistories: [UserSubscriptionHistory!]!
+  # サブスクの支払い方法
+  payment: Payment!
+}
+
+type UserSubscriptionPlan {
+  id: ID!
+  status: UserSubscriptionStatus!
+  plan: SubscriptionPlan!
+  benefitUsages: [UserSubscriptionBenefitUsage!]!
+  startedAt: DateTime!
+  # サブスクの終了日。次回更新日であり、キャンセルやプラン変更した場合の解約日でもある。
+  expiresAt: DateTime!
+  subscriptionMonth: Int!
+}
+
+type UserSubscriptionHistory {
+  id: ID!
+  planTitle: String!
+  amount: Int!
+  paidAt: DateTime!
+}
+
+enum UserSubscriptionStatus {
+  # 登録中
+  ACTIVE
+  # 解約済み
+  CANCELLED
+  # 解約済みかつ有効期限終了
+  CANCEL_COMPLETED
+  # 支払いエラー
+  PAYMENT_FAILED
+}
+
+type UserSubscriptionBenefitUsage {
+  benefit: SubscriptionBenefit!
+  used: Int!
+  limit: Int
+}
+
+type MembershipCard {
+  """
+  会員読み取り(chompy-studio)用のQRコードデータ
+  スタンプなどのロイヤリティ機能が無くても、会員情報読み取り(注文との紐付け)はできて良いため
+  loyaltyCardとは別の概念として定義する。将来もしも「会員証」の概念が大きくなることが想定される場合には、MemberShipのようなTypeを追加する。
+  """
+  membershipQRCodeData: String!
+}
+
+type LastOrderInput {
+  lastNameKana: String!
+  email: String!
+  phoneNumber: String!
+}

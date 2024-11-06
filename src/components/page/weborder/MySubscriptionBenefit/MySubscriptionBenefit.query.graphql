@@ -1,0 +1,35 @@
+query GetMySubscriptionBenefitPage {
+  viewer {
+    subscription {
+      currentPlan {
+        plan {
+          id
+          title
+        }
+        benefitUsages {
+          benefit {
+            id
+            title
+          }
+          used
+          limit
+        }
+      }
+      ...UserSubscriptionForRouteGuard
+    }
+  }
+}
+
+fragment PlanForMySubscriptionBenefitPage on SubscriptionPlan {
+  id
+  title
+}
+
+fragment BenefitUsageForMySubscriptionBenefitPage on UserSubscriptionBenefitUsage {
+  benefit {
+    id
+    title
+  }
+  used
+  limit
+}

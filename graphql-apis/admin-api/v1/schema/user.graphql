@@ -1,0 +1,22 @@
+type User {
+    firstName: String!
+    lastName: String!
+    firstNameKana: String!
+    lastNameKana: String!
+    displayNanme: String!
+    imageUrl: String!
+    email: String!
+    verifiedEmails: [String!]
+    phoneNumber: String!
+    stripeId: String!
+    companyId: String!
+    defaultPaymentType: Int!
+    usingPortal: Boolean!
+    invitationCode: String!
+    invitedFrom: String!
+    invitedFromShop: String!
+    invited: Boolean!
+    invitedAt: Time!
+    createdAt: Time!
+    updatedAt: Time!
+}

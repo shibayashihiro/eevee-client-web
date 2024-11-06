@@ -1,0 +1,20 @@
+query GetCourseMenusPage($facilityId: ID!) {
+  viewing {
+    ...NavbarViewingParts
+  }
+  viewer {
+    ...NavbarViewerParts
+  }
+
+  courseMenuCategories(facilityId: $facilityId) {
+    ...CourseMenuCategoryListItem
+  }
+
+  facility: node(id: $facilityId) {
+    ... on Facility {
+      featureFlags {
+        ...FeatureFlagsForProvider
+      }
+    }
+  }
+}

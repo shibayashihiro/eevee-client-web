@@ -1,0 +1,12 @@
+fragment CartMenuItem on OrderItem {
+  id
+  menuItem {
+    id
+    name
+    alcoholicBeverage
+  }
+  totalPrice
+  quantity
+
+  ...OrderItemOptionItemsTextParts
+}

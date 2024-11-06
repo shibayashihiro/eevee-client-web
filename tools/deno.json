@@ -1,0 +1,13 @@
+{
+  "lint": {
+    "files": {
+      "include": ["tools/generate-configs/"]
+    }
+  },
+  "fmt": {
+    "files": {
+      "include": ["tools/generate-configs/"]
+    }
+  },
+  "lock": false
+}

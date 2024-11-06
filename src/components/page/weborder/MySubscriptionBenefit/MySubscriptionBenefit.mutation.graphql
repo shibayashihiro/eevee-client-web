@@ -1,0 +1,7 @@
+mutation submitUseSubscriptionBenefit($input: UseSubscriptionBenefitInput!) {
+  useSubscriptionBenefit(input: $input) {
+    benefitUsage {
+      ...BenefitUsageForMySubscriptionBenefitPage
+    }
+  }
+}

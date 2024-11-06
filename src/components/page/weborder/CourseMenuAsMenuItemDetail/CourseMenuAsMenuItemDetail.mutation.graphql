@@ -1,0 +1,15 @@
+mutation AddCourseMenu($input: AddCourseMenuToCartInput!) {
+  addCourseMenuToCart(input: $input) {
+    cart {
+      __typename
+    }
+  }
+}
+
+mutation UpdateCourseMenu($input: ModifyCourseMenuOnCartInput!) {
+    modifyCourseMenuOnCart(input: $input) {
+        cart {
+        __typename
+        }
+    }
+}

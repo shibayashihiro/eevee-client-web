@@ -1,0 +1,77 @@
+query getTenantOrder($id: String!, $orderId: String!) {
+  tenantOrder(id: $id, orderId: $orderId) {
+    id
+    displayId
+    status
+    user {
+      id
+    }
+    type
+    charge {
+      deliveryFeeAmount
+      discountAmount
+      totalAmount
+      originalDeliveryFeeAmount
+      campaignDiscountAmount
+      userGroupDiscountAmount
+      refundAmount
+      subTotalAmount
+      subscriptionDiscountAmountLabel
+      subscriptionDiscountAmount
+    }
+    items {
+      id
+      shopId
+      shopName
+      menuName
+      name
+      price
+      menuOptions {
+        quantity
+        itemName
+        price
+      }
+    }
+    address {
+      prefecture
+      addressLine
+      buildingName
+      roomNumber
+      memo
+    }
+    memo
+    estimatedArrivalMinutes
+    shop {
+      name
+    }
+    coupon {
+      code
+      name
+      type
+      value
+      minimumAmount
+      condition
+      conditionValue
+      useCount
+      history {
+        type
+        timestamp
+      }
+      expiredAt
+      createdAt
+    }
+    paymentType
+    confirmedAt
+    submittedAt
+    capturedAt
+    authorizedAt
+    completedAt
+    updatedAt
+  }
+}
+
+query getTenantOrders($ids: [String!]!) {
+  tenantOrders(ids: $ids) {
+    id
+  }
+}

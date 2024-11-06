@@ -1,0 +1,30 @@
+overwrite: true
+schema: './graphql-apis/api/v1/schema/*.graphql'
+documents: 'src/**/*.graphql'
+generates:
+  src/graphql/generated/types.ts:
+    plugins:
+      - 'typescript'
+      - 'add':
+          # DateTime型をただのstring型と区別するためにbranded typeを定義
+          content: 'export type DateTime = string & { readonly __brand: unique symbol }'
+    config:
+      disableDescriptions: true
+      nonOptionalTypename: true # Typeの判定に使いたいためtrueにする
+      scalars:
+        DateTime: DateTime
+  src/:
+    preset: 'near-operation-file'
+    presetConfig:
+      baseTypesPath: 'graphql/generated/types.ts'
+    plugins:
+      - 'typescript-operations'
+      - 'typescript-urql'
+      - 'add':
+          # 上記のCustom Typeをimport
+          content: "import { DateTime } from '@/graphql/generated/types';"
+    config:
+      nonOptionalTypename: true # Typeの判定に使いたいためtrueにする
+      dedupeFragments: true
+      scalars:
+        DateTime: DateTime

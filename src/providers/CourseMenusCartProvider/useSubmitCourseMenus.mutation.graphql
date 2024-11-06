@@ -1,0 +1,9 @@
+mutation SubmitCourseMenus($input: SubmitCourseMenusInput!) {
+  submitCourseMenus(input: $input) {
+    __typename
+    postOrderMessage {
+      title
+      message
+    }
+  }
+}

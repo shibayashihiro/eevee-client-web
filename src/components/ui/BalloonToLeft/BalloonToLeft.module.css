@@ -1,0 +1,22 @@
+.balloon {
+  position: relative;
+
+  /* width: 100%; */
+
+  /* 左矢印と同px分空ける */
+  margin-left: 10px;
+  padding: 16.5px 12px;
+  border-radius: 16px;
+  background: #efefef;
+}
+
+.balloon::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: -10px;
+  margin-top: -10px;
+  border-width: 10px 10px 10px 0;
+  border-style: solid;
+  border-color: transparent #efefef;
+}

@@ -1,0 +1,7 @@
+mutation addCoupon($input: AddCouponInput!) {
+    addCoupon(input: $input) {
+        coupon {
+            __typename
+        }
+    }
+}

@@ -1,0 +1,25 @@
+fragment SubscriptionForRegistrationProcess on TenantSubscription {
+  id
+  title
+  termsOfUseUrl
+  specialAgreementUrl
+  availableDays
+}
+
+fragment SubscriptionPlanForRegistrationProcess on SubscriptionPlan {
+  id
+  title
+  price
+  benefits {
+    title
+  }
+}
+
+fragment UserForSubscriptionPlanRegistrationProcess on User {
+  payments {
+    ...PaymentDialogParts
+  }
+  profile {
+    displayName
+  }
+}

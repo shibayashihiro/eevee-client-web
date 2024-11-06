@@ -1,0 +1,52 @@
+query GetWebDeliveryHomeSections($facilityID: ID!, $orderType: OrderType!) {
+  tenant: viewing {
+    ...NavbarViewingParts
+    layout {
+      webHome(facilityID: $facilityID, orderType: $orderType) {
+        sections {
+          ... on MainVisualSection {
+            image
+          }
+          ... on StatusSection {
+            title
+          }
+          ... on DeliverySection {
+            scheduledTime
+            deliveryFeeAmount
+            isOutOfArea
+            caution
+          }
+          ...HomeMembershipCardSectionParts
+          ...HomeInProgressOrderSectionParts
+          ...HomeFacilityInfoSectionParts
+          ...HomeMenuItemsSectionParts
+          ...HomeMenuCategoriesSectionParts
+          ...SelectOrderTypeSectionParts
+        }
+      }
+    }
+  }
+
+  viewer {
+    cart(facilityID: $facilityID, orderType: $orderType) {
+      ...CartFooterButtonParts
+    }
+    deliveryAddresses {
+      ...DeliveryAddressIndicatorParts
+      latLng {
+        latitude
+        longitude
+      }
+    }
+    ...NavbarViewerParts
+  }
+
+  facility: node(id: $facilityID) {
+    ...NavbarMenuFacility
+    ... on Facility {
+      featureFlags {
+        ...FeatureFlagsForProvider
+      }
+    }
+  }
+}

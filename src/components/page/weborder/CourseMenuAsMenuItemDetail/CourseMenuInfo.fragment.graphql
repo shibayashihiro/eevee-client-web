@@ -1,0 +1,5 @@
+fragment CourseMenuAsMenuItemDetail_CourseMenuInfo on CourseMenu {
+  name
+  # image
+  description
+}

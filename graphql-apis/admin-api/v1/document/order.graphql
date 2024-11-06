@@ -1,0 +1,95 @@
+query getOrder($id: String!) {
+  order(id: $id) {
+    id
+    displayId
+    status
+    user {
+      id
+    }
+    type
+    charge {
+      deliveryFeeAmount
+      discountAmount
+      totalAmount
+      originalDeliveryFeeAmount
+      campaignDiscountAmount
+      userGroupDiscountAmount
+      refundAmount
+      subTotalAmount
+    }
+    shop {
+      name
+    }
+    shopGroup {
+      id
+    }
+    items {
+      id
+      shopId
+      shopName
+      menuName
+      name
+      price
+      menuOptions {
+        quantity
+        itemName
+        price
+      }
+    }
+    address {
+      prefecture
+      addressLine
+      buildingName
+      roomNumber
+      memo
+    }
+    memo
+    estimatedArrivalMinutes
+    coupon {
+      code
+      name
+      minimumAmount
+      condition
+      conditionValue
+      useCount
+      couponHistory {
+        type
+        timestamp
+      }
+      expiredAt
+      createdAt
+    }
+    confirmedAt
+    submittedAt
+    authorizedAt
+    completedAt
+    updatedAt
+    groupOrder
+    shareUrl
+    memberIds
+    memberOrders {
+      id
+    }
+    billingType
+    areaDelivery {
+      id
+    }
+    driverReviewPosted
+    supportTicketId
+    cancelCauseType
+  }
+}
+
+query getOrders($ids: [String!]) {
+  orders(ids: $ids) {
+    id
+    status
+    shopGroup {
+      id
+    }
+    submittedAt
+    areaDelivery {
+      id
+    }
+  }
+}

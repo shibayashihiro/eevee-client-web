@@ -1,0 +1,10 @@
+type UserGroup {
+    name: String!
+    iconUrl: String!
+    memberIds: [String!]
+    officeId: String!
+    address: Address
+    invitationUrl: String!
+    createdAt: Time!
+    updatedAt: Time!
+}

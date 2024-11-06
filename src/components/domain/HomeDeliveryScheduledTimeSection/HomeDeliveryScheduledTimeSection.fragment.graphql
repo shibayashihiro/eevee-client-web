@@ -1,0 +1,5 @@
+fragment HomeDeliveryScheduledTimeSectionParts on DeliverySection {
+    scheduledTime
+    deliveryFeeAmount
+    caution
+}

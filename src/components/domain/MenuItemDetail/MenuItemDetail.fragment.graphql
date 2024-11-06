@@ -1,0 +1,21 @@
+fragment MenuItemDetailParts on MenuItem {
+  id
+  name
+  image
+  description
+  price(orderType: $orderType)
+  ownerComment {
+    ...OwnerCommentParts
+  }
+  orderStatus(orderType: $orderType) {
+    viewerCanAddToCart
+    reasonViewerCannotAddToCart
+  }
+
+  options {
+    ...MenuItemDetailOptionParts
+  }
+  taxRateType
+
+  ...MenuItemForCartItemEditParts
+}

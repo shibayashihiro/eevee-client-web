@@ -1,0 +1,21 @@
+fragment MenuCategoryItems on MenuCategory {
+  id
+  items(orderType: $orderType, after: $after) {
+    nodes {
+      id
+      name
+      description
+      price(orderType: $orderType)
+      priceExcludingTax(orderType: $orderType)
+      image
+      status {
+        available
+        labelUnavailable
+      }
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}

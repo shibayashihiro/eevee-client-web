@@ -1,0 +1,7 @@
+mutation UpdateDisposableItem($input: UpdateDisposableItemInput!) {
+    updateDisposableItem(input: $input) {
+        cart {
+            __typename
+        }
+    }
+}

@@ -1,0 +1,17 @@
+query GetTableCourseMenusForAlreadySelectedGuard($tableId: ID!, $facilityId: ID!) {
+  table: tableWithMergeSupport(tableId: $tableId) {
+    id
+    mainCourseMenu {
+      __typename
+    }
+  }
+
+  facility: node(id: $facilityId) {
+    __typename
+    ... on Facility {
+      featureFlags {
+        ...FeatureFlagsForProvider
+      }
+    }
+  }
+}

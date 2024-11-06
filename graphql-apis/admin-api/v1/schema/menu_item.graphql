@@ -1,0 +1,31 @@
+scalar Time
+
+extend type Query {
+    menuItem(shopId: String!, id: String!): MenuItem
+    menuItems(shopIds: [String!], menuItemIds: [String!]): [MenuItem]
+    menuItemsByShopId(shopId: String!): [MenuItem]
+}
+
+type MenuItem {
+    id: String!
+    name: String!
+    description: String!
+    price: Int!
+    image: String!
+    menuItemStatus: Int!
+    menuIds: [String!]
+    menuCategoryId: String!
+    genreIds: [String!]
+    averageCookingMinutes: Int!
+    size: Float!
+    shopComment: ShopComment
+    monthlyOrderCount: Int!
+    tags: [String!]
+    alcoholicBeverage: Boolean!
+    createdAt: Time!
+    updatedAt: Time!
+}
+
+type ShopComment {
+    description: String!
+}

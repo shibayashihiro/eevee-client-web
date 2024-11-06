@@ -1,0 +1,7 @@
+query GetPlacePredictions($keyword: String!) {
+  placePredictions(keyword: $keyword) {
+    placeId
+    mainText
+    secondaryText
+  }
+}

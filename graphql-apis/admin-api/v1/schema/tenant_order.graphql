@@ -1,0 +1,53 @@
+extend type Query {
+    tenantOrder(id: String!, orderId: String!): TenantOrder
+    tenantOrders(ids: [String!]!): [TenantOrder!]!
+}
+
+type TenantOrder {
+    id: String!
+    displayId: String!
+    status: Int!
+    user: TenantOrderUser
+    type: Int!
+    charge: Charge
+    items: [CartItem!]!
+    address: Address
+    memo: String!
+    estimatedArrivalMinutes: Int!
+    shop: TenantOrderShop
+    coupon: UserCoupon
+    paymentType: Int!
+    confirmedAt: Time!
+    submittedAt: Time!
+    capturedAt: Time
+    authorizedAt: Time
+    completedAt: Time
+    updatedAt: Time!
+}
+
+type TenantOrderUser {
+    id: String!
+}
+
+type TenantOrderShop {
+    name: String!
+}
+
+type UserCoupon {
+    code: String!
+    name: String!
+    type: Int!
+    value: Int!
+    minimumAmount: Int!
+    condition: Int!
+    conditionValue: Int!
+    useCount: Int!
+    history: [UserCouponHistory!]!
+    expiredAt: Time!
+    createdAt: Time!
+}
+
+type UserCouponHistory {
+    type: Int!
+    timestamp: Time!
+}

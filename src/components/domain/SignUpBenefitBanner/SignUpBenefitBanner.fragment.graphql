@@ -1,0 +1,3 @@
+fragment SignUpBenefitBannerParts on AccountRegistrationIncentive {
+  title
+}

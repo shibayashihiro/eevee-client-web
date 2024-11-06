@@ -1,0 +1,31 @@
+query GetCartForTakeoutOrderConfirm($facilityID: ID!, $orderType: OrderType!) {
+  facility: node(id: $facilityID) {
+    ... on Facility {
+      ...CartFacilityNameParts
+      featureFlags {
+        ...FeatureFlagsForProvider
+      }
+    }
+  }
+
+  viewer {
+    cart(facilityID: $facilityID, orderType: $orderType) {
+      id
+      totalQuantity
+
+      ...OrderConfirmCartParts
+      order {
+        id
+        ... on TakeoutOrder {
+          scheduledTime
+          availablePayments {
+            ...PaymentDialogParts
+          }
+        }
+      }
+    }
+    lastOrderInput {
+      ...LastOrderInputParts
+    }
+  }
+}

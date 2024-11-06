@@ -1,0 +1,5 @@
+fragment HomeBannerParts on Banner {
+  title
+  message
+  behavior
+}

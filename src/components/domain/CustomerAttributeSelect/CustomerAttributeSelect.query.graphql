@@ -1,0 +1,10 @@
+query GetCustomerAttributes($facilityID: ID!) {
+  customerAttributes(facilityId: $facilityID) {
+    name
+    minSelectCount
+    details {
+      id
+      name
+    }
+  }
+}

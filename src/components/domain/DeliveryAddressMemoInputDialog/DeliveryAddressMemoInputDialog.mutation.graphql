@@ -1,0 +1,7 @@
+mutation UpdateDeliveryAddressMemo($input: UpdateDeliveryAddressMemoInput!) {
+    updateDeliveryAddressMemo(input: $input) {
+        deliveryAddress {
+            __typename
+        }
+    }
+}

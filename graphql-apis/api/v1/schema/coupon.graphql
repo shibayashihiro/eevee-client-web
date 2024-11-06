@@ -1,0 +1,19 @@
+type Coupon implements Node {
+    id: ID!
+    title: String!
+    subTitle: String!
+    image: String!
+    statusLabel: String!
+
+    details: [CouponDetail!]!
+}
+
+type CouponDetail {
+    name: String!
+    value: String!
+}
+
+type CouponConnection {
+    nodes: [Coupon!]!
+    pageInfo: PageInfo!
+}

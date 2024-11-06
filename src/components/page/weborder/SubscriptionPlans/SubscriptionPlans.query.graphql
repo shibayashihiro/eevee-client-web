@@ -1,0 +1,26 @@
+query GetSubscriptionPlansPage {
+  viewing {
+    subscription {
+      title
+      description
+      features {
+        title
+        description
+        icon
+      }
+      plans {
+        id
+        ...SelectableSubscriptionPlanCard
+        ...SubscriptionPlanForRegistrationProcess
+      }
+      helpUrl
+      contactUrl
+
+      ...SubscriptionForRegistrationProcess
+    }
+  }
+
+  viewer {
+    ...UserForSubscriptionPlanRegistrationProcess
+  }
+}

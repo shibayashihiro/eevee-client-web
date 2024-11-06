@@ -1,0 +1,17 @@
+query GetScheduledOrderTimeListByDate($facilityID: ID!, $orderType: OrderType!, $date: DateInput!) {
+  scheduledOrderTimesByDate(facilityId: $facilityID, orderType: $orderType, date: $date) {
+    name
+    minArrival
+    maxArrival
+    selected
+    disabled
+  }
+}
+
+query GetScheduleOrderAvailableDates($facilityID: ID!, $orderType: OrderType!) {
+  scheduleOrderAvailableDates(facilityId: $facilityID, orderType: $orderType) {
+    year
+    month
+    days
+  }
+}

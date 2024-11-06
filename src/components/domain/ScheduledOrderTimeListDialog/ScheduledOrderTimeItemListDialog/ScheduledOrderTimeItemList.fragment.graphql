@@ -1,0 +1,6 @@
+fragment ScheduledOrderTimeItemParts on ScheduledOrderTimeItem {
+  name
+  minArrival
+  maxArrival
+  selected
+}

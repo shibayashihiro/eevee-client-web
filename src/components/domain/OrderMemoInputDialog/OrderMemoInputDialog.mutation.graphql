@@ -1,0 +1,7 @@
+mutation UpdateMemo($input: UpdateMemoInput!) {
+  updateMemo(input: $input) {
+    cart {
+      __typename
+    }
+  }
+}

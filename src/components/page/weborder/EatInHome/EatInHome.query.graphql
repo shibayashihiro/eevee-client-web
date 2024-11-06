@@ -1,0 +1,50 @@
+query GetWebEatInHomeSections($facilityID: ID!, $orderType: OrderType!) {
+  tenant: viewing {
+    ...NavbarViewingParts
+    layout {
+      webHome(facilityID: $facilityID, orderType: $orderType) {
+        sections {
+          ... on MainVisualSection {
+            image
+          }
+          ... on StatusSection {
+            title
+          }
+          ...HomeMembershipCardSectionParts
+          ...HomeFacilityInfoSectionParts
+          ...HomeMenuItemsSectionParts
+          ...HomeMenuCategoriesSectionParts
+          ...SelectOrderTypeSectionParts
+          ...HomeBannerSectionParts
+          ...HomeCourseMenuCategoriesSection
+        }
+      }
+    }
+  }
+
+  viewer {
+    cart(facilityID: $facilityID, orderType: $orderType) {
+      ...CartFooterButtonParts
+    }
+
+    table(facilityID: $facilityID) {
+      cartRawId
+      ...HomeFacilityInfoSectionCurrentTableParts
+      ...TableCourseMenuStatsHeader
+      mainCourseMenu {
+        ...HomeLastOrderPassedBanner
+      }
+    }
+
+    ...NavbarViewerParts
+  }
+
+  facility: node(id: $facilityID) {
+    ... on Facility {
+      ...NavbarMenuFacility
+      featureFlags {
+        ...FeatureFlagsForProvider
+      }
+    }
+  }
+}

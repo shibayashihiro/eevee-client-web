@@ -1,0 +1,11 @@
+fragment OptionItemSelectListItemParts on OptionItem {
+  name
+  image
+  description
+  price(orderType: $orderType)
+  priceExcludingTax(orderType: $orderType)
+  status {
+    available
+    labelUnavailable
+  }
+}

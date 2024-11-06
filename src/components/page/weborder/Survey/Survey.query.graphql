@@ -1,0 +1,29 @@
+query SurveyPage($surveyId: ID!) {
+  viewing {
+    ...NavbarViewingParts
+  }
+
+  viewer {
+    ...NavbarViewerParts
+  }
+
+  survey: node(id: $surveyId) {
+    ... on Survey {
+      id
+      surveyConfig {
+        availableAt
+        surveyForm {
+          id
+          rows {
+            id
+            order
+            question
+            required
+            answerType
+            answers
+          }
+        }
+      }
+    }
+  }
+}

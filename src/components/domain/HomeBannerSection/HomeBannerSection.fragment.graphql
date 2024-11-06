@@ -1,0 +1,5 @@
+fragment HomeBannerSectionParts on BannerSection {
+  banners {
+    ...HomeBannerParts
+  }
+}

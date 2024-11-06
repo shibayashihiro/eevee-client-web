@@ -1,0 +1,5 @@
+mutation RequestProxyPhoneNumber($input: RequestProxyPhoneNumberInput!) {
+  requestProxyPhoneNumber(input: $input) {
+    phoneNumber
+  }
+}

@@ -1,0 +1,3 @@
+fragment SelectOrderTypeSectionParts on SelectOrderTypeSection {
+  orderTypes
+}

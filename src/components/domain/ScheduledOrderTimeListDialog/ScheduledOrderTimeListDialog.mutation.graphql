@@ -1,0 +1,7 @@
+mutation UpdateScheduledOrderTime($input: UpdateScheduledOrderTimeInput!) {
+  updateScheduledOrderTime(input: $input) {
+    scheduledOrderTime {
+      __typename
+    }
+  }
+}

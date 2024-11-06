@@ -1,0 +1,14 @@
+fragment NavbarMenuViewer on User {
+  profile {
+    imageUrl
+  }
+  loyaltyCard {
+    __typename
+  }
+}
+
+fragment NavbarMenuFacility on Facility {
+  featureFlags {
+    ...FeatureFlagsForProvider
+  }
+}

@@ -1,0 +1,25 @@
+type Payment {
+  id: ID!
+  last4: String!
+  brand: String!
+  paymentType: PaymentType!
+  isDefault: Boolean! @deprecated(reason: "rename column to isSelected")
+  isSelected: Boolean!
+}
+
+enum PaymentType {
+  CARD
+  NATIVE_PAY
+  REGISTER
+}
+
+type PaymentIntent {
+  clientSecret: String
+  status: PaymentIntentStatus!
+}
+
+enum PaymentIntentStatus {
+  REQUIRES_ACTION
+  REQUIRES_CAPTURE
+  SUCCEEDED
+}

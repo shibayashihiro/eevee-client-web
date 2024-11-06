@@ -1,0 +1,233 @@
+type Cart implements Node {
+  id: ID!
+  totalPrice: Int! @restricted
+  totalQuantity: Int! @restricted
+  availableCouponsCount: Int! @restricted
+  """
+  カート内の商品をID指定で取得する。Order配下にするか迷ったが、後述の通りorderを取得するとConfirm相当の処理を実行するため、itemはCartに持たせた。
+  """
+  item(id: ID!): OrderItem @restricted
+  """
+  orderを取得するとアプリのConfirm相当の処理が実行されるため、カート内確認の時だけ使用する。
+  """
+  order: Order @restricted
+  tableOrder: Order @restricted
+}
+
+interface Order implements Node {
+  id: ID!
+  facility: Facility! @restricted
+  items: [OrderItem!]! @restricted
+  charge: Charge! @restricted
+  memo: String @restricted
+  payment: Payment @restricted
+  coupon: Coupon @restricted
+  shortIds: [String!]! @restricted
+  progress: Progress @restricted
+  disposableItems: [DisposableItem!]! @restricted
+  submittedAt: DateTime @restricted
+}
+
+type EatInOrder implements Node & Order {
+  id: ID!
+  facility: Facility! @restricted
+  items: [OrderItem!]! @restricted
+  charge: Charge! @restricted
+  memo: String @restricted
+  payment: Payment @restricted
+  coupon: Coupon @restricted
+  shortIds: [String!]! @restricted
+  progress: Progress @restricted
+  disposableItems: [DisposableItem!]! @restricted
+  submittedAt: DateTime @restricted
+
+  seatNumber: String @restricted # 先払い用、手入力の席番号
+  # 食べ放題、飲み放題などのコースメニュー
+  courseMenuItems: [OrderCourseMenuItem!]! @restricted
+}
+
+# テーブル注文は、テーブルに紐づく注文を、すべてのユーザーが閲覧できる。
+# そのため、各フィールドrestrictedをつけないOrderとして別個定義する。
+type TableOrder implements Node & Order {
+  id: ID!
+  facility: Facility!
+  items: [OrderItem!]!
+  charge: Charge!
+  memo: String
+  payment: Payment
+  coupon: Coupon
+  shortIds: [String!]!
+  progress: Progress
+  disposableItems: [DisposableItem!]!
+  submittedAt: DateTime
+}
+
+type TakeoutOrder implements Node & Order {
+  id: ID!
+  facility: Facility! @restricted
+  items: [OrderItem!]! @restricted
+  charge: Charge! @restricted
+  memo: String @restricted
+  payment: Payment @restricted
+  coupon: Coupon @restricted
+  shortIds: [String!]! @restricted
+  progress: Progress @restricted
+  disposableItems: [DisposableItem!]! @restricted
+  submittedAt: DateTime @restricted
+
+  scheduledTime: String! @restricted
+  availablePayments: [Payment!]! @restricted
+}
+
+type DeliveryOrder implements Node & Order {
+  id: ID!
+  facility: Facility! @restricted
+  items: [OrderItem!]! @restricted
+  charge: Charge! @restricted
+  memo: String @restricted
+  payment: Payment @restricted
+  coupon: Coupon @restricted
+  shortIds: [String!]! @restricted
+  progress: Progress @restricted
+  disposableItems: [DisposableItem!]! @restricted
+  submittedAt: DateTime @restricted
+
+  deliveryAddress: DeliveryAddress! @restricted
+  scheduledTime: String! @restricted
+  requirement: String @restricted
+  availablePayments: [Payment!]! @restricted
+}
+
+"""
+OrderItemは、API上だとCartItemに相当する。
+OrderがCartItemをもつより、CartがOrderItemをもつような考え方の方が自然であるため、名前を変えた。
+"""
+type OrderItem {
+  """
+  APIのCartItem.IDはMenuItem.IDとなっていたが、OrderItem.IDはOrder内でユニークな商品の識別子となる。
+  ID指定でカート内の商品などを操作できるようにするため。
+  """
+  id: ID!
+  menuItem: MenuItem!
+  """
+  OptionItemも含めたこの商品全体の価格のスナップショット。
+  """
+  totalPrice: Int!
+  quantity: Int!
+  name: String!
+  selectedOptionItems: [OrderOptionItem!]!
+}
+
+type OrderOptionItem {
+  optionId: ID!
+  optionItem: OptionItem!
+  name: String!
+  quantity: Int!
+  subOptionItems: [OrderOptionItem!]!
+}
+
+"""
+Order(Cart)に入ったコースメニュー商品を表す。（例: 「プレミアムドリンクバー: 大人1人」）
+
+理想的には、OrderItemに統一したいが、内部データ構造がだいぶ異なるため、別途定義した。
+"""
+type OrderCourseMenuItem {
+  id: ID!
+  courseMenu: CourseMenu!
+  entry: CourseMenuEntry!
+  totalPrice: Int!
+  quantity: Int!
+}
+
+type Charge {
+  amount: Int!
+  details: [ChargeDetail!]!
+}
+
+type ChargeDetail {
+  name: String!
+  amount: Int!
+}
+
+enum OrderType {
+  DELIVERY
+  TAKEOUT
+  EAT_IN
+}
+
+type Progress {
+  currentStep: Int!
+  lastStep: Int!
+  stepSubject: String!
+  scheduledTime: String!
+  contactType: ContactType!
+  tel: String!
+  prepared: Boolean!
+  caution: String!
+
+  driver: Driver
+  waypointId: ID
+}
+
+enum ContactType {
+  SHOP
+  SUPPORT
+}
+
+type DisposableItem {
+  id: ID!
+  name: String!
+  price: Int!
+  selected: Boolean!
+}
+
+enum ScheduledOrderTimeType {
+  NOW
+  SCHEDULE
+  SCHEDULE_DATE # 予約日指定
+}
+
+# いますぐ / 時間指定
+type ScheduledOrderTime {
+  name: String!
+  available: Boolean!
+  selected: Boolean!
+  type: ScheduledOrderTimeType!
+  orderType: OrderType!
+
+  items: [ScheduledOrderTimeItem!]!
+}
+
+# 日時, 10:00, 10:30, 11:00, ...
+type ScheduledOrderTimeItem {
+  name: String!
+  selected: Boolean!
+  disabled: Boolean!
+  minArrival: String!
+  maxArrival: String!
+}
+
+
+type AvailableDate {
+  year: Int!
+  month: Int!
+  days: [Int!]!
+}
+
+type CustomerAttribute {
+  name: String!
+  minSelectCount: Int!
+
+  details: [CustomerAttributeDetail!]!
+}
+
+type CustomerAttributeDetail {
+  id: ID!
+  name: String!
+}
+
+extend type Query {
+  scheduledOrderTimes(facilityId: ID!, orderType: OrderType!): [ScheduledOrderTime!]!
+  scheduledOrderTimesByDate(facilityId: ID!, orderType: OrderType!, date: DateInput!): [ScheduledOrderTimeItem!]!
+  scheduleOrderAvailableDates(facilityId: ID!, orderType: OrderType!): [AvailableDate!]!
+}

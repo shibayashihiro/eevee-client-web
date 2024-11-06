@@ -1,0 +1,14 @@
+type PlacePrediction {
+  # GoogleMapsのPlaceのIDなので、ID型ではなく純粋なString型にしている
+  placeId: String!
+  mainText: String!
+  secondaryText: String!
+}
+
+type PlaceAddress {
+  placeId: String!
+  country: String!
+  postalCode: String!
+  prefecture: String!
+  addressLine: String!
+}

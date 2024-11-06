@@ -1,0 +1,6 @@
+fragment HomeDeliveryOutOfAreaBannerParts on DeliveryAddress {
+    latLng {
+        latitude
+        longitude
+    }
+}

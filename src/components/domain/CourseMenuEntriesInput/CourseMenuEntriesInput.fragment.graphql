@@ -1,0 +1,7 @@
+fragment CourseMenuEntriesInput on CourseMenu {
+  id
+  minSelectCount
+  entries {
+    ...CourseMenuEntryForInputPeopleCountListItem
+  }
+}

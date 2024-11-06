@@ -1,0 +1,6 @@
+fragment CourseMenuEntryForInputPeopleCountListItem on CourseMenuEntry {
+  id
+  name
+  price
+  priceExcludingTax
+}

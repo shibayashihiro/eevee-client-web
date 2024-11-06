@@ -1,0 +1,9 @@
+query SurveyStart {
+  viewing {
+    ...NavbarViewingParts
+  }
+
+  viewer {
+    ...NavbarViewerParts
+  }
+}

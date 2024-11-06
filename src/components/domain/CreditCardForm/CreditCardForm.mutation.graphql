@@ -1,0 +1,7 @@
+mutation addPayment($input: AddPaymentInput!) {
+    addPayment(input: $input) {
+        payment {
+            __typename
+        }
+    }
+}

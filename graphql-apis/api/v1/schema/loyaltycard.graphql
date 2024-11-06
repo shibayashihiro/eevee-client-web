@@ -1,0 +1,30 @@
+type LoyaltyCard {
+  name: String!
+  # ランクアップシステムがあるか
+  hasRankUp: Boolean!
+  # ランク一覧
+  ranks: [LoyaltyCardRank!]!
+  # ポイント獲得条件 (NOTE: 将来的にスタンプ以外の形式も考えられるので、ポイントとしている)
+  pointCondition: LoyaltyCardPointCondition!
+  # 会員証に関する注意事項
+  cautions: [String!]!
+}
+
+type LoyaltyCardPointCondition {
+  # ポイント獲得条件
+  condition: String!
+  # ポイント獲得についての注意事項
+  caution: String
+}
+
+type LoyaltyCardRank {
+  name: String!
+  # ランクの色
+  colorRGB: String!
+  # ランクアップ条件
+  rankUpCondition: String!
+  # ランク特典
+  benefit: String
+  # ランク内のスタンプカード特典
+  stampCardRewards: [String!]!
+}

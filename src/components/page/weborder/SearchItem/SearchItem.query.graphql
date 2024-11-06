@@ -1,0 +1,27 @@
+query GetSearchItemPage(
+  $facilityID: ID! # $tableId: ID!
+  $orderType: OrderType!
+) {
+  facility: node(id: $facilityID) {
+    ... on Facility {
+      ...CartFacilityNameParts
+      featureFlags {
+        ...FeatureFlagsForProvider
+      }
+    }
+  }
+
+  viewing {
+    ...NavbarViewingParts
+  }
+  viewer {
+    table(facilityID: $facilityID) {
+      name
+      ...TableCourseMenuStatsHeader
+    }
+    cart(facilityID: $facilityID, orderType: $orderType) {
+      ...CartFooterButtonParts
+    }
+    ...NavbarViewerParts
+  }
+}

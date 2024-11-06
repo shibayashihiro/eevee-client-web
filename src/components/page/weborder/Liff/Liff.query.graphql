@@ -1,0 +1,19 @@
+query GetTableForLIFFInit($tableId: ID!) {
+  table: tableWithMergeSupport(tableId: $tableId) {
+    id
+    isCustomerAttributesCollected
+    mainCourseMenu {
+      __typename
+    }
+  }
+}
+
+query GetCourseMenuFeatureFlagForLIFFInit($facilityId: ID!) {
+  facility: node(id: $facilityId) {
+    ... on Facility {
+      featureFlags {
+        eatInCourseMenuModeEnabled
+      }
+    }
+  }
+}

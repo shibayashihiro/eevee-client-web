@@ -1,0 +1,28 @@
+query GetCartForEatInTableOrderConfirm($facilityID: ID!, $orderType: OrderType!) {
+  facility: node(id: $facilityID) {
+    ... on Facility {
+      ...CartFacilityNameParts
+      featureFlags {
+        ...FeatureFlagsForProvider
+      }
+    }
+  }
+
+  viewer {
+    cart(facilityID: $facilityID, orderType: $orderType) {
+      id
+
+      ...BackHomeIfCartEmptyParts
+      ...OrderConfirmCartParts
+
+      tableOrder {
+        id
+      }
+    }
+
+    table(facilityID: $facilityID) {
+      name
+      cartRawId
+    }
+  }
+}

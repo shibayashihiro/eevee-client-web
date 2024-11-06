@@ -1,0 +1,7 @@
+mutation selectCoupon($input: SelectCouponInput!) {
+    selectCoupon(input: $input) {
+        cart {
+            __typename
+        }
+    }
+}

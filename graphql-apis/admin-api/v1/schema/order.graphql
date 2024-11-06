@@ -1,0 +1,112 @@
+extend type Query {
+    order(id: String!): Order
+    orders(ids: [String!]): [Order!]!
+}
+
+type Order {
+    id: String!
+    displayId: String!
+    status: Int!
+    user: OrderUser
+    type: Int!
+    charge: Charge
+    shop: OrderShop
+    shopGroup: ShopGroup
+    items: [CartItem!]!
+    address: Address
+    memo: String!
+    estimatedArrivalMinutes: Int!
+    coupon: Coupon
+    confirmedAt: Time!
+    submittedAt: Time!
+    authorizedAt: Time!
+    completedAt: Time!
+    updatedAt: Time!
+    groupOrder: Boolean!
+    shareUrl: String!
+    memberIds: [String!]
+    memberOrders: [Order!]!
+    billingType: Int!
+    areaDelivery: AreaDelivery
+    driverReviewPosted: Boolean!
+    supportTicketId: String!
+    cancelCauseType: String!
+    officeDelivery: Boolean!
+}
+
+type OrderUser {
+    id: String!
+}
+
+type Charge {
+    deliveryFeeAmount: Int!
+    discountAmount: Int!
+    totalAmount: Int!
+    originalDeliveryFeeAmount: Int!
+    campaignDiscountAmount: Int!
+    userGroupDiscountAmount: Int!
+    refundAmount: Int!
+    subTotalAmount: Int!
+    subscriptionDiscountAmountLabel: String!
+    subscriptionDiscountAmount: Int!
+}
+
+type OrderShop {
+    name: String!
+}
+
+type ShopGroup {
+    id: String!
+    name: String!
+    estimatedArrivalTime: String!
+}
+
+type CartItem {
+    id: String!
+    shopId: String!
+    shopName: String!
+    menuName: String!
+    name: String!
+    price: Int!
+    menuOptions: [MenuOption!]!
+    quantity: Int!
+    discountAmount: Int!
+}
+
+type MenuOption {
+    quantity: Int!
+    name: String!
+    itemName: String!
+    price: Int!
+}
+
+type Address {
+    prefecture: String!
+    addressLine: String!
+    buildingName: String!
+    roomNumber: String!
+    memo: String!
+}
+
+type Coupon {
+    code: String!
+    name: String!
+    type: Int!
+    minimumAmount: Int!
+    condition: Int!
+    conditionValue: Int!
+    useCount: Int!
+    couponHistory: [CouponHistory!]!
+    expiredAt: Time!
+    createdAt: Time!
+}
+
+type CouponHistory {
+    type: Int!
+    timestamp: Time!
+}
+
+type AreaDelivery {
+    id: String!
+}
+

@@ -1,0 +1,117 @@
+@import 'variables.module.scss';
+
+html,
+body {
+  color: $mono-primary;
+  font-family: 'SF Hiragino', 'ヒラギノUD角ゴ StdN', 'Noto Sans JP', sans-serif, -apple-system, BlinkMacSystemFont;
+  font-size: $text-small;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.mono {
+  &-primary {
+    color: $mono-primary;
+  }
+
+  &-secondary {
+    color: $mono-secondary;
+  }
+
+  &-hint {
+    color: $mono-hint;
+  }
+}
+
+.text {
+  &-micro {
+    font-size: $text-micro;
+  }
+
+  &-extra-small {
+    font-size: $text-extra-small;
+  }
+
+  &-small {
+    font-size: $text-small;
+  }
+
+  &-normal {
+    font-size: $text-medium;
+  }
+
+  &-medium {
+    font-size: $text-medium;
+  }
+
+  &-large {
+    font-size: $text-large;
+  }
+}
+
+.bold {
+  font-weight: 600;
+
+  &-micro {
+    @extend .bold;
+
+    font-size: $text-micro;
+  }
+
+  &-extra-small {
+    @extend .bold;
+
+    font-size: $text-extra-small;
+  }
+
+  &-small {
+    @extend .bold;
+
+    font-size: $text-small;
+  }
+
+  &-normal {
+    @extend .bold;
+
+    font-size: $text-medium;
+  }
+
+  &-medium {
+    @extend .bold;
+
+    font-size: $text-medium;
+  }
+
+  &-large {
+    @extend .bold;
+
+    font-size: $text-large;
+  }
+
+  &-extra-large {
+    @extend .bold;
+
+    font-size: $text-extra-large;
+  }
+
+  &-2xl {
+    @extend .bold;
+
+    font-size: $text-2xl;
+  }
+
+  &-3xl {
+    @extend .bold;
+
+    font-size: $text-3xl;
+  }
+
+  &-32px {
+    @extend .bold;
+
+    font-size: $text-32px;
+  }
+}

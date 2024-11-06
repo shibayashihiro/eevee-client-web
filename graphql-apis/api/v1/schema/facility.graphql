@@ -1,0 +1,95 @@
+type Facility implements Node {
+  id: ID!
+  name: String!
+  """
+  shortNameはブランド名などを省略した簡潔な名前が入る。
+  省略可能な部分がない場合はnameと同じになる。
+  """
+  shortName: String!
+  ownerComment: OwnerComment
+  image: String!
+  address1: String!
+  address2: String!
+  availableOrderTypes: [AvailableOrderType!]!
+  isFavorite: Boolean!
+  """
+  位置情報が未指定の場合はnullを返す
+  """
+  metaByLocation(location: LatLngInput): FacilityMetaByLocation
+  latLng: LatLng!
+  postalCode: String!
+
+  featureFlags: FeatureFlags!
+}
+
+type AvailableOrderType {
+  """
+  FIXME: label => labelWithBusinessHours などにリネームしたい(labelだとよく分からない)
+  """
+  label: String!
+  orderType: OrderType!
+}
+
+type FacilityMetaByLocation {
+  """
+  お店までの距離(メートル)
+  """
+  distance: Float!
+  deliveryEstimatedArrivalTimeLabel: String!
+}
+
+type Table implements Node {
+  id: ID!
+  name: String!
+  cartRawId: String!
+
+  # テーブルに紐づく、進行中(=会計前)の注文リスト
+  orders: [TableOrder!]!
+  # テーブルの会計金額、注文がない場合はnull
+  charge: Charge
+  # テーブルに紐づく客数
+  customerAttributeDetails: [CustomerAttributeDetail!]!
+    @deprecated(
+      reason: "テーブルに紐づく顧客属性を取得するとサーバーサイドでエラーになるため、代わりにisCustomerAttributesCollectedを使う。"
+    )
+  # 顧客属性を取得済みかどうか
+  isCustomerAttributesCollected: Boolean!
+
+  # テーブルに適用されているメインのコースメニュー(一番最初に選択したもの)
+  mainCourseMenu: TableCourseMenu
+  # テーブルに適用されている追加のコースメニュー(後から追加するもの)
+  subCourseMenus: [TableCourseMenu!]!
+}
+
+type TableCourseMenu {
+  # コースのラストオーダー時間。nullの場合はラストオーダーなし
+  lastOrderAt: DateTime
+  courseMenu: CourseMenu!
+  noticeReadStatus: NoticeReadStatus!
+  courseMenuItems: [OrderCourseMenuItem!]!
+}
+
+enum NoticeReadStatus {
+  NOTHING_READ
+  TEN_MIN_READ
+  TIME_OVER_READ
+}
+
+type FeatureFlags {
+  """
+  コースメニュー(食べ飲み放題など)機能を利用するかどうか
+  """
+  eatInCourseMenuModeEnabled: Boolean!
+  """
+  税抜き価格を表示するかどうか
+  """
+  showPriceExcludingTax: Boolean!
+  """
+  品番検索機能が有効かどうか
+  """
+  itemCodeSearchEnabled: Boolean!
+  """
+  スタンプカード・会員証機能等を利用するかどうか
+  """
+  loyaltyProgramEnabled: Boolean!
+}

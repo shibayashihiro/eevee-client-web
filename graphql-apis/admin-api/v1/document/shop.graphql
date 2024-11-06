@@ -1,0 +1,15 @@
+query getShops($ids: [String!]!) {
+  shops(ids: $ids) {
+    id
+    status
+    name
+    nameKana
+    postalCode
+    prefecture
+    address1
+    address2
+    phoneNumber
+    rating
+    reviewCount
+  }
+}

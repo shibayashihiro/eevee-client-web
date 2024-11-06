@@ -1,0 +1,15 @@
+mutation updateUsingDeliveryAddress($input: UpdateUsingDeliveryAddressInput!) {
+    updateUsingDeliveryAddress(input: $input) {
+        deliveryAddress {
+            __typename
+        }
+    }
+}
+
+mutation removeDeliveryAddress($input: RemoveDeliveryAddressInput!) {
+    removeDeliveryAddress(input: $input) {
+        deliveryAddress {
+            __typename
+        }
+    }
+}

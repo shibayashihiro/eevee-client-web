@@ -1,0 +1,16 @@
+{
+  "css.validate": false,
+  "less.validate": false,
+  "scss.validate": false,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.fixAll.stylelint": "explicit"
+  },
+  // Code Spell Checker's setting
+  // https://marketplace.visualstudio.com/items?itemName=streetsidesoftware.code-spell-checker
+  "cSpell.words": ["Liff", "urql"],
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "deno.enable": false,
+  "deno.enablePaths": ["./tools/generate-configs"],
+  "deno.config": "./tools/deno.json"
+}

@@ -1,0 +1,5 @@
+fragment OptionIsRequiredChipParts on MenuItemOption {
+  minSelectCount
+  maxSelectCount
+  maxSelectCountPerItem
+}

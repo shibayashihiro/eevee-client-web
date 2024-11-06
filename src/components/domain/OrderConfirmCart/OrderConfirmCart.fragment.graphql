@@ -1,0 +1,30 @@
+fragment OrderConfirmCartParts on Cart {
+  availableCouponsCount
+  order {
+    ... on Order {
+      charge {
+        ...ChargeDetailsFullListParts
+      }
+      items {
+        ...CartMenuItem
+      }
+      memo
+      payment {
+        ...PaymentItemParts
+      }
+      coupon {
+        id
+        title
+      }
+      disposableItems {
+        ...CartDisposableItemParts
+      }
+    }
+
+    ... on EatInOrder {
+      courseMenuItems {
+        ...CartCourseMenuItem
+      }
+    }
+  }
+}

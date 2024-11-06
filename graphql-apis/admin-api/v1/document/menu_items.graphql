@@ -1,0 +1,39 @@
+query getMenuItem($shopId: String!, $id: String!) {
+  menuItem(shopId: $shopId, id: $id) {
+    ...menuItem
+  }
+}
+
+query getMenuItems($shopIds: [String!], $menuItemIds: [String!]) {
+  menuItems(shopIds: $shopIds, menuItemIds: $menuItemIds) {
+    ...menuItem
+  }
+}
+
+query getMenuItemsByShopId($shopId: String!) {
+  menuItemsByShopId(shopId: $shopId) {
+    ...menuItem
+  }
+}
+
+fragment menuItem on MenuItem {
+  id
+  name
+  description
+  price
+  image
+  menuItemStatus
+  menuIds
+  menuCategoryId
+  genreIds
+  averageCookingMinutes
+  size
+  shopComment {
+    description
+  }
+  monthlyOrderCount
+  tags
+  alcoholicBeverage
+  createdAt
+  updatedAt
+}

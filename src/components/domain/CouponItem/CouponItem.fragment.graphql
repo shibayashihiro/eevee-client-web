@@ -1,0 +1,9 @@
+fragment CouponItemParts on Coupon {
+    id
+    title
+    subTitle
+    details {
+        name
+        value
+    }
+}

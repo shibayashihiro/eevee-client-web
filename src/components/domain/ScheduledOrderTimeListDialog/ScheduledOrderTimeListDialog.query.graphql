@@ -1,0 +1,14 @@
+query GetScheduledOrderTimeList($facilityID: ID!, $orderType: OrderType!) {
+  scheduledOrderTimes(facilityId: $facilityID, orderType: $orderType) {
+    name
+    available
+    selected
+    type
+    items {
+      name
+      minArrival
+      maxArrival
+      selected
+    }
+  }
+}

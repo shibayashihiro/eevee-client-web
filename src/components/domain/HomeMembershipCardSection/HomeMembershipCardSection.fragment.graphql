@@ -1,0 +1,4 @@
+fragment HomeMembershipCardSectionParts on MembershipCardSection {
+  logo
+  membershipQRCodeData
+}

@@ -1,0 +1,25 @@
+fragment CourseMenuCategoryListItem on CourseMenuCategory {
+  id
+  name
+  description
+  courses {
+    ...CourseMenuListItem
+  }
+}
+
+fragment CourseMenuListItem on CourseMenu {
+  id
+  name
+  description
+  ruleDescriptions
+  pricePerPerson {
+    ... on CourseMenuFixedPricePerPerson {
+      price
+      priceExcludingTax
+    }
+    ... on CourseMenuRangePricePerPerson {
+      minPrice
+      minPriceExcludingTax
+    }
+  }
+}

@@ -1,0 +1,9 @@
+fragment NavbarViewingParts on Tenant {
+  logo
+}
+
+# 元々、各所からNavbarViewerPartsを呼び出していた経緯で、NavbarMenuViewerをそのまま
+# 参照するだけのフラグメントになってしまっている。直接NavbarMenuViewerを呼び出すように修正しても良い。
+fragment NavbarViewerParts on User {
+  ...NavbarMenuViewer
+}

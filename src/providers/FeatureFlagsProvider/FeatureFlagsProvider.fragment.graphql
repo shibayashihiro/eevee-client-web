@@ -1,0 +1,5 @@
+fragment FeatureFlagsForProvider on FeatureFlags {
+  showPriceExcludingTax
+  loyaltyProgramEnabled
+  itemCodeSearchEnabled
+}

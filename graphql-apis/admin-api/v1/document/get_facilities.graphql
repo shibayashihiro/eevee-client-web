@@ -1,0 +1,6 @@
+query getFacilities($ids: [String!]) {
+  facilities(ids: $ids) {
+    id
+    name
+  }
+}

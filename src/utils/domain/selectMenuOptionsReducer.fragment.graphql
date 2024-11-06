@@ -1,0 +1,17 @@
+fragment MenuItemOptionForSelectOptions on MenuItemOption {
+  id
+  items {
+    id
+  }
+  ...MenuItemOptionForValidationParts
+}
+
+fragment MenuItemOptionForValidationParts on MenuItemOption {
+  id
+  minSelectCount
+  maxSelectCount
+  maxSelectCountPerItem
+  items {
+    name
+  }
+}

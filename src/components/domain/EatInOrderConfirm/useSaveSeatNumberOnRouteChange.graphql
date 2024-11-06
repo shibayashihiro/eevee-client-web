@@ -1,0 +1,6 @@
+mutation SubmitSeatNumber($input: SetSeatNumberInput!) {
+  setSeatNumber(input: $input) {
+    # submit後にキャッシュ更新(再Query)したくないためclientMutationIdだけを指定している
+    clientMutationId
+  }
+}

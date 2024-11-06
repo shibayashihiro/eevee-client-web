@@ -1,0 +1,33 @@
+query GetCourseMenuForMenuItemDetail($courseId: ID!, $facilityId: ID!, $orderType: OrderType!) {
+  tenant: viewing {
+    ...NavbarViewingParts
+  }
+
+  courseMenu: node(id: $courseId) {
+    ... on CourseMenu {
+      id
+      ...CourseMenuAsMenuItemDetail_CourseMenuInfo
+      ...CourseMenuAsMenuItemDetail_CourseMenuEntriesInput
+      entries {
+        id
+        name
+        price
+      }
+    }
+  }
+
+  viewer {
+    cart(facilityID: $facilityId, orderType: $orderType) {
+      id
+    }
+    ...NavbarViewerParts
+  }
+
+  facility: node(id: $facilityId) {
+    ... on Facility {
+      featureFlags {
+        ...FeatureFlagsForProvider
+      }
+    }
+  }
+}
