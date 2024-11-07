@@ -1,5 +1,4 @@
 import { Box, HStack, Spacer, VStack, Text, Image } from '@chakra-ui/react';
-import { Person, HelpOutline } from '@mui/icons-material'; 
 import { OrderType } from '@/graphql/generated/types';
 import { useResolvedHomePath } from '@/providers/tenant/WebOrderPageStateProvider';
 

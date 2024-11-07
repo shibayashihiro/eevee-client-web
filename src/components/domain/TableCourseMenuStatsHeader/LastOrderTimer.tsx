@@ -4,6 +4,7 @@ import { useMemo, useCallback, useState, useEffect } from 'react';
 import { NoticeReadStatus, UserCourseMenuNoticeStatus } from '@/graphql/generated/types';
 import { getMinutesDiff } from '@/utils/date';
 import { ModalDialog } from '@/components/ui/ModalDialog';
+import { useHandleErrorWithAlertDialog } from '@/providers/tenant/GlobalModalDialogProvider/hooks';
 
 import { TableCourseMenuForTimerFragment } from './LastOrderTimer.fragment.generated';
 import { useUpdateUserCourseMenuNoticeStatusMutation } from './LastOrderTimer.mutation.generated';
@@ -19,41 +20,28 @@ export const LastOrderTimer = ({ courseMenu }: Props) => {
     courseMenu: { category },
   } = courseMenu;
 
-  // 「既読」の状態をClient側でただちに更新させるために、props(apiの結果を直参照)ではなくstateで保持する。
-  // ダイアログでOKをクリックしたときに、APIの結果を待たずに既読したことにしたいため。
-  const [alreadyReadTenMinutesNotice, setAlreadyReadTenMinutesNotice] = useState<boolean>(
-    noticeReadStatus !== NoticeReadStatus.NothingRead,
-  );
-  const [alreadyReadLastOrderPassedNotice, setAlreadyReadLastOrderPassedNotice] = useState<boolean>(
-    noticeReadStatus === NoticeReadStatus.TimeOverRead,
-  );
-
   const lastOrderAtDate = useMemo(() => (lastOrderAt ? new Date(lastOrderAt) : new Date()), [lastOrderAt]);
   const calculateMinutesLeft = useCallback(() => getMinutesDiff(new Date(), lastOrderAtDate), [lastOrderAtDate]);
 
   const [minutesLeft, setMinutesLeft] = useState<number>(calculateMinutesLeft);
   const lastOrderPassedNotice = useDisclosure();
 
-  const [notificationDialogStat, setNotificationDialogStat] = useState<ShowNotificationDialogStat>(() =>
-    resolveNotificationDialogState({
-      minutesLeft,
-      alreadyReadTenMinutesNotice,
-      alreadyReadLastOrderPassedNotice,
-    }),
-  );
+  const shouldShowLastOrderPassedNotice = useMemo(() => {
+    return minutesLeft <= 0 && noticeReadStatus != NoticeReadStatus.TimeOverRead;
+  }, [minutesLeft, noticeReadStatus]);
+
+  const shouldShowLastTenMinutesNotice = useMemo(() => {
+    if (shouldShowLastOrderPassedNotice) {
+      return false;
+    }
+    return minutesLeft <= 10 && noticeReadStatus === NoticeReadStatus.NothingRead;
+  }, [minutesLeft, noticeReadStatus, shouldShowLastOrderPassedNotice]);
 
   useEffect(() => {
     const timerAction = (timerId?: NodeJS.Timeout) => {
       const minutesLeft = calculateMinutesLeft();
       setMinutesLeft(minutesLeft);
-      setNotificationDialogStat(
-        resolveNotificationDialogState({
-          minutesLeft,
-          alreadyReadTenMinutesNotice,
-          alreadyReadLastOrderPassedNotice,
-        }),
-      );
-      if (alreadyReadLastOrderPassedNotice) {
+      if (shouldShowLastOrderPassedNotice) {
         if (timerId) {
           clearInterval(timerId);
         }
@@ -67,22 +55,12 @@ export const LastOrderTimer = ({ courseMenu }: Props) => {
     }, 1000 * 60);
     return () => clearInterval(timerId);
   }, [
-    alreadyReadLastOrderPassedNotice,
-    alreadyReadTenMinutesNotice,
     calculateMinutesLeft,
     lastOrderAtDate,
     lastOrderPassedNotice,
+    shouldShowLastOrderPassedNotice,
+    shouldShowLastTenMinutesNotice,
   ]);
-
-  const handleConfirmLastTenMinutesNotice = useCallback(() => {
-    setAlreadyReadTenMinutesNotice(true);
-    setNotificationDialogStat('close');
-  }, []);
-
-  const handleConfirmLastOrderPassedNotice = useCallback(() => {
-    setAlreadyReadLastOrderPassedNotice(true);
-    setNotificationDialogStat('close');
-  }, []);
 
   if (!lastOrderAt) {
     return null;
@@ -102,38 +80,27 @@ export const LastOrderTimer = ({ courseMenu }: Props) => {
         </HStack>
       )}
 
-      <LastTenMinutesNoticeDialog
-        minutesLeft={minutesLeft}
-        isOpen={notificationDialogStat === 'show-last-10-minutes'}
-        onClickOk={handleConfirmLastTenMinutesNotice}
-      />
+      <LastTenMinutesNoticeDialog minutesLeft={minutesLeft} isOpen={shouldShowLastTenMinutesNotice} />
       <LastOrderPassedNoticeDialog
         courseMenuCategoryName={category?.name ?? ''}
-        isOpen={notificationDialogStat === 'show-last-order-passed'}
-        onClickOk={handleConfirmLastOrderPassedNotice}
+        isOpen={shouldShowLastOrderPassedNotice}
       />
     </>
   );
 };
 
-const LastTenMinutesNoticeDialog = ({
-  minutesLeft,
-  isOpen,
-  onClickOk,
-}: {
-  minutesLeft: number;
-  isOpen: boolean;
-  onClickOk: () => void;
-}) => {
+const LastTenMinutesNoticeDialog = ({ minutesLeft, isOpen }: { minutesLeft: number; isOpen: boolean }) => {
+  const { handleErrorWithAlertDialog } = useHandleErrorWithAlertDialog();
   const [{ fetching }, updateCourseMenuNoticeStatus] = useUpdateUserCourseMenuNoticeStatusMutation();
   const handleOnClick = async () => {
-    // OKをクリックしたらすぐにダイアログを閉じて、結果は待たないで良い (単なる通知の確認のため)
-    updateCourseMenuNoticeStatus({
+    const { error } = await updateCourseMenuNoticeStatus({
       input: {
         status: UserCourseMenuNoticeStatus.Read_10MinutesNotice,
       },
     });
-    onClickOk();
+    if (error) {
+      handleErrorWithAlertDialog(error);
+    }
   };
   return (
     <ModalDialog
@@ -167,21 +134,21 @@ const LastTenMinutesNoticeDialog = ({
 const LastOrderPassedNoticeDialog = ({
   courseMenuCategoryName,
   isOpen,
-  onClickOk,
 }: {
   courseMenuCategoryName: string;
   isOpen: boolean;
-  onClickOk: () => void;
 }) => {
+  const { handleErrorWithAlertDialog } = useHandleErrorWithAlertDialog();
   const [{ fetching }, updateCourseMenuNoticeStatus] = useUpdateUserCourseMenuNoticeStatusMutation();
   const handleOnClick = async () => {
-    // OKをクリックしたらすぐにダイアログを閉じて、結果は待たないで良い (単なる通知の確認のため)
-    updateCourseMenuNoticeStatus({
+    const { error } = await updateCourseMenuNoticeStatus({
       input: {
         status: UserCourseMenuNoticeStatus.ReadEndNotice,
       },
     });
-    onClickOk();
+    if (error) {
+      handleErrorWithAlertDialog(error);
+    }
   };
   return (
     <ModalDialog
@@ -199,30 +166,4 @@ const LastOrderPassedNoticeDialog = ({
       <></>
     </ModalDialog>
   );
-};
-
-type ShowNotificationDialogStat = 'close' | 'show-last-10-minutes' | 'show-last-order-passed';
-
-export const resolveNotificationDialogState = ({
-  minutesLeft,
-  alreadyReadTenMinutesNotice,
-  alreadyReadLastOrderPassedNotice,
-}: {
-  minutesLeft: number;
-  alreadyReadTenMinutesNotice: boolean;
-  alreadyReadLastOrderPassedNotice: boolean;
-}): ShowNotificationDialogStat => {
-  if (minutesLeft <= 0) {
-    if (alreadyReadLastOrderPassedNotice) {
-      return 'close';
-    }
-    return 'show-last-order-passed';
-  }
-  if (minutesLeft <= 10) {
-    if (alreadyReadTenMinutesNotice) {
-      return 'close';
-    }
-    return 'show-last-10-minutes';
-  }
-  return 'close';
 };

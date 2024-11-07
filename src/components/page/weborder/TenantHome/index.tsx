@@ -1,4 +1,4 @@
-import { Box, Flex, Image, Spacer, Text, VStack, Button, Container  } from '@chakra-ui/react';
+import { Box, Flex, Image, Spacer, Text, VStack, Button, Container, SimpleGrid } from '@chakra-ui/react';
 import { useCallback } from 'react';
 import variables from '@/styles/variables.module.scss';
 import { Navbar } from '@/components/domain/Navbar';
@@ -59,7 +59,7 @@ const TenantHome: NextPageWithLayout = () => {
   if (!data) {
     throw new Error('not found');
   }
-
+  
   const { helpUrl, termsOfUseUrl, specifiedCommercialTransactionActUrl } = data.viewing;
   const footerLinks: FooterLink[] = [
     { label: '困ったときは', href: helpUrl, isExternal: true },
@@ -102,11 +102,11 @@ const TenantHome: NextPageWithLayout = () => {
           </>
         ) : (
       
-      <Container maxW={variables.containerMaxWidth}>
-        <Flex mt="24px" justifyContent="center" gap={4}  mx="auto">
+      <Container maxW={variables.containerMaxWidth} py={9}>
+        <Flex justifyContent="center" gap={4}  mx="auto">
           <Button
-            bg={variables.monoSub}
-            borderRadius="md"
+            bg={"mono.primary"}
+            borderRadius="lg"
             w="312px"
             h="96px"
             fontWeight="bold"
@@ -118,8 +118,8 @@ const TenantHome: NextPageWithLayout = () => {
             </Flex>          
           </Button>
           <Button
-            bg={variables.monoSub}
-            borderRadius="md"
+            bg={"mono.primary"}
+            borderRadius="lg"
             w="312px"
             h="96px"
             fontWeight="bold"
@@ -131,27 +131,49 @@ const TenantHome: NextPageWithLayout = () => {
             </Flex>
           </Button>
         </Flex>
-        <Flex mt="24px" justifyContent="center" gap={4}  mx="auto">
-          <VStack mx="auto" alignItems="center" borderRadius="md">
-            <Image
-              src={data.viewing.mainVisualImage}
-              alt="メイン画像"
-              w="312px"
-              h={{ base: '120px'}}
-              objectFit="fill"
-            />
+        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} mt={10}>
+          {[...Array(2)].map((_, index) => (
+          <VStack key={index} w="100%" borderRadius="md">
+            <Image src={data.viewing.mainVisualImage} alt="" w="100%" h={{ base: '120px' }} objectFit="cover" />
           </VStack>
-          <VStack mx="auto" alignItems="center" borderRadius="md">
-            <Image
-              src={data.viewing.mainVisualImage}
-              alt="メイン画像"
-              w="312px"
-              h={{ base: '120px'}}
-              objectFit="fill"
-            />
-          </VStack>
-        </Flex>
-        
+          ))}
+        </SimpleGrid>
+        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} mt={10}>
+          <Box
+            as="a"
+            href="#menu" // Replace with actual link
+            bg="rgba(0, 0, 0, 0.6)"
+            color="white"
+            w="100%"
+            h="68px"
+            borderRadius="lg"
+            overflow="hidden"
+            position="relative"
+          >
+            <Image src={data.viewing.mainVisualImage} w="100%" h="100%" objectFit="cover" opacity={0.3} />
+            <Flex position="absolute" top="0" left="0" w="100%" h="100%" align="center" justify="center">
+              <Image src="/assets/icons/eatin.svg"/>
+              <Text fontWeight="bold" ml="16px">メニュー</Text>
+            </Flex>
+          </Box>
+          <Box
+            as="a"
+            href="#store-list" // Replace with actual link
+            bg="rgba(0, 0, 0, 0.6)"
+            color="white"
+            w="100%"
+            h="68px"
+            borderRadius="lg"
+            overflow="hidden"
+            position="relative"
+          >
+            <Image src={data.viewing.mainVisualImage} w="100%" h="100%" objectFit="cover" opacity={0.3} />
+            <Flex position="absolute" top="0" left="0" w="100%" h="100%" align="center" justify="center">
+              <Image src="/assets/icons/shop.svg"/>
+              <Text fontWeight="bold" ml="16px">店舗一覧</Text>
+            </Flex>
+          </Box>
+        </SimpleGrid>
       </Container>
       )}
       <Box w="full" bg="mono.bg" pt="32px" pb="48px">

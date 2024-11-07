@@ -15,7 +15,7 @@ export const HomeHeader = ({ userName = 'ゲストさん', containerMaxWidth }: 
     await router.replace(loginPage(home));
   };
   return (
-    <Box bg="mono.primary" color="white" py="16px">
+    <Box bg="mono.primary" color="white" py={2}>
       <Container maxW={containerMaxWidth}>
         <Flex alignItems="center" justifyContent="space-between">
           <Text fontSize="lg" fontWeight="bold">
