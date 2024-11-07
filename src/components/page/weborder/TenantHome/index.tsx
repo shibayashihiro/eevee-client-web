@@ -1,8 +1,9 @@
 import { Box, Flex, Image, Spacer, Text, VStack, Button, Container, SimpleGrid } from '@chakra-ui/react';
 import { useCallback } from 'react';
+
 import variables from '@/styles/variables.module.scss';
 import { Navbar } from '@/components/domain/Navbar';
-import { HomeHeader } from '@/components/domain/HomeHeader'; 
+import { HomeHeader } from '@/components/domain/HomeHeader';
 import { TenantPageLink } from '@/components/domain/TenantPageLink';
 import { PrimaryButton } from '@/components/ui/Button';
 import { WrappedLink } from '@/components/ui/WrappedLink';
@@ -15,6 +16,7 @@ import { containerMarginX } from '@/utils/constants';
 import { privacyPage, shopListPage } from '@/utils/paths/tenantPages';
 import { validateQueryTenantIdentifier } from '@/utils/validator';
 import { apps } from '@/apps';
+
 import { useGetWebHomeSectionsForTenantPageQuery } from './TenantHome.query.generated';
 
 type FooterLink = {
@@ -141,7 +143,7 @@ const TenantHome: NextPageWithLayout = () => {
         <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} mt={10}>
           <Box
             as="a"
-            href="#menu" // Replace with actual link
+            href="#menu"
             bg="rgba(0, 0, 0, 0.6)"
             color="white"
             w="100%"
@@ -158,7 +160,7 @@ const TenantHome: NextPageWithLayout = () => {
           </Box>
           <Box
             as="a"
-            href="#store-list" // Replace with actual link
+            href="#store-list"
             bg="rgba(0, 0, 0, 0.6)"
             color="white"
             w="100%"

@@ -1,14 +1,15 @@
 import { Box, HStack, Spacer, VStack, Text, Image } from '@chakra-ui/react';
+import { useRouter } from 'next/router';
+
 import { OrderType } from '@/graphql/generated/types';
 import { useResolvedHomePath } from '@/providers/tenant/WebOrderPageStateProvider';
+import { validateQueryTenantIdentifier } from '@/utils/validator';
+import { apps } from '@/apps';
 
 import { Logo } from './Logo';
 import { NavbarViewerPartsFragment, NavbarViewingPartsFragment } from './Navbar.fragment.generated';
 import { NavbarMenu, ItemSearchMethodButtonType } from './NavbarMenu';
 import { NavbarMenuFacilityFragment } from './NavbarMenu.fragment.generated';
-import { useRouter } from 'next/router';
-import { validateQueryTenantIdentifier } from '@/utils/validator';
-import { apps } from '@/apps';
 
 export * from './Navbar.fragment.generated';
 
@@ -27,6 +28,7 @@ export const Navbar = (props: Props) => {
   const home = useResolvedHomePath();
   const router = useRouter();
   const cfg = validateQueryTenantIdentifier(router.query) ? apps.getConfig(router.query.tenantIdentifier) : null;
+
   return (
     <HStack
       as="nav"
@@ -40,9 +42,7 @@ export const Navbar = (props: Props) => {
       justifyContent={'space-between'}
       alignItems={'center'}
     >
-
       <Logo imageUrl={viewing.logo} homePath={disableHomeLink ? undefined : home} />
-
       <Spacer />
       {cfg?.promotionEnabled ? (
         <Box px="12px">
@@ -62,11 +62,11 @@ export const Navbar = (props: Props) => {
         </VStack>
 
         <VStack spacing="4px" align="center">
-          <Image src="/assets/icons/help.svg" boxSize="24px" alt="" /> 
+          <Image src="/assets/icons/help.svg" boxSize="24px" alt="ヘルプアイコン" /> 
           <Text fontSize="sm">ヘルプ</Text>
         </VStack>
       </HStack> 
       )}     
     </HStack>
-    );
+  );
 };
