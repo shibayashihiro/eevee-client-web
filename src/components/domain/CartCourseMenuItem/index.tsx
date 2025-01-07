@@ -10,7 +10,6 @@ import { CartOrderItemActions } from '../Cart/CartOrderItemActions';
 
 import { CartCourseMenuItemFragment } from './CartCourseMenuItem.fragment.generated';
 
-
 type Props = {
   courseMenuItem: CartCourseMenuItemFragment;
   onClickDelete: () => void;

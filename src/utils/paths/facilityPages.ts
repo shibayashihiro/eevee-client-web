@@ -4,20 +4,29 @@
 
 import { UrlObject } from 'url';
 
-import { OrderType } from '@/graphql/generated/types';
+import { DeliveryType, OrderType } from '@/graphql/generated/types';
+
+import { orderTypePathNames } from './utils';
 
 const PREFIX = '/f';
 
-export const deliveryHome = (facilityId: string) => `${PREFIX}/${facilityId}/delivery`;
-export const eatInHome = (facilityId: string) => `${PREFIX}/${facilityId}/eatin`;
-export const takeoutHome = (facilityId: string) => `${PREFIX}/${facilityId}/takeout`;
+export const deliveryHome = (facilityId: string) => `${PREFIX}/${facilityId}/${orderTypePathNames[OrderType.Delivery]}`;
+export const eatInHome = (facilityId: string) => `${PREFIX}/${facilityId}/${orderTypePathNames[OrderType.EatIn]}`;
+export const takeoutHome = (facilityId: string) => `${PREFIX}/${facilityId}/${orderTypePathNames[OrderType.Takeout]}`;
 export const myPageHome = (facilityId: string) => `${PREFIX}/${facilityId}/mypage`;
 export const myPageStampCard = (facilityId: string) => `${PREFIX}/${facilityId}/mypage/stampcard`;
-export const myPageCoupon = (facilityId: string) => `${PREFIX}/${facilityId}/mypage/coupon`;
 
 export const cartPage = (facilityId: string, orderType: OrderType): UrlObject => {
   return {
     pathname: `${PREFIX}/${facilityId}/cart`,
+    query: {
+      orderType: orderType,
+    },
+  };
+};
+export const cartCouponPage = (facilityId: string, orderType: OrderType): UrlObject => {
+  return {
+    pathname: `${PREFIX}/${facilityId}/cart/coupon`,
     query: {
       orderType: orderType,
     },
@@ -32,6 +41,11 @@ export const tableOrderCartPage = (facilityId: string): UrlObject => {
       tableOrder: '',
     },
   };
+};
+
+export const requestPaperReceiptPage = (facilityId: string, orderType: OrderType) => {
+  const params = new URLSearchParams({ orderType: orderType });
+  return `${PREFIX}/${facilityId}/cart/request-paper-receipt?${params.toString()}`;
 };
 
 export const menuItemDetailPage = (
@@ -61,6 +75,7 @@ export const orderDetailPage = (facilityId: string, orderId: string, orderType: 
 });
 
 export const tableOrdersPage = (facilityId: string): string => `${PREFIX}/${facilityId}/table/orders`;
+export const tableOrdersPaymentPage = (facilityId: string): string => `${PREFIX}/${facilityId}/table/payment`;
 
 export const tableCheckInPage = (facilityId: string, tableId: string): UrlObject => ({
   pathname: `${PREFIX}/${facilityId}/table/${tableId}/checkin`,
@@ -110,10 +125,22 @@ export const searchItemPage = (facilityId: string, orderType: OrderType): UrlObj
   };
 };
 
-export const orderDateSelectionPage = (facilityId: string): UrlObject => {
-  return {
-    pathname: `${PREFIX}/${facilityId}/orderdateselection`,
-  };
+export const orderDateSelectionPage = (
+  facilityId: string,
+  orderType: OrderType,
+  options?: {
+    deliveryType?: DeliveryType;
+  },
+): string => {
+  const path = `${PREFIX}/${facilityId}/${orderTypePathNames[orderType]}/orderdateselection`;
+  if (!options) {
+    return path;
+  }
+  const params = new URLSearchParams();
+  if (options?.deliveryType) {
+    params.append('deliveryType', options.deliveryType);
+  }
+  return `${path}?${params.toString()}`;
 };
 
 export const initialHome = (facilityId: string, orderType: OrderType): string => {

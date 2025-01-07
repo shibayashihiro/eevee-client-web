@@ -11,6 +11,7 @@ import { OrderItemOptionItemsTextPartsFragmentDoc } from '../OrderItemOptionItem
 import { PaymentItemPartsFragmentDoc } from '../PaymentItem/PaymentItem.fragment.generated';
 import { CartDisposableItemPartsFragmentDoc } from '../CartDisposableItem/CartDisposableItem.fragment.generated';
 import { CartCourseMenuItemFragmentDoc } from '../CartCourseMenuItem/CartCourseMenuItem.fragment.generated';
+import { PaperReceiptRequestSelectionFragmentDoc } from '../OrderConfirmCart/PaperReceiptRequestSelection.fragment.generated';
 import { PaymentDialogPartsFragmentDoc } from '../PaymentDialog/PaymentDialog.fragment.generated';
 
 import { LastOrderInputPartsFragmentDoc } from './LastOrderInput.fragment.generated';
@@ -38,6 +39,7 @@ export type GetCartForTakeoutOrderConfirmQuery = {
           showPriceExcludingTax: boolean;
           loyaltyProgramEnabled: boolean;
           itemCodeSearchEnabled: boolean;
+          OnlinePaymentEnabled: boolean;
         };
       }
     | { __typename: 'MenuCategory' }
@@ -69,6 +71,7 @@ export type GetCartForTakeoutOrderConfirmQuery = {
             items: Array<{
               __typename: 'OrderItem';
               id: string;
+              name: string;
               totalPrice: number;
               quantity: number;
               menuItem: { __typename: 'MenuItem'; id: string; name: string; alcoholicBeverage: boolean };
@@ -81,10 +84,11 @@ export type GetCartForTakeoutOrderConfirmQuery = {
             }>;
             payment?: {
               __typename: 'Payment';
-              last4: string;
+              paymentType: Types.PaymentType;
+              isSignInRequired: boolean;
+              name: string;
               brand: string;
               isSelected: boolean;
-              paymentType: Types.PaymentType;
             } | null;
             coupon?: { __typename: 'Coupon'; id: string; title: string } | null;
             disposableItems: Array<{
@@ -94,6 +98,8 @@ export type GetCartForTakeoutOrderConfirmQuery = {
               price: number;
               selected: boolean;
             }>;
+            paperReceiptRequest?: { __typename: 'PaperReceiptRequest'; needsPaperReceipt: boolean } | null;
+            noContactDeliveryOption: { __typename: 'NoContactDeliveryOption'; requestNoContactDelivery: boolean };
           }
         | {
             __typename: 'EatInOrder';
@@ -107,6 +113,7 @@ export type GetCartForTakeoutOrderConfirmQuery = {
             items: Array<{
               __typename: 'OrderItem';
               id: string;
+              name: string;
               totalPrice: number;
               quantity: number;
               menuItem: { __typename: 'MenuItem'; id: string; name: string; alcoholicBeverage: boolean };
@@ -119,10 +126,11 @@ export type GetCartForTakeoutOrderConfirmQuery = {
             }>;
             payment?: {
               __typename: 'Payment';
-              last4: string;
+              paymentType: Types.PaymentType;
+              isSignInRequired: boolean;
+              name: string;
               brand: string;
               isSelected: boolean;
-              paymentType: Types.PaymentType;
             } | null;
             coupon?: { __typename: 'Coupon'; id: string; title: string } | null;
             disposableItems: Array<{
@@ -158,6 +166,7 @@ export type GetCartForTakeoutOrderConfirmQuery = {
             items: Array<{
               __typename: 'OrderItem';
               id: string;
+              name: string;
               totalPrice: number;
               quantity: number;
               menuItem: { __typename: 'MenuItem'; id: string; name: string; alcoholicBeverage: boolean };
@@ -170,10 +179,11 @@ export type GetCartForTakeoutOrderConfirmQuery = {
             }>;
             payment?: {
               __typename: 'Payment';
-              last4: string;
+              paymentType: Types.PaymentType;
+              isSignInRequired: boolean;
+              name: string;
               brand: string;
               isSelected: boolean;
-              paymentType: Types.PaymentType;
             } | null;
             coupon?: { __typename: 'Coupon'; id: string; title: string } | null;
             disposableItems: Array<{
@@ -192,10 +202,11 @@ export type GetCartForTakeoutOrderConfirmQuery = {
             availablePayments: Array<{
               __typename: 'Payment';
               id: string;
-              last4: string;
+              paymentType: Types.PaymentType;
+              name: string;
               brand: string;
               isSelected: boolean;
-              paymentType: Types.PaymentType;
+              isSignInRequired: boolean;
             }>;
             charge: {
               __typename: 'Charge';
@@ -205,6 +216,7 @@ export type GetCartForTakeoutOrderConfirmQuery = {
             items: Array<{
               __typename: 'OrderItem';
               id: string;
+              name: string;
               totalPrice: number;
               quantity: number;
               menuItem: { __typename: 'MenuItem'; id: string; name: string; alcoholicBeverage: boolean };
@@ -217,10 +229,11 @@ export type GetCartForTakeoutOrderConfirmQuery = {
             }>;
             payment?: {
               __typename: 'Payment';
-              last4: string;
+              paymentType: Types.PaymentType;
+              isSignInRequired: boolean;
+              name: string;
               brand: string;
               isSelected: boolean;
-              paymentType: Types.PaymentType;
             } | null;
             coupon?: { __typename: 'Coupon'; id: string; title: string } | null;
             disposableItems: Array<{
@@ -230,6 +243,7 @@ export type GetCartForTakeoutOrderConfirmQuery = {
               price: number;
               selected: boolean;
             }>;
+            paperReceiptRequest?: { __typename: 'PaperReceiptRequest'; needsPaperReceipt: boolean } | null;
           }
         | null;
     };
@@ -254,6 +268,9 @@ export const GetCartForTakeoutOrderConfirmDocument = gql`
         ...OrderConfirmCartParts
         order {
           id
+          payment {
+            isSignInRequired
+          }
           ... on TakeoutOrder {
             scheduledTime
             availablePayments {
@@ -276,6 +293,7 @@ export const GetCartForTakeoutOrderConfirmDocument = gql`
   ${PaymentItemPartsFragmentDoc}
   ${CartDisposableItemPartsFragmentDoc}
   ${CartCourseMenuItemFragmentDoc}
+  ${PaperReceiptRequestSelectionFragmentDoc}
   ${PaymentDialogPartsFragmentDoc}
   ${LastOrderInputPartsFragmentDoc}
 `;

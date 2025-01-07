@@ -5,3 +5,9 @@ mutation selectCoupon($input: SelectCouponInput!) {
         }
     }
 }
+
+mutation selectTableCoupon($input: SelectTableCouponInput!) {
+    selectTableCoupon(input: $input) {
+        clientMutationId
+    }
+}

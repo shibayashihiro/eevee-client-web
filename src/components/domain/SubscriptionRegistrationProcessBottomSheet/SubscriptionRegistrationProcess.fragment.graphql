@@ -23,3 +23,7 @@ fragment UserForSubscriptionPlanRegistrationProcess on User {
     displayName
   }
 }
+
+fragment TenantForSubscriptionPlanRegistrationProcess on Tenant {
+  privacyPolicyUrl
+}

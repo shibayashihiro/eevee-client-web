@@ -3,7 +3,7 @@ import { ComponentProps } from 'react';
 
 export const ErrorIcon = (props: ComponentProps<typeof Icon>) => {
   return (
-    <Icon {...props} viewBox="0 0 24 24" fill="none">
+    <Icon {...props} viewBox="0 0 24 24">
       <path
         fillRule="evenodd"
         clipRule="evenodd"

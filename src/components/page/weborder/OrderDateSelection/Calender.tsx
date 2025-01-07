@@ -40,11 +40,7 @@ export const CalendarComponent = ({
     }
   }, [error, handleErrorWithAlertDialog]);
 
-  const availableDates = useMemo(
-    () =>
-      data?.scheduleOrderAvailableDates.sort((curr, next) => curr.month - next.month || curr.year - next.year) ?? [],
-    [data?.scheduleOrderAvailableDates],
-  );
+  const availableDates = useMemo(() => data?.scheduleOrderAvailableDates ?? [], [data?.scheduleOrderAvailableDates]);
 
   const currentMonthData = useMemo(() => {
     if (availableDates.length > 0) {
@@ -85,18 +81,16 @@ export const CalendarComponent = ({
           <HStack w={16} justify="start">
             <Icon as={ChevronLeftIcon} />
             {currentMonthIndex > 0 ? (
-              <Text fontSize="lg" fontWeight="bold">
+              <Text className="bold-normal">
                 {currentMonthIndex > 0 ? `${availableDates[currentMonthIndex - 1].month}月` : ''}
               </Text>
             ) : null}
           </HStack>
         </Button>
-        <Text fontSize="xl" fontWeight="bold">
-          {`${currentMonthData.year}年${currentMonthData.month}月`}
-        </Text>
+        <Text className="text-normal">{`${currentMonthData.year}年${currentMonthData.month}月`}</Text>
         <Button onClick={handleNextMonth} isDisabled={currentMonthIndex === availableDates.length - 1} variant="ghost">
           <HStack w={16} justify="end">
-            <Text fontSize="lg" fontWeight="bold">
+            <Text className="bold-normal">
               {currentMonthIndex < availableDates.length - 1 ? `${availableDates[currentMonthIndex + 1].month}月` : ''}
             </Text>
             <Icon as={ChevronRightIcon} />
@@ -153,9 +147,11 @@ function DayCell({
   return (
     <Button
       onClick={() => (available ? handleDateSelect(date) : null)}
-      backgroundColor={isSelected ? 'brand.primary' : 'brand.backgroundSoft'}
+      backgroundColor={isSelected ? 'brand.primary' : available ? 'brand.backgroundSoft' : 'gainsboro'}
+      color={isSelected ? 'white' : available ? 'primaryText' : 'primary'}
       opacity={available ? 1 : 0.3}
       variant={isSelected ? 'solid' : 'outline'}
+      border={0}
       _hover={{}}
     >
       {day}
@@ -186,10 +182,10 @@ const daysOfWeek = [
 const getDayColorForCalendar = (day: dayOfWeekType): string => {
   switch (day) {
     case dayOfWeekType.Sunday:
-      return 'red';
+      return '#CC333F';
     case dayOfWeekType.Saturday:
-      return 'blue';
+      return '#134B9D';
     default:
-      return 'black'; // Fallback color
+      return '#333'; // Fallback color
   }
 };

@@ -8,8 +8,9 @@ import { AvailableOrderTypeBadgePartsFragmentDoc } from '../../../domain/Availab
 import {
   NavbarViewingPartsFragmentDoc,
   NavbarViewerPartsFragmentDoc,
+  NavbarMenuViewerFragmentDoc,
 } from '../../../domain/Navbar/Navbar.fragment.generated';
-import { NavbarMenuViewerFragmentDoc } from '../../../domain/Navbar/NavbarMenu.fragment.generated';
+import { GeneralNavbarMenuViewerFragmentDoc } from '../../../domain/Navbar/GeneralNavbarMenu.generated';
 
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 export type GetInitialHomePageQueryVariables = Types.Exact<{
@@ -33,6 +34,7 @@ export type GetInitialHomePageQuery = {
           showPriceExcludingTax: boolean;
           loyaltyProgramEnabled: boolean;
           itemCodeSearchEnabled: boolean;
+          OnlinePaymentEnabled: boolean;
         };
         availableOrderTypes: Array<{ __typename: 'AvailableOrderType'; label: string; orderType: Types.OrderType }>;
       }
@@ -79,6 +81,7 @@ export const GetInitialHomePageDocument = gql`
   ${NavbarViewingPartsFragmentDoc}
   ${NavbarViewerPartsFragmentDoc}
   ${NavbarMenuViewerFragmentDoc}
+  ${GeneralNavbarMenuViewerFragmentDoc}
 `;
 
 export function useGetInitialHomePageQuery(

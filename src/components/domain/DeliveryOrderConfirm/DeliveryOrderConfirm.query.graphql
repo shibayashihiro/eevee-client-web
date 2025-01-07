@@ -26,12 +26,21 @@ query GetCartForDeliveryOrderConfirm($facilityID: ID!, $orderType: OrderType!) {
             memo
           }
           scheduledTime
-          requirement
+          requirements {
+            requirement
+            requirementLabel
+          }
           availablePayments {
             ...PaymentDialogParts
           }
+          noContactDeliveryOption {
+            requestNoContactDelivery
+          }
         }
       }
+    }
+    lastOrderInput {
+      ...DeliveryLastOrderInputParts
     }
   }
 }

@@ -5,11 +5,9 @@ export type RGBA = {
   a: number;
 };
 
-export const toString = (rgba: RGBA): string => {
-  return `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${rgba.a})`;
-};
-
-const initialOpacity = 1.0;
+const colorPaletteKeys = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900] as const;
+type ColorPaletteKey = (typeof colorPaletteKeys)[number];
+export type ColorPalette = Record<ColorPaletteKey, RGBA>;
 
 /**
  * NOTE: alpha部は無視され1.0でセットされます。
@@ -24,18 +22,7 @@ export const rgbHexToRGBA = (rgbHex: string): RGBA => {
   return { r, g, b, a: initialOpacity };
 };
 
-export type ColorPalette = {
-  [key: string]: RGBA;
-};
-
-export const toStrings = (palette: ColorPalette): { [key: string]: string } => {
-  const result: { [key: string]: string } = {};
-  Object.keys(palette).forEach((key) => {
-    result[key] = toString(palette[key]);
-  });
-  return result;
-};
-
+const initialOpacity = 1.0;
 const initialColor = rgbHexToRGBA('#FFFFFF');
 const initialPalette: ColorPalette = {
   50: initialColor,
@@ -50,6 +37,20 @@ const initialPalette: ColorPalette = {
   900: initialColor,
 } as const;
 
+export const toString = (rgba: RGBA): string => {
+  return `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${rgba.a})`;
+};
+export const toStrings = (palette: ColorPalette): Record<ColorPaletteKey, string> => {
+  const result = colorPaletteKeys.reduce<Record<ColorPaletteKey, string>>(
+    (acc, key) => {
+      acc[key] = toString(palette[key]);
+      return acc;
+    },
+    {} as Record<ColorPaletteKey, string>,
+  );
+  return result;
+};
+
 export const generateColorPalette = (baseColorHex: string): ColorPalette => {
   const palette = { ...initialPalette };
 
@@ -58,7 +59,7 @@ export const generateColorPalette = (baseColorHex: string): ColorPalette => {
   palette[500] = baseRGBA;
 
   // 50に向かっては足していく
-  const beforeRange = ['400', '300', '200', '100', '50'];
+  const beforeRange: ColorPaletteKey[] = [400, 300, 200, 100, 50];
   beforeRange.forEach((key, i) => {
     const diff = (i + 1) * 10;
     const rgb = {
@@ -71,7 +72,7 @@ export const generateColorPalette = (baseColorHex: string): ColorPalette => {
   });
 
   // 900に向かっては引いていく
-  const afterRange = ['600', '700', '800', '900'];
+  const afterRange: ColorPaletteKey[] = [600, 700, 800, 900];
   afterRange.forEach((key, i) => {
     const diff = (i + 1) * 10;
     const rgb = {

@@ -3,8 +3,8 @@
 // スタンプカード機能が有効かどうかはFacilityに依存するため、FacilityId以下のパスにしている。
 
 import { WebOrderLayout } from '@/components/layouts/WebOrderLayout';
-import { MyPage } from '@/components/page/weborder/Mypage';
+import { FacilityMyPage } from '@/components/page/weborder/MyPage';
 
-MyPage.getLayout = WebOrderLayout;
+FacilityMyPage.getLayout = WebOrderLayout;
 
-export default MyPage;
+export default FacilityMyPage;

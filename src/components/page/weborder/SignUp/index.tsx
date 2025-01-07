@@ -1,108 +1,106 @@
-import { ParsedUrlQuery } from 'querystring';
-
-import { useCallback, useState } from 'react';
-import { Box } from '@chakra-ui/react';
+import { Fragment, useCallback, useState } from 'react';
+import { Container } from '@chakra-ui/react';
+import { useRouter } from 'next/router';
 
 import { NextPageWithLayout } from '@/types';
 import { InsideNavbar } from '@/components/ui/InsideNavbar';
-import { containerMarginX } from '@/utils/constants';
-import { Completed, InputAuthorizationCode, InputPhoneNumber, InputUserInfo } from '@/components/domain/SignUp';
-import { useTenantRouter } from '@/providers/tenant/WebOrderPageStateProvider';
+import { home } from '@/utils/paths/tenantPages';
+import { useRedirectIfAuthenticated } from '@/auth/hooks';
 
-const steps = {
-  inputPhoneNumber: 0,
-  inputAuthorizationCode: 1,
-  inputUserInfo: 2,
-  completed: 3,
-} as const;
-type Step = typeof steps[keyof typeof steps];
+import { SignUpStepInputPhoneNumber } from './SignUpStepInputPhoneNumber';
+import { SignUpStepInputUserProfile } from './SignUpStepInputUserProfile';
+import { SignUpStepCompleted } from './SignUpStepCompleted';
+import { SignUpStepInputAuthorizationCode } from './SignUpStepInputAuthorizationCode';
+import { SignUpStepInputCredentials } from './SignUpStepInputCredentials';
+import {
+  initialStep,
+  SignUpStep,
+  StepperProvider,
+  steps,
+  useStepperDispatch,
+  useStepperState,
+} from './StepperProvider';
 
-const initialStep = steps.inputPhoneNumber;
-const lastStep = steps.completed;
-
-const titles: Record<Step, string> = {
-  [steps.inputPhoneNumber]: '電話番号の確認',
-  [steps.inputAuthorizationCode]: '認証コードを入力',
-  [steps.inputUserInfo]: 'アカウント作成',
-  [steps.completed]: '登録が完了しました',
-};
-
-type ExpectedQuery = {
-  src?: string;
-};
-
-const isExpectedQuery = (query: ParsedUrlQuery): query is ExpectedQuery => {
-  return typeof query.src === 'string' || query.src === undefined;
-};
-
-const SignUpPage: NextPageWithLayout = () => {
-  const router = useTenantRouter();
-  const [step, setStep] = useState<Step>(initialStep);
+export const SignUpPage: NextPageWithLayout = () => {
+  const router = useRouter();
   const [phoneNumber, setPhoneNumber] = useState('');
 
-  const backToSrc = useCallback(() => {
-    if (isExpectedQuery(router.query) && router.query.src) {
-      router.replace(router.query.src);
-      return;
-    }
-    router.back();
-  }, [router]);
+  const backTo = typeof router.query.src === 'string' ? router.query.src : home;
 
-  const toNextStep = useCallback(() => {
-    if (step === lastStep) {
-      backToSrc();
-      return;
-    }
-    setStep((step) => {
-      if (step >= lastStep) {
-        return step;
-      }
-      return (step + 1) as Step;
-    });
-  }, [backToSrc, step]);
-
-  const toPrevStep = useCallback(() => {
-    setStep((step) => {
-      if (step <= initialStep) {
-        return step;
-      }
-      return (step - 1) as Step;
-    });
-  }, []);
-
-  const handleSetSignUpRequestPhoneNumber = useCallback((phoneNumber: string) => {
-    setPhoneNumber(phoneNumber);
-  }, []);
-
-  const handleClickBackIcon = useCallback(() => {
-    switch (step) {
-      case initialStep:
-        router.back();
-        break;
-      case lastStep:
-        backToSrc();
-        break;
-      default:
-        toPrevStep();
-        break;
-    }
-  }, [backToSrc, router, step, toPrevStep]);
+  useRedirectIfAuthenticated({ backTo });
 
   return (
+    <StepperProvider>
+      <SignUpStepper
+        renderContent={(step) => {
+          switch (step) {
+            case steps.inputPhoneNumber:
+              return <SignUpStepInputPhoneNumber setPhoneNumber={setPhoneNumber} />;
+            case steps.inputAuthorizationCode:
+              return <SignUpStepInputAuthorizationCode phoneNumber={phoneNumber} />;
+            case steps.inputCredentials:
+              return <SignUpStepInputCredentials phoneNumber={phoneNumber} />;
+            case steps.inputUserInfo:
+              return <SignUpStepInputUserProfile />;
+            case steps.completed:
+              return <SignUpStepCompleted backTo={backTo} />;
+            default:
+              return <Fragment />;
+          }
+        }}
+      />
+    </StepperProvider>
+  );
+};
+
+type StepperProps = {
+  renderContent: (step: SignUpStep) => React.ReactNode;
+};
+
+const SignUpStepper = ({ renderContent: render }: StepperProps) => {
+  const { activeStep } = useStepperState();
+  return (
     <>
-      <InsideNavbar title={titles[step]} onClickBackIcon={handleClickBackIcon} />
-      <Box mx={containerMarginX} pt="24px">
-        {step === steps.inputPhoneNumber && (
-          <InputPhoneNumber setPhoneNumber={handleSetSignUpRequestPhoneNumber} onClickNext={toNextStep} />
-        )}
-        {step === steps.inputAuthorizationCode && (
-          <InputAuthorizationCode phoneNumber={phoneNumber} onClickNext={toNextStep} />
-        )}
-        {step === steps.inputUserInfo && <InputUserInfo phoneNumber={phoneNumber} onClickNext={toNextStep} />}
-        {step === steps.completed && <Completed onClickNext={toNextStep} />}
-      </Box>
+      <HeaderNavigation />
+      <Container pt="24px">
+        <Fragment key={activeStep}>{render(activeStep)}</Fragment>
+      </Container>
     </>
   );
 };
 
-export default SignUpPage;
+const titles: Record<SignUpStep, string> = {
+  [steps.inputPhoneNumber]: '携帯電話番号の確認',
+  [steps.inputAuthorizationCode]: '認証コードを入力',
+  [steps.inputCredentials]: 'アカウント作成',
+  [steps.inputUserInfo]: 'プロフィールの登録',
+  [steps.completed]: '登録が完了しました',
+};
+
+const HeaderNavigation = () => {
+  const router = useRouter();
+  const { activeStep } = useStepperState();
+  const { goToPrevStep } = useStepperDispatch();
+
+  const showBack = activeStep == steps.inputPhoneNumber || activeStep == steps.inputAuthorizationCode;
+
+  const handleClickBackIcon = useCallback(() => {
+    if (activeStep === steps.completed) {
+      return null;
+    }
+    if (activeStep === initialStep) {
+      router.back();
+      return;
+    }
+    if (!showBack) {
+      return;
+    }
+    goToPrevStep();
+  }, [activeStep, goToPrevStep, router, showBack]);
+
+  if (activeStep === steps.completed) {
+    return null;
+  }
+
+  return <InsideNavbar title={titles[activeStep]} hideBackIcon={!showBack} onClickBackIcon={handleClickBackIcon} />;
+};

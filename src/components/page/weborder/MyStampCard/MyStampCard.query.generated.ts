@@ -7,12 +7,14 @@ import * as Types from '../../../../graphql/generated/types';
 import {
   NavbarViewingPartsFragmentDoc,
   NavbarViewerPartsFragmentDoc,
+  NavbarMenuViewerFragmentDoc,
+  NavbarMenuFacilityFragmentDoc,
 } from '../../../domain/Navbar/Navbar.fragment.generated';
 import { StampCardPartsFragmentDoc } from '../../../domain/StampCard/StampCard.fragment.generated';
 import {
-  NavbarMenuViewerFragmentDoc,
-  NavbarMenuFacilityFragmentDoc,
-} from '../../../domain/Navbar/NavbarMenu.fragment.generated';
+  GeneralNavbarMenuViewerFragmentDoc,
+  GeneralNavbarMenuFacilityFragmentDoc,
+} from '../../../domain/Navbar/GeneralNavbarMenu.generated';
 import { FeatureFlagsForProviderFragmentDoc } from '../../../../providers/FeatureFlagsProvider/FeatureFlagsProvider.fragment.generated';
 
 import { StampCardsCarouselFragmentDoc } from './StampCardsCarousel.fragment.generated';
@@ -71,6 +73,7 @@ export type GetMyStampCardPageQuery = {
           showPriceExcludingTax: boolean;
           loyaltyProgramEnabled: boolean;
           itemCodeSearchEnabled: boolean;
+          OnlinePaymentEnabled: boolean;
         };
       }
     | { __typename: 'MenuCategory' }
@@ -116,7 +119,9 @@ export const GetMyStampCardPageDocument = gql`
   ${LoyaltyCardSystemFragmentDoc}
   ${NavbarViewerPartsFragmentDoc}
   ${NavbarMenuViewerFragmentDoc}
+  ${GeneralNavbarMenuViewerFragmentDoc}
   ${NavbarMenuFacilityFragmentDoc}
+  ${GeneralNavbarMenuFacilityFragmentDoc}
   ${FeatureFlagsForProviderFragmentDoc}
 `;
 

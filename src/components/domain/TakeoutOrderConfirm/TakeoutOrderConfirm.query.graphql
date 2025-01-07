@@ -16,6 +16,9 @@ query GetCartForTakeoutOrderConfirm($facilityID: ID!, $orderType: OrderType!) {
       ...OrderConfirmCartParts
       order {
         id
+        payment {
+          isSignInRequired
+        }
         ... on TakeoutOrder {
           scheduledTime
           availablePayments {

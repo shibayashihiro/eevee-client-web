@@ -11,4 +11,5 @@ type PlaceAddress {
   postalCode: String!
   prefecture: String!
   addressLine: String!
+  latLng: LatLng!
 }

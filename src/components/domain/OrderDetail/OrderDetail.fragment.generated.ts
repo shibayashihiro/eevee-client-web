@@ -11,17 +11,16 @@ export type OrderDetailParts_DeliveryOrder_Fragment = {
     roomNumber: string;
     memo?: string | null;
   };
-  charge: {
-    __typename: 'Charge';
-    amount: number;
-    details: Array<{ __typename: 'ChargeDetail'; name: string; amount: number }>;
+  facility: {
+    __typename: 'Facility';
+    name: string;
+    latLng: { __typename: 'LatLng'; latitude: number; longitude: number };
   };
   items: Array<{
     __typename: 'OrderItem';
-    id: string;
-    totalPrice: number;
     quantity: number;
-    menuItem: { __typename: 'MenuItem'; id: string; name: string; alcoholicBeverage: boolean };
+    name: string;
+    totalPrice: number;
     selectedOptionItems: Array<{
       __typename: 'OrderOptionItem';
       name: string;
@@ -29,27 +28,26 @@ export type OrderDetailParts_DeliveryOrder_Fragment = {
       subOptionItems: Array<{ __typename: 'OrderOptionItem'; name: string; quantity: number }>;
     }>;
   }>;
-  facility: {
-    __typename: 'Facility';
-    name: string;
-    latLng: { __typename: 'LatLng'; latitude: number; longitude: number };
+  charge: {
+    __typename: 'Charge';
+    amount: number;
+    details: Array<{ __typename: 'ChargeDetail'; name: string; amount: number }>;
   };
 };
 
 export type OrderDetailParts_EatInOrder_Fragment = {
   __typename: 'EatInOrder';
   shortIds: Array<string>;
-  charge: {
-    __typename: 'Charge';
-    amount: number;
-    details: Array<{ __typename: 'ChargeDetail'; name: string; amount: number }>;
+  facility: {
+    __typename: 'Facility';
+    name: string;
+    latLng: { __typename: 'LatLng'; latitude: number; longitude: number };
   };
   items: Array<{
     __typename: 'OrderItem';
-    id: string;
-    totalPrice: number;
     quantity: number;
-    menuItem: { __typename: 'MenuItem'; id: string; name: string; alcoholicBeverage: boolean };
+    name: string;
+    totalPrice: number;
     selectedOptionItems: Array<{
       __typename: 'OrderOptionItem';
       name: string;
@@ -57,27 +55,26 @@ export type OrderDetailParts_EatInOrder_Fragment = {
       subOptionItems: Array<{ __typename: 'OrderOptionItem'; name: string; quantity: number }>;
     }>;
   }>;
-  facility: {
-    __typename: 'Facility';
-    name: string;
-    latLng: { __typename: 'LatLng'; latitude: number; longitude: number };
+  charge: {
+    __typename: 'Charge';
+    amount: number;
+    details: Array<{ __typename: 'ChargeDetail'; name: string; amount: number }>;
   };
 };
 
 export type OrderDetailParts_TableOrder_Fragment = {
   __typename: 'TableOrder';
   shortIds: Array<string>;
-  charge: {
-    __typename: 'Charge';
-    amount: number;
-    details: Array<{ __typename: 'ChargeDetail'; name: string; amount: number }>;
+  facility: {
+    __typename: 'Facility';
+    name: string;
+    latLng: { __typename: 'LatLng'; latitude: number; longitude: number };
   };
   items: Array<{
     __typename: 'OrderItem';
-    id: string;
-    totalPrice: number;
     quantity: number;
-    menuItem: { __typename: 'MenuItem'; id: string; name: string; alcoholicBeverage: boolean };
+    name: string;
+    totalPrice: number;
     selectedOptionItems: Array<{
       __typename: 'OrderOptionItem';
       name: string;
@@ -85,27 +82,26 @@ export type OrderDetailParts_TableOrder_Fragment = {
       subOptionItems: Array<{ __typename: 'OrderOptionItem'; name: string; quantity: number }>;
     }>;
   }>;
-  facility: {
-    __typename: 'Facility';
-    name: string;
-    latLng: { __typename: 'LatLng'; latitude: number; longitude: number };
+  charge: {
+    __typename: 'Charge';
+    amount: number;
+    details: Array<{ __typename: 'ChargeDetail'; name: string; amount: number }>;
   };
 };
 
 export type OrderDetailParts_TakeoutOrder_Fragment = {
   __typename: 'TakeoutOrder';
   shortIds: Array<string>;
-  charge: {
-    __typename: 'Charge';
-    amount: number;
-    details: Array<{ __typename: 'ChargeDetail'; name: string; amount: number }>;
+  facility: {
+    __typename: 'Facility';
+    name: string;
+    latLng: { __typename: 'LatLng'; latitude: number; longitude: number };
   };
   items: Array<{
     __typename: 'OrderItem';
-    id: string;
-    totalPrice: number;
     quantity: number;
-    menuItem: { __typename: 'MenuItem'; id: string; name: string; alcoholicBeverage: boolean };
+    name: string;
+    totalPrice: number;
     selectedOptionItems: Array<{
       __typename: 'OrderOptionItem';
       name: string;
@@ -113,10 +109,10 @@ export type OrderDetailParts_TakeoutOrder_Fragment = {
       subOptionItems: Array<{ __typename: 'OrderOptionItem'; name: string; quantity: number }>;
     }>;
   }>;
-  facility: {
-    __typename: 'Facility';
-    name: string;
-    latLng: { __typename: 'LatLng'; latitude: number; longitude: number };
+  charge: {
+    __typename: 'Charge';
+    amount: number;
+    details: Array<{ __typename: 'ChargeDetail'; name: string; amount: number }>;
   };
 };
 
@@ -129,16 +125,6 @@ export type OrderDetailPartsFragment =
 export const OrderDetailPartsFragmentDoc = gql`
   fragment OrderDetailParts on Order {
     shortIds
-    charge {
-      amount
-      details {
-        name
-        amount
-      }
-    }
-    items {
-      ...CartMenuItem
-    }
     facility {
       name
       latLng {
@@ -155,5 +141,6 @@ export const OrderDetailPartsFragmentDoc = gql`
         memo
       }
     }
+    ...OrderDetailOrderItemsSummary
   }
 `;

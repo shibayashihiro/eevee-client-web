@@ -5,8 +5,9 @@ import * as Types from '../../../../graphql/generated/types';
 import {
   NavbarViewingPartsFragmentDoc,
   NavbarViewerPartsFragmentDoc,
+  NavbarMenuViewerFragmentDoc,
 } from '../../../domain/Navbar/Navbar.fragment.generated';
-import { NavbarMenuViewerFragmentDoc } from '../../../domain/Navbar/NavbarMenu.fragment.generated';
+import { GeneralNavbarMenuViewerFragmentDoc } from '../../../domain/Navbar/GeneralNavbarMenu.generated';
 import { CourseMenuEntriesInputFragmentDoc } from '../../../domain/CourseMenuEntriesInput/CourseMenuEntriesInput.fragment.generated';
 import { CourseMenuEntryForInputPeopleCountListItemFragmentDoc } from '../../../domain/CourseMenuEntriesInput/InputPeopleCountListItem.fragment.generated';
 import { FeatureFlagsForProviderFragmentDoc } from '../../../../providers/FeatureFlagsProvider/FeatureFlagsProvider.fragment.generated';
@@ -72,6 +73,7 @@ export type GetSuggestedCourseMenusSelectPeoplePageQuery = {
           showPriceExcludingTax: boolean;
           loyaltyProgramEnabled: boolean;
           itemCodeSearchEnabled: boolean;
+          OnlinePaymentEnabled: boolean;
         };
       }
     | { __typename: 'MenuCategory' }
@@ -114,6 +116,7 @@ export const GetSuggestedCourseMenusSelectPeoplePageDocument = gql`
   ${NavbarViewingPartsFragmentDoc}
   ${NavbarViewerPartsFragmentDoc}
   ${NavbarMenuViewerFragmentDoc}
+  ${GeneralNavbarMenuViewerFragmentDoc}
   ${CourseMenuEntriesInputFragmentDoc}
   ${CourseMenuEntryForInputPeopleCountListItemFragmentDoc}
   ${FeatureFlagsForProviderFragmentDoc}

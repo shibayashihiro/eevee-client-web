@@ -12,6 +12,7 @@ export type TableOrdersPageOrderListPartsFragment = {
     items: Array<{
       __typename: 'OrderItem';
       id: string;
+      name: string;
       totalPrice: number;
       quantity: number;
       menuItem: { __typename: 'MenuItem'; id: string; name: string; alcoholicBeverage: boolean };
@@ -67,6 +68,7 @@ export type TableOrdersPageOrderListItemPartsFragment = {
   items: Array<{
     __typename: 'OrderItem';
     id: string;
+    name: string;
     totalPrice: number;
     quantity: number;
     menuItem: { __typename: 'MenuItem'; id: string; name: string; alcoholicBeverage: boolean };

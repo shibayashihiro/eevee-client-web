@@ -24,13 +24,16 @@ export type UserForSubscriptionPlanRegistrationProcessFragment = {
   payments: Array<{
     __typename: 'Payment';
     id: string;
-    last4: string;
+    paymentType: Types.PaymentType;
+    name: string;
     brand: string;
     isSelected: boolean;
-    paymentType: Types.PaymentType;
+    isSignInRequired: boolean;
   }>;
   profile?: { __typename: 'Profile'; displayName: string } | null;
 };
+
+export type TenantForSubscriptionPlanRegistrationProcessFragment = { __typename: 'Tenant'; privacyPolicyUrl: string };
 
 export const SubscriptionForRegistrationProcessFragmentDoc = gql`
   fragment SubscriptionForRegistrationProcess on TenantSubscription {
@@ -59,5 +62,10 @@ export const UserForSubscriptionPlanRegistrationProcessFragmentDoc = gql`
     profile {
       displayName
     }
+  }
+`;
+export const TenantForSubscriptionPlanRegistrationProcessFragmentDoc = gql`
+  fragment TenantForSubscriptionPlanRegistrationProcess on Tenant {
+    privacyPolicyUrl
   }
 `;

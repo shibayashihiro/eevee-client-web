@@ -30,7 +30,15 @@ type OverlayProps = ComponentProps<typeof LinkOverlay>;
 export const TenantPageLinkOverlay: FC<OverlayProps> = (props: OverlayProps) => {
   const { href, children, ...otherProps } = props;
   const basePath = useBasePath();
-  const wrappedHref = href ? basePath + href : undefined;
+
+  const wrapHref = (href?: string) => {
+    if (!href || props.isExternal) {
+      return href;
+    }
+    return basePath + href;
+  };
+
+  const wrappedHref = wrapHref(href);
   return (
     <LinkOverlay as={NextLink} href={wrappedHref} {...otherProps}>
       {children}

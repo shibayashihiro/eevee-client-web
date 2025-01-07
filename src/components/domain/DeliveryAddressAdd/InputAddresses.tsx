@@ -8,11 +8,16 @@ import { useHandleErrorWithAlertDialog } from '@/providers/tenant/GlobalModalDia
 import { useLoadingOverlay } from '@/providers/GlobalLoadingSpinnerProvider';
 
 import { useAddDeliveryAddressMutation } from './DeliveryAddressAdd.mutation.generated';
-import { InputAddressesInitializePartsFragment } from './DeliveryAddressAdd.fragment.generated';
+
+type InputAddressesInitializeParts = {
+  prefecture: string;
+  addressLine: string;
+  latLng: { latitude: number; longitude: number };
+};
 
 type Props = {
-  fragment: InputAddressesInitializePartsFragment;
-  onSubmit: () => void;
+  initialValue: InputAddressesInitializeParts;
+  onSubmit: (assignedFacilityId: string) => void;
 };
 
 type FormState = {
@@ -20,13 +25,21 @@ type FormState = {
   address1: string;
   address2: string;
   deliveryNote: string;
+  latitude: number;
+  longitude: number;
 };
 
-const init = ({ prefecture, addressLine }: InputAddressesInitializePartsFragment): FormState => ({
+const init = ({
+  prefecture,
+  addressLine,
+  latLng: { latitude, longitude },
+}: InputAddressesInitializeParts): FormState => ({
   prefecture: prefecture,
   address1: addressLine,
   address2: '',
   deliveryNote: '',
+  latitude: latitude,
+  longitude: longitude,
 });
 
 type ActionTypes = 'setPrefecture' | 'setAddress1' | 'setAddress2' | 'setDeliveryNote';
@@ -50,8 +63,8 @@ const reducer = (state: FormState, action: Action): FormState => {
   }
 };
 
-export const InputAddresses: FC<Props> = ({ fragment, onSubmit }) => {
-  const [state, dispatch] = useReducer(reducer, fragment, init);
+export const InputAddresses: FC<Props> = ({ initialValue, onSubmit }) => {
+  const [state, dispatch] = useReducer(reducer, initialValue, init);
   const { handleErrorWithAlertDialog } = useHandleErrorWithAlertDialog();
   const [result, addDeliveryAddress] = useAddDeliveryAddressMutation();
   useLoadingOverlay(result.fetching);
@@ -77,20 +90,25 @@ export const InputAddresses: FC<Props> = ({ fragment, onSubmit }) => {
     if (!isValid) {
       return;
     }
-    const { error } = await addDeliveryAddress({
+    const { data, error } = await addDeliveryAddress({
       input: {
         prefecture,
         addressLine: address1,
         buildingName: address2,
         memo: deliveryNote,
+        latLng: initialValue.latLng,
       },
     });
     if (error) {
       handleErrorWithAlertDialog(error);
       return;
     }
-    onSubmit();
-  }, [state, isValid, addDeliveryAddress, onSubmit, handleErrorWithAlertDialog]);
+    if (!data?.addDeliveryAddress?.assignedFacilityId) {
+      handleErrorWithAlertDialog(new Error('配送先の登録に失敗しました'));
+      return;
+    }
+    onSubmit(data.addDeliveryAddress.assignedFacilityId);
+  }, [state, isValid, initialValue.latLng, addDeliveryAddress, onSubmit, handleErrorWithAlertDialog]);
 
   return (
     <>

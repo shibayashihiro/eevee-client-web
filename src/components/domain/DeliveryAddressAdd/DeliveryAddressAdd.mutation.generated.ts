@@ -12,6 +12,7 @@ export type AddDeliveryAddressMutation = {
   addDeliveryAddress: {
     __typename: 'AddDeliveryAddressPayload';
     clientMutationId?: string | null;
+    assignedFacilityId: string;
     deliveryAddress: { __typename: 'DeliveryAddress' };
   };
 };
@@ -23,6 +24,7 @@ export const AddDeliveryAddressDocument = gql`
       deliveryAddress {
         __typename
       }
+      assignedFacilityId
     }
   }
 `;

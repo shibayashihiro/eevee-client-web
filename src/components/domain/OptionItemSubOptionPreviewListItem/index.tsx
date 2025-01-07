@@ -45,9 +45,9 @@ export const OptionItemSubOptionPreviewListItem = ({
   });
 
   return (
-    <VStack align="stretch" spacing="4px" p="8px" bgColor="brand.backgroundSoft">
+    <VStack align="stretch" spacing="4px" p="8px" bgColor="brand.backgroundSoft" mb="8px" rounded="4px">
       <HStack justify="space-between">
-        <Text color="mono.secondary" className="bold-extra-small">
+        <Text color="mono.primary" className="bold-extra-small">
           {subOption.name}
         </Text>
         <Button variant="link" colorScheme="brand" onClick={openSubOptionEditDialog}>
@@ -67,9 +67,5 @@ const SubOptionItemAsText = ({ name, price, quantity }: { name: string; price: n
   const priceText = price !== 0 ? ` (${formatOptionItemPrice(price)})` : '';
   const quantityText = quantity > 1 ? ` × ${quantity}` : '';
   const displayText = `${name}${priceText}${quantityText}`;
-  return (
-    <Text className="text-small" lineHeight="140%">
-      {displayText}
-    </Text>
-  );
+  return <Text className="text-normal">{displayText}</Text>;
 };

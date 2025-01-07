@@ -1,7 +1,6 @@
 fragment PaymentDialogParts on Payment {
-    id
-    last4
-    brand
-    isSelected
-    paymentType
+  id
+  paymentType
+
+  ...PaymentItemParts
 }

@@ -5,8 +5,9 @@ import * as Types from '../../../../graphql/generated/types';
 import {
   NavbarViewingPartsFragmentDoc,
   NavbarViewerPartsFragmentDoc,
+  NavbarMenuViewerFragmentDoc,
 } from '../../../domain/Navbar/Navbar.fragment.generated';
-import { NavbarMenuViewerFragmentDoc } from '../../../domain/Navbar/NavbarMenu.fragment.generated';
+import { GeneralNavbarMenuViewerFragmentDoc } from '../../../domain/Navbar/GeneralNavbarMenu.generated';
 
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 export type SurveyEndQueryVariables = Types.Exact<{ [key: string]: never }>;
@@ -33,6 +34,7 @@ export const SurveyEndDocument = gql`
   ${NavbarViewingPartsFragmentDoc}
   ${NavbarViewerPartsFragmentDoc}
   ${NavbarMenuViewerFragmentDoc}
+  ${GeneralNavbarMenuViewerFragmentDoc}
 `;
 
 export function useSurveyEndQuery(options?: Omit<Urql.UseQueryArgs<SurveyEndQueryVariables>, 'query'>) {

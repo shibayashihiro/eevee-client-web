@@ -1,14 +1,22 @@
 query GetWebHomeSectionsForTenantPage {
   viewing {
-    helpUrl
-    termsOfUseUrl
-    specifiedCommercialTransactionActUrl
     mainVisualImage
-    companyName
     ...NavbarViewingParts
+    ...HomeContainerPromotionEnabledSection
+    ...TenantHomeFooterInfo
   }
 
   viewer {
     ...NavbarViewerParts
+    ...HomeHeader
   }
+}
+
+fragment TenantHomeFooterInfo on Tenant {
+  companyName
+  helpUrl
+  contactUrl
+  termsOfUseUrl
+  privacyPolicyUrl
+  specifiedCommercialTransactionActUrl
 }

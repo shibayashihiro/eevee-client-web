@@ -1,8 +1,8 @@
 import { FC } from 'react';
 import { Text } from '@chakra-ui/react';
+import { useRouter } from 'next/router';
 
 import { ModalDialog } from '@/components/ui/ModalDialog';
-import { useTenantRouter } from '@/providers/tenant/WebOrderPageStateProvider';
 
 type Props = {
   isOpen: boolean;
@@ -12,7 +12,7 @@ type Props = {
 };
 
 export const PhoneCallConfirmDialog: FC<Props> = ({ isOpen, onClose, tel, title }) => {
-  const router = useTenantRouter();
+  const router = useRouter();
 
   const handleOnClick = async () => {
     await router.push(`tel://${tel}`);

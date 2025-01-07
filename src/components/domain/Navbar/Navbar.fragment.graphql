@@ -7,3 +7,11 @@ fragment NavbarViewingParts on Tenant {
 fragment NavbarViewerParts on User {
   ...NavbarMenuViewer
 }
+
+fragment NavbarMenuViewer on User {
+  ...GeneralNavbarMenuViewer
+}
+
+fragment NavbarMenuFacility on Facility {
+  ...GeneralNavbarMenuFacility
+}

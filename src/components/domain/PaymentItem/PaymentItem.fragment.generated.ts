@@ -4,17 +4,19 @@ import * as Types from '../../../graphql/generated/types';
 
 export type PaymentItemPartsFragment = {
   __typename: 'Payment';
-  last4: string;
+  name: string;
   brand: string;
   isSelected: boolean;
   paymentType: Types.PaymentType;
+  isSignInRequired: boolean;
 };
 
 export const PaymentItemPartsFragmentDoc = gql`
   fragment PaymentItemParts on Payment {
-    last4
+    name
     brand
     isSelected
     paymentType
+    isSignInRequired
   }
 `;

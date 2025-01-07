@@ -65,12 +65,14 @@ export type AddDeliveryAddressInput = {
   addressLine: Scalars['String']['input'];
   buildingName: Scalars['String']['input'];
   clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  latLng: LatLngInput;
   memo: Scalars['String']['input'];
   prefecture: Scalars['String']['input'];
 };
 
 export type AddDeliveryAddressPayload = {
   __typename: 'AddDeliveryAddressPayload';
+  assignedFacilityId: Scalars['ID']['output'];
   clientMutationId?: Maybe<Scalars['String']['output']>;
   deliveryAddress: DeliveryAddress;
 };
@@ -123,11 +125,14 @@ export type AvailableOrderType = {
 export type Banner = {
   __typename: 'Banner';
   behavior: BannerInteractionBehavior;
+  image: Scalars['String']['output'];
   message: Scalars['String']['output'];
   title: Scalars['String']['output'];
+  url?: Maybe<Scalars['String']['output']>;
 };
 
 export enum BannerInteractionBehavior {
+  ExternalLink = 'EXTERNAL_LINK',
   ShowOrderHistory = 'SHOW_ORDER_HISTORY',
 }
 
@@ -185,9 +190,28 @@ export type CheckInTablePayload = {
   clientMutationId?: Maybe<Scalars['String']['output']>;
 };
 
+export type CheckoutTableOrderInput = {
+  amount: Scalars['Int']['input'];
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  orderId: Scalars['ID']['input'];
+};
+
+export type CheckoutTableOrderPayload = {
+  __typename: 'CheckoutTableOrderPayload';
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  order: Order;
+  paymentIntent?: Maybe<PaymentIntent>;
+};
+
 export type CompletedSurveyInput = {
   answers: Array<Scalars['String']['input']>;
   question: Scalars['String']['input'];
+};
+
+export type CompletionStatus = {
+  __typename: 'CompletionStatus';
+  completedAt: Scalars['DateTime']['output'];
+  statusLabel: Scalars['String']['output'];
 };
 
 export enum ContactType {
@@ -197,6 +221,7 @@ export enum ContactType {
 
 export type Coupon = Node & {
   __typename: 'Coupon';
+  canManualUse: Scalars['Boolean']['output'];
   details: Array<CouponDetail>;
   id: Scalars['ID']['output'];
   image: Scalars['String']['output'];
@@ -311,6 +336,7 @@ export type DeliveryOrder = Node &
     __typename: 'DeliveryOrder';
     availablePayments: Array<Payment>;
     charge: Charge;
+    completionStatus?: Maybe<CompletionStatus>;
     coupon?: Maybe<Coupon>;
     deliveryAddress: DeliveryAddress;
     disposableItems: Array<DisposableItem>;
@@ -318,9 +344,13 @@ export type DeliveryOrder = Node &
     id: Scalars['ID']['output'];
     items: Array<OrderItem>;
     memo?: Maybe<Scalars['String']['output']>;
+    noContactDeliveryOption: NoContactDeliveryOption;
+    paperReceiptRequest?: Maybe<PaperReceiptRequest>;
     payment?: Maybe<Payment>;
     progress?: Maybe<Progress>;
+    /** @deprecated Use requirements field instead. */
     requirement?: Maybe<Scalars['String']['output']>;
+    requirements?: Maybe<Requirements>;
     scheduledTime: Scalars['String']['output'];
     shortIds: Array<Scalars['String']['output']>;
     submittedAt?: Maybe<Scalars['DateTime']['output']>;
@@ -334,6 +364,11 @@ export type DeliverySection = {
   notice?: Maybe<Scalars['String']['output']>;
   scheduledTime: Scalars['String']['output'];
 };
+
+export enum DeliveryType {
+  OnDemand = 'ON_DEMAND',
+  PreOrder = 'PRE_ORDER',
+}
 
 export type DisposableItem = {
   __typename: 'DisposableItem';
@@ -381,6 +416,7 @@ export type Facility = Node & {
   metaByLocation?: Maybe<FacilityMetaByLocation>;
   name: Scalars['String']['output'];
   ownerComment?: Maybe<OwnerComment>;
+  phoneNumber: Scalars['String']['output'];
   postalCode: Scalars['String']['output'];
   shortName: Scalars['String']['output'];
 };
@@ -407,6 +443,7 @@ export type FacilityMetaByLocation = {
 
 export type FeatureFlags = {
   __typename: 'FeatureFlags';
+  OnlinePaymentEnabled: Scalars['Boolean']['output'];
   eatInCourseMenuModeEnabled: Scalars['Boolean']['output'];
   itemCodeSearchEnabled: Scalars['Boolean']['output'];
   loyaltyProgramEnabled: Scalars['Boolean']['output'];
@@ -616,6 +653,7 @@ export type Mutation = {
   addPayment: AddPaymentPayload;
   cancelUnsubscribe: CancelUnsubscribePayload;
   checkInTable: CheckInTablePayload;
+  checkoutTableOrder: CheckoutTableOrderPayload;
   linkOrder: LinkOrderPayload;
   modifyCourseMenuOnCart: ModifyCourseMenuOnCartPayload;
   modifyOrderItem: ModifyOrderItemPayload;
@@ -628,6 +666,7 @@ export type Mutation = {
   requestAuthCodeBySMS: RequestAuthCodeBySmsPayload;
   requestProxyPhoneNumber: RequestProxyPhoneNumberPayload;
   selectCoupon: SelectCouponPayload;
+  selectTableCoupon: SelectTableCouponPayload;
   sendCompletedSurvey: SendCompletedSurveyPayload;
   setSeatNumber: SetSeatNumberPayload;
   signIn: SignInPayload;
@@ -641,10 +680,14 @@ export type Mutation = {
   updateDeliveryAddressMemo: UpdateDeliveryAddressMemoPayload;
   updateDisposableItem: UpdateDisposableItemPayload;
   updateMemo: UpdateMemoPayload;
+  updateNoContactDeliveryOption: UpdateNoContactDeliveryOptionPayload;
+  updateProfile: UpdateProfilePayload;
+  updateReceiptRequest: UpdatePaperReceiptPayload;
   updateScheduledOrderTime: UpdateScheduledOrderTimePayload;
   updateTenantUserLINEConfig: UpdateTenantUserLineConfigPayload;
   updateUserCourseMenuNoticeStatus: UpdateUserCourseMenuNoticeStatusPayload;
   updateUsingDeliveryAddress: UpdateUsingDeliveryAddressPayload;
+  useCoupon: Coupon;
   useSubscriptionBenefit: UseSubscriptionBenefitPayload;
   verifySMSAuthCode: VerifySmsAuthCodePayload;
 };
@@ -675,6 +718,10 @@ export type MutationCancelUnsubscribeArgs = {
 
 export type MutationCheckInTableArgs = {
   input: CheckInTableInput;
+};
+
+export type MutationCheckoutTableOrderArgs = {
+  input: CheckoutTableOrderInput;
 };
 
 export type MutationLinkOrderArgs = {
@@ -725,6 +772,10 @@ export type MutationSelectCouponArgs = {
   input: SelectCouponInput;
 };
 
+export type MutationSelectTableCouponArgs = {
+  input: SelectTableCouponInput;
+};
+
 export type MutationSendCompletedSurveyArgs = {
   input: SendCompletedSurveyInput;
 };
@@ -739,6 +790,10 @@ export type MutationSignInArgs = {
 
 export type MutationSignUpArgs = {
   input: SignUpInput;
+};
+
+export type MutationSuspendUserArgs = {
+  input: SuspendUserInput;
 };
 
 export type MutationSubmitCourseMenusArgs = {
@@ -777,6 +832,18 @@ export type MutationUpdateMemoArgs = {
   input: UpdateMemoInput;
 };
 
+export type MutationUpdateNoContactDeliveryOptionArgs = {
+  input: UpdateNoContactDeliveryOptionInput;
+};
+
+export type MutationUpdateProfileArgs = {
+  input: UpdateProfileInput;
+};
+
+export type MutationUpdateReceiptRequestArgs = {
+  input: UpdatePaperReceiptRequestInput;
+};
+
 export type MutationUpdateScheduledOrderTimeArgs = {
   input: UpdateScheduledOrderTimeInput;
 };
@@ -793,12 +860,21 @@ export type MutationUpdateUsingDeliveryAddressArgs = {
   input: UpdateUsingDeliveryAddressInput;
 };
 
+export type MutationUseCouponArgs = {
+  input: UseCouponInput;
+};
+
 export type MutationUseSubscriptionBenefitArgs = {
   input: UseSubscriptionBenefitInput;
 };
 
 export type MutationVerifySmsAuthCodeArgs = {
   input: VerifySmsAuthCodeInput;
+};
+
+export type NoContactDeliveryOption = {
+  __typename: 'NoContactDeliveryOption';
+  requestNoContactDelivery: Scalars['Boolean']['output'];
 };
 
 export type Node = {
@@ -852,6 +928,12 @@ export type Order = {
   submittedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
+export type OrderConnection = {
+  __typename: 'OrderConnection';
+  nodes: Array<Order>;
+  pageInfo: PageInfoTimeBased;
+};
+
 export type OrderCourseMenuItem = {
   __typename: 'OrderCourseMenuItem';
   courseMenu: CourseMenu;
@@ -859,6 +941,13 @@ export type OrderCourseMenuItem = {
   id: Scalars['ID']['output'];
   quantity: Scalars['Int']['output'];
   totalPrice: Scalars['Int']['output'];
+};
+
+export type OrderInfo = {
+  __typename: 'OrderInfo';
+  customerCount?: Maybe<Scalars['Int']['output']>;
+  orderId?: Maybe<Scalars['ID']['output']>;
+  selectedCouponId?: Maybe<Scalars['ID']['output']>;
 };
 
 export type OrderItem = {
@@ -904,14 +993,27 @@ export type PageInfo = {
   hasNextPage: Scalars['Boolean']['output'];
 };
 
+export type PageInfoTimeBased = {
+  __typename: 'PageInfoTimeBased';
+  endCursor?: Maybe<Scalars['DateTime']['output']>;
+  hasNextPage: Scalars['Boolean']['output'];
+};
+
+export type PaperReceiptRequest = {
+  __typename: 'PaperReceiptRequest';
+  needsPaperReceipt: Scalars['Boolean']['output'];
+  recipientName?: Maybe<Scalars['String']['output']>;
+};
+
 export type Payment = {
   __typename: 'Payment';
   brand: Scalars['String']['output'];
   id: Scalars['ID']['output'];
-  /** @deprecated rename column to isSelected */
-  isDefault: Scalars['Boolean']['output'];
   isSelected: Scalars['Boolean']['output'];
+  isSignInRequired: Scalars['Boolean']['output'];
+  /** @deprecated use name instead */
   last4: Scalars['String']['output'];
+  name: Scalars['String']['output'];
   paymentType: PaymentType;
 };
 
@@ -937,6 +1039,7 @@ export type PlaceAddress = {
   __typename: 'PlaceAddress';
   addressLine: Scalars['String']['output'];
   country: Scalars['String']['output'];
+  latLng: LatLng;
   placeId: Scalars['String']['output'];
   postalCode: Scalars['String']['output'];
   prefecture: Scalars['String']['output'];
@@ -957,8 +1060,11 @@ export type PostOrderMessage = {
 
 export type Profile = {
   __typename: 'Profile';
+  birthDate?: Maybe<UserProfileBirthDate>;
   displayName: Scalars['String']['output'];
+  gender?: Maybe<Scalars['String']['output']>;
   imageUrl: Scalars['String']['output'];
+  lastNameKana?: Maybe<Scalars['String']['output']>;
 };
 
 export type Progress = {
@@ -1143,6 +1249,12 @@ export type RequestProxyPhoneNumberPayload = {
   phoneNumber: Scalars['String']['output'];
 };
 
+export type Requirements = {
+  __typename: 'Requirements';
+  requirement: Scalars['String']['output'];
+  requirementLabel: Scalars['String']['output'];
+};
+
 export type ScheduledOrderTime = {
   __typename: 'ScheduledOrderTime';
   available: Scalars['Boolean']['output'];
@@ -1183,6 +1295,16 @@ export type SelectCouponPayload = {
 export type SelectOrderTypeSection = {
   __typename: 'SelectOrderTypeSection';
   orderTypes: Array<OrderType>;
+};
+
+export type SelectTableCouponInput = {
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  couponId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+export type SelectTableCouponPayload = {
+  __typename: 'SelectTableCouponPayload';
+  clientMutationId?: Maybe<Scalars['String']['output']>;
 };
 
 export type SelectedOptionItemInput = {
@@ -1237,6 +1359,15 @@ export type SignUpInput = {
 
 export type SignUpPayload = {
   __typename: 'SignUpPayload';
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+};
+
+export type SuspendUserInput = {
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type SuspendUserPayload = {
+  __typename: 'SuspendUserPayload';
   clientMutationId?: Maybe<Scalars['String']['output']>;
 };
 
@@ -1372,6 +1503,7 @@ export type Table = Node & {
   isCustomerAttributesCollected: Scalars['Boolean']['output'];
   mainCourseMenu?: Maybe<TableCourseMenu>;
   name: Scalars['String']['output'];
+  order?: Maybe<OrderInfo>;
   orders: Array<TableOrder>;
   subCourseMenus: Array<TableCourseMenu>;
 };
@@ -1405,12 +1537,14 @@ export type TakeoutOrder = Node &
     __typename: 'TakeoutOrder';
     availablePayments: Array<Payment>;
     charge: Charge;
+    completionStatus?: Maybe<CompletionStatus>;
     coupon?: Maybe<Coupon>;
     disposableItems: Array<DisposableItem>;
     facility: Facility;
     id: Scalars['ID']['output'];
     items: Array<OrderItem>;
     memo?: Maybe<Scalars['String']['output']>;
+    paperReceiptRequest?: Maybe<PaperReceiptRequest>;
     payment?: Maybe<Payment>;
     progress?: Maybe<Progress>;
     scheduledTime: Scalars['String']['output'];
@@ -1435,9 +1569,11 @@ export type Tenant = Node & {
   appPromotion?: Maybe<Promotion>;
   companyAddress: Scalars['String']['output'];
   companyName: Scalars['String']['output'];
+  contactUrl: Scalars['String']['output'];
   facilities: Array<Facility>;
   helpUrl: Scalars['String']['output'];
   id: Scalars['ID']['output'];
+  idProviderName: Scalars['String']['output'];
   iosDownloadUrl: Scalars['String']['output'];
   layout: Layout;
   lineAppName: Scalars['String']['output'];
@@ -1449,6 +1585,8 @@ export type Tenant = Node & {
   subscription?: Maybe<TenantSubscription>;
   tecAlignment: Scalars['Boolean']['output'];
   termsOfUseUrl: Scalars['String']['output'];
+  topPageBannerSections?: Maybe<TopPageBannerSections>;
+  userProfileInputFields: Array<UserProfileInputField>;
 };
 
 export type TenantFacilitiesArgs = {
@@ -1467,6 +1605,12 @@ export type TenantSubscription = {
   specialAgreementUrl: Scalars['String']['output'];
   termsOfUseUrl: Scalars['String']['output'];
   title: Scalars['String']['output'];
+};
+
+export type TopPageBannerSections = {
+  __typename: 'TopPageBannerSections';
+  bannerSection: BannerSection;
+  navigationItemsSection: BannerSection;
 };
 
 export type UnsubscribeInput = {
@@ -1526,9 +1670,56 @@ export type UpdateMemoPayload = {
   clientMutationId?: Maybe<Scalars['String']['output']>;
 };
 
+export type UpdateNoContactDeliveryOptionInput = {
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  requestNoContactDelivery: Scalars['Boolean']['input'];
+};
+
+export type UpdateNoContactDeliveryOptionPayload = {
+  __typename: 'UpdateNoContactDeliveryOptionPayload';
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  noContactDeliveryOption: NoContactDeliveryOption;
+};
+
+export type UpdatePaperReceiptPayload = {
+  __typename: 'UpdatePaperReceiptPayload';
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  paperReceiptRequest?: Maybe<PaperReceiptRequest>;
+};
+
+export type UpdatePaperReceiptRequestInput = {
+  cartId: Scalars['ID']['input'];
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  needsPaperReceipt: Scalars['Boolean']['input'];
+  recipientName?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateProfileBirthDateInput = {
+  day: Scalars['Int']['input'];
+  month: Scalars['Int']['input'];
+  year: Scalars['Int']['input'];
+};
+
+export type UpdateProfileInput = {
+  birthDate?: InputMaybe<UpdateProfileBirthDateInput>;
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  displayName?: InputMaybe<Scalars['String']['input']>;
+  gender?: InputMaybe<Scalars['String']['input']>;
+  lastNameKana?: InputMaybe<Scalars['String']['input']>;
+  occupation?: InputMaybe<Scalars['String']['input']>;
+  prefecture?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateProfilePayload = {
+  __typename: 'UpdateProfilePayload';
+  clientMutationId?: Maybe<Scalars['String']['output']>;
+  profile: Profile;
+};
+
 export type UpdateScheduledOrderTimeInput = {
   clientMutationId?: InputMaybe<Scalars['String']['input']>;
   date?: InputMaybe<DateInput>;
+  deliveryType?: InputMaybe<DeliveryType>;
   facilityId: Scalars['ID']['input'];
   maxArrival?: InputMaybe<Scalars['String']['input']>;
   minArrival?: InputMaybe<Scalars['String']['input']>;
@@ -1569,8 +1760,14 @@ export type UpdateUsingDeliveryAddressInput = {
 
 export type UpdateUsingDeliveryAddressPayload = {
   __typename: 'UpdateUsingDeliveryAddressPayload';
+  assignedFacilityId: Scalars['ID']['output'];
   clientMutationId?: Maybe<Scalars['String']['output']>;
   deliveryAddress: DeliveryAddress;
+};
+
+export type UseCouponInput = {
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  couponId: Scalars['ID']['input'];
 };
 
 export type UseSubscriptionBenefitInput = {
@@ -1597,6 +1794,7 @@ export type User = Node & {
   lastOrderInput?: Maybe<LastOrderInput>;
   loyaltyCard?: Maybe<UserLoyaltyCard>;
   membershipCard: MembershipCard;
+  orders: OrderConnection;
   payments: Array<Payment>;
   profile?: Maybe<Profile>;
   subscription?: Maybe<UserSubscription>;
@@ -1617,6 +1815,11 @@ export type UserCouponsArgs = {
 
 export type UserMembershipCardArgs = {
   facilityID: Scalars['ID']['input'];
+};
+
+export type UserOrdersArgs = {
+  after?: InputMaybe<Scalars['DateTime']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type UserTableArgs = {
@@ -1642,6 +1845,32 @@ export type UserLoyaltyCardExpiration = {
   description?: Maybe<Scalars['String']['output']>;
   expiredAt?: Maybe<Scalars['DateTime']['output']>;
 };
+
+export type UserProfileBirthDate = {
+  __typename: 'UserProfileBirthDate';
+  day: Scalars['Int']['output'];
+  month: Scalars['Int']['output'];
+  year: Scalars['Int']['output'];
+};
+
+export type UserProfileInputField = {
+  __typename: 'UserProfileInputField';
+  helpText?: Maybe<Scalars['String']['output']>;
+  placeholder?: Maybe<Scalars['String']['output']>;
+  required: Scalars['Boolean']['output'];
+  title: Scalars['String']['output'];
+  type: UserProfileInputFieldType;
+  values?: Maybe<Array<Scalars['String']['output']>>;
+};
+
+export enum UserProfileInputFieldType {
+  BirthDate = 'BIRTH_DATE',
+  DisplayName = 'DISPLAY_NAME',
+  Gender = 'GENDER',
+  LastNameKana = 'LAST_NAME_KANA',
+  Occupation = 'OCCUPATION',
+  Prefecture = 'PREFECTURE',
+}
 
 export type UserSubscription = {
   __typename: 'UserSubscription';

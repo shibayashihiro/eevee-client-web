@@ -8,8 +8,9 @@ import { FeatureFlagsForProviderFragmentDoc } from '../../../../providers/Featur
 import {
   NavbarViewingPartsFragmentDoc,
   NavbarViewerPartsFragmentDoc,
+  NavbarMenuViewerFragmentDoc,
 } from '../../../domain/Navbar/Navbar.fragment.generated';
-import { NavbarMenuViewerFragmentDoc } from '../../../domain/Navbar/NavbarMenu.fragment.generated';
+import { GeneralNavbarMenuViewerFragmentDoc } from '../../../domain/Navbar/GeneralNavbarMenu.generated';
 
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 export type GetCourseMenusCartPageQueryVariables = Types.Exact<{
@@ -51,6 +52,7 @@ export type GetCourseMenusCartPageQuery = {
           showPriceExcludingTax: boolean;
           loyaltyProgramEnabled: boolean;
           itemCodeSearchEnabled: boolean;
+          OnlinePaymentEnabled: boolean;
         };
       }
     | { __typename: 'MenuCategory' }
@@ -98,6 +100,7 @@ export const GetCourseMenusCartPageDocument = gql`
   ${NavbarViewingPartsFragmentDoc}
   ${NavbarViewerPartsFragmentDoc}
   ${NavbarMenuViewerFragmentDoc}
+  ${GeneralNavbarMenuViewerFragmentDoc}
 `;
 
 export function useGetCourseMenusCartPageQuery(

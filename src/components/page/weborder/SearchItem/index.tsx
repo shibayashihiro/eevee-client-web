@@ -10,7 +10,7 @@ import { useFacilityId } from '@/providers/tenant/WebOrderPageStateProvider';
 import { NextPageWithLayout } from '@/types';
 import { TableNumber } from '@/components/ui/TableNumber';
 import { TableCourseMenuStatsHeader } from '@/components/domain/TableCourseMenuStatsHeader';
-import { ItemSearchMethodButtonType } from '@/components/domain/Navbar/NavbarMenu';
+import { ItemSearchMethodButtonType } from '@/components/domain/Navbar';
 import { OrderType } from '@/graphql/generated/types';
 import { FixedCartFooterButton } from '@/components/domain/FixedCartFooterButton';
 
@@ -45,11 +45,8 @@ const SearchItemPage: NextPageWithLayout = () => {
         facility={data.facility}
         orderType={orderType}
         showOrderHistory={true}
-        itemSearchMethodButtonType={
-          data.facility?.featureFlags.itemCodeSearchEnabled
-            ? ItemSearchMethodButtonType.ShowItemList
-            : ItemSearchMethodButtonType.None
-        }
+        showTableOrderPayment={false}
+        itemSearchMethodButtonType={ItemSearchMethodButtonType.ShowItemList}
       >
         <Box style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
           {data.viewer.table && <TableCourseMenuStatsHeader table={data.viewer.table} />}

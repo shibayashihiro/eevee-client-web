@@ -4,6 +4,7 @@ import { buildAppColor, makeAppDefinition } from '.';
 
 const stagingIdentifiers = [
   'chompy-house',
+  'chompy-steak-house',
   'ikinaristeak-demo',
   'suage-demo',
   'chompy-cafe-stg',
@@ -24,6 +25,17 @@ const stagingConfigs: Record<StagingIdentifier, AppConfig> = {
       favicon: '/favicons/chompy-house.ico',
     },
     liffId: '1657566651-WnrXragZ',
+    promotionEnabled: false,
+  },
+  'chompy-steak-house': {
+    tenantUidHeader: '3EbSfT6RCgXZDspYz8f4',
+    appColor: buildAppColor('#AAAA32', '#A0A032'),
+    pageMeta: {
+      title: 'CHOMPY HOUSE',
+      favicon: '/favicons/chompy-house.ico',
+    },
+    liffId: '1657566651-WnrXragZ',
+    promotionEnabled: true,
   },
   'ikinaristeak-demo': {
     tenantUidHeader: 'wQwAvAIqkUt6vfoWKv4C',
@@ -34,6 +46,7 @@ const stagingConfigs: Record<StagingIdentifier, AppConfig> = {
     },
     uiCustomization: {
       tenantHomeNoteText: '※一部の店舗ではご利用できません',
+      isIkinariSteak: true,
     },
   },
   'suage-demo': {
@@ -70,6 +83,9 @@ const stagingConfigs: Record<StagingIdentifier, AppConfig> = {
       favicon: '/favicons/chompy-house.ico',
     },
     liffId: '1657612062-yJm8qGbO',
+    uiCustomization: {
+      isIkinariSteak: false,
+    },
   },
   'spice-theater': {
     tenantUidHeader: 'UslkVopUCYXlcy8BTuLN',
@@ -82,10 +98,10 @@ const stagingConfigs: Record<StagingIdentifier, AppConfig> = {
   },
   'napoli-pizza-dev': {
     tenantUidHeader: 'F3KPKbxGoWAEfipdgI29',
-    appColor: buildAppColor('#1D1D1D', '#1D1D1D'),
+    appColor: buildAppColor('#A31616', '#990C0C'),
     pageMeta: {
       title: 'ナポリの窯 - Staging',
-      favicon: '/favicons/chompy-house.ico',
+      favicon: '/favicons/napoli-pizza.png',
     },
     firebaseAuthProject: 'napoli-pizza',
     promotionEnabled: true,

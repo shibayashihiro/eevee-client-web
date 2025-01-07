@@ -14,6 +14,10 @@ type User implements Node {
   subscription: UserSubscription @restricted
   membershipCard(facilityID: ID!): MembershipCard! @restricted
   lastOrderInput: LastOrderInput @restricted
+  """
+  ユーザーのすべての注文
+  """
+  orders(first: Int, after: DateTime): OrderConnection! @restricted
 }
 
 type DeliveryAddress {
@@ -33,8 +37,29 @@ type LatLng {
 }
 
 type Profile {
+  """
+  ニックネーム
+  """
   displayName: String!
+  """
+  お名前(カナ) (姓)
+  """
+  lastNameKana: String
+  """
+  生年月日
+  """
+  birthDate: UserProfileBirthDate
+  """
+  性別
+  """
+  gender: String
   imageUrl: String!
+}
+
+type UserProfileBirthDate {
+  year: Int!
+  month: Int!
+  day: Int!
 }
 
 type UserLoyaltyCard {
@@ -122,4 +147,51 @@ type LastOrderInput {
   lastNameKana: String!
   email: String!
   phoneNumber: String!
+}
+
+"""
+プロフィール登録時の入力フィールド
+ブランドによって入力フィールドを動的に変更するために必要となった。
+"""
+type UserProfileInputField {
+  title: String!
+  required: Boolean!
+  type: UserProfileInputFieldType!
+  placeholder: String
+  """
+  入力フィールドの真上に小さく表示するヘルプテキスト
+  @example "例) 19920201 ※1990年2月1日生まれの場合
+  """
+  helpText: String
+  """
+  選択方式の場合の、選択肢。nullの場合は手入力する。
+  """
+  values: [String!]
+}
+
+enum UserProfileInputFieldType {
+  """
+  ニックネーム
+  """
+  DISPLAY_NAME
+  """
+  生年月日
+  """
+  BIRTH_DATE
+  """
+  性別
+  """
+  GENDER
+  """
+  職業
+  """
+  OCCUPATION
+  """
+  都道府県
+  """
+  PREFECTURE
+  """
+  お名前(カナ) (姓)
+  """
+  LAST_NAME_KANA
 }

@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import liff from '@line/liff';
 
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
@@ -10,6 +10,8 @@ import { useAuth } from './AuthProvider';
 export type User = {
   id: string;
   isAnonymous: boolean;
+  // 会員登録直後など、即座にonAuthStateChangedが働かないケースのためにreloadできる機構を提供する
+  reload: () => Promise<void>;
 };
 
 type UserState = User | null;
@@ -31,7 +33,20 @@ type Props = {
 
 export const AuthUserProvider = ({ tenantId, children }: Props) => {
   const [user, setUser] = useState<UserState>(null);
-  const { onAuthStateChanged, signInAnonymously, signInByLINE } = useAuth();
+  const { onAuthStateChanged, signInAnonymously, signInByLINE, getCurrentUser } = useAuth();
+
+  // 会員登録直後など、即座にonAuthStateChangedが働かないケースのためにreloadできる機構を提供する
+  const reload = useCallback(async () => {
+    const user = getCurrentUser();
+    if (user) {
+      await user.reload();
+      setUser({
+        id: user.uid,
+        isAnonymous: user.isAnonymous,
+        reload,
+      });
+    }
+  }, [getCurrentUser]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged((user) => {
@@ -48,11 +63,12 @@ export const AuthUserProvider = ({ tenantId, children }: Props) => {
       setUser({
         id: user.uid,
         isAnonymous: user.isAnonymous,
+        reload,
       });
     });
 
     return () => unsubscribe();
-  }, [onAuthStateChanged, signInAnonymously, signInByLINE, tenantId]);
+  }, [onAuthStateChanged, reload, signInAnonymously, signInByLINE, tenantId]);
 
   return (
     <AuthUserContext.Provider value={user}>

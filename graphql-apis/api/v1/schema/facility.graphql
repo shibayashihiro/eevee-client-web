@@ -18,6 +18,10 @@ type Facility implements Node {
   metaByLocation(location: LatLngInput): FacilityMetaByLocation
   latLng: LatLng!
   postalCode: String!
+  """
+  電話番号。店舗への問い合わせなどに利用する
+  """
+  phoneNumber: String!
 
   featureFlags: FeatureFlags!
 }
@@ -59,6 +63,9 @@ type Table implements Node {
   mainCourseMenu: TableCourseMenu
   # テーブルに適用されている追加のコースメニュー(後から追加するもの)
   subCourseMenus: [TableCourseMenu!]!
+
+  # テーブルに紐づくOrderに関する情報。チェックインしていない時はそれぞれnull
+  order: OrderInfo
 }
 
 type TableCourseMenu {
@@ -92,4 +99,14 @@ type FeatureFlags {
   スタンプカード・会員証機能等を利用するかどうか
   """
   loyaltyProgramEnabled: Boolean!
+  """
+  オンライン決済機能を利用するかどうか
+  """
+  OnlinePaymentEnabled: Boolean!
+}
+
+type OrderInfo {
+  orderId: ID
+  selectedCouponId: ID
+  customerCount: Int
 }

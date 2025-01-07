@@ -10,6 +10,11 @@ type PageInfo {
   endCursor: String
 }
 
+type PageInfoTimeBased {
+  hasNextPage: Boolean!
+  endCursor: DateTime
+}
+
 type Query {
   node(id: ID!): Node
   viewer: User!
@@ -40,6 +45,8 @@ type Mutation {
   submitTableOrder(input: SubmitTableOrderInput!): SubmitTableOrderPayload!
   setSeatNumber(input: SetSeatNumberInput!): SetSeatNumberPayload!
   updateMemo(input: UpdateMemoInput!): UpdateMemoPayload!
+  updateNoContactDeliveryOption(input: UpdateNoContactDeliveryOptionInput!): UpdateNoContactDeliveryOptionPayload!
+  updateReceiptRequest(input: UpdatePaperReceiptRequestInput!): UpdatePaperReceiptPayload!
   updateUsingDeliveryAddress(input: UpdateUsingDeliveryAddressInput!): UpdateUsingDeliveryAddressPayload!
   removeDeliveryAddress(input: RemoveDeliveryAddressInput!): RemoveDeliveryAddressPayload!
   updateDeliveryAddressMemo(input: UpdateDeliveryAddressMemoInput!): UpdateDeliveryAddressMemoPayload!
@@ -51,6 +58,8 @@ type Mutation {
   requestAuthCodeByPhone(input: RequestAuthCodeByPhoneInput!): RequestAuthCodeByPhonePayload!
   verifySMSAuthCode(input: VerifySMSAuthCodeInput!): VerifySMSAuthCodePayload!
   signUp(input: SignUpInput!): SignUpPayload!
+  suspendUser(input: SuspendUserInput!): SuspendUserPayload!
+  updateProfile(input: UpdateProfileInput!): UpdateProfilePayload!
   addCoupon(input: AddCouponInput!): AddCouponPayload!
   selectCoupon(input: SelectCouponInput!): SelectCouponPayload!
   addDeliveryAddress(input: AddDeliveryAddressInput!): AddDeliveryAddressPayload!
@@ -80,6 +89,10 @@ type Mutation {
   sendCompletedSurvey(input: SendCompletedSurveyInput!): SendCompletedSurveyPayload!
   # サブスクを利用する
   useSubscriptionBenefit(input: UseSubscriptionBenefitInput!): UseSubscriptionBenefitPayload!
+  # テーブルオーダーのクーポンについて更新する
+  selectTableCoupon(input: SelectTableCouponInput!): SelectTableCouponPayload!
+  # テーブルオーダーの支払いをする
+  checkoutTableOrder(input: CheckoutTableOrderInput!): CheckoutTableOrderPayload!
 }
 
 input LatLngInput {
@@ -160,7 +173,7 @@ input SubmitOrderInput {
 
   orderId: ID!
 
-  # 匿名ユーザーでテイクアウト注文する場合に使用する
+  # テイクアウト/デリバリー注文する場合に使用する
   lastNameKana: String
   phoneNumber: String
   email: String
@@ -217,6 +230,34 @@ type UpdateMemoPayload {
   cart: Cart!
 }
 
+input UpdateNoContactDeliveryOptionInput {
+  clientMutationId: String
+
+  requestNoContactDelivery: Boolean!
+}
+
+type UpdateNoContactDeliveryOptionPayload {
+  clientMutationId: String
+
+  noContactDeliveryOption: NoContactDeliveryOption!
+}
+
+input UpdatePaperReceiptRequestInput {
+  clientMutationId: String
+
+  cartId: ID!
+  # 紙の領収書を希望するかどうか
+  needsPaperReceipt: Boolean!
+  # 宛名
+  recipientName: String
+}
+
+type UpdatePaperReceiptPayload {
+  clientMutationId: String
+
+  paperReceiptRequest: PaperReceiptRequest
+}
+
 input UpdateUsingDeliveryAddressInput {
   clientMutationId: String
 
@@ -227,6 +268,7 @@ type UpdateUsingDeliveryAddressPayload {
   clientMutationId: String
 
   deliveryAddress: DeliveryAddress!
+  assignedFacilityId: ID!
 }
 
 input RemoveDeliveryAddressInput {
@@ -343,6 +385,14 @@ type SignUpPayload {
   clientMutationId: String
 }
 
+input SuspendUserInput { 
+  clientMutationId: String
+}
+
+type SuspendUserPayload {  
+  clientMutationId: String
+}
+
 input AddCouponInput {
   clientMutationId: String
 
@@ -375,12 +425,14 @@ input AddDeliveryAddressInput {
   addressLine: String!
   buildingName: String!
   memo: String!
+  latLng: LatLngInput!
 }
 
 type AddDeliveryAddressPayload {
   clientMutationId: String
 
   deliveryAddress: DeliveryAddress!
+  assignedFacilityId: ID!
 }
 
 input RequestProxyPhoneNumberInput {
@@ -427,6 +479,8 @@ input UpdateScheduledOrderTimeInput {
   date: DateInput
   minArrival: String
   maxArrival: String
+  # デリバリー注文の場合は必須
+  deliveryType: DeliveryType
 }
 
 input DateInput {
@@ -636,4 +690,50 @@ input UseSubscriptionBenefitInput {
 type UseSubscriptionBenefitPayload {
   clientMutationId: String
   benefitUsage: UserSubscriptionBenefitUsage!
+}
+
+input UpdateProfileInput {
+  clientMutationId: String
+  lastNameKana: String
+  displayName: String
+  birthDate: UpdateProfileBirthDateInput
+  gender: String
+  prefecture: String
+  occupation: String
+}
+
+input UpdateProfileBirthDateInput {
+  year: Int!
+  month: Int!
+  day: Int!
+}
+
+type UpdateProfilePayload {
+  clientMutationId: String
+
+  profile: Profile!
+}
+
+input SelectTableCouponInput {
+  clientMutationId: String
+
+  couponId: ID
+}
+
+type SelectTableCouponPayload {
+  clientMutationId: String
+}
+
+input CheckoutTableOrderInput {
+  clientMutationId: String
+
+  orderId: ID!
+  amount: Int!
+}
+
+type CheckoutTableOrderPayload {
+  clientMutationId: String
+
+  order: Order!
+  paymentIntent: PaymentIntent
 }

@@ -1,9 +1,10 @@
 import React, { forwardRef } from 'react';
-import { Box, Divider, HStack, Text, VStack } from '@chakra-ui/react';
+import { Box, Divider, Text, VStack } from '@chakra-ui/react';
 
 import { useCartItemEditState } from '@/providers/CartItemEditProvider';
 import { resolveMenuItemOptionInputType } from '@/utils/domain/menuItemOption';
 import { InputErrorMessage } from '@/components/ui/InputErrorMessage';
+import { containerMarginX } from '@/utils/constants';
 
 import { OptionIsRequiredChip } from '../OptionIsRequiredChip';
 
@@ -33,18 +34,18 @@ export const MenuItemDetailOption = forwardRef<HTMLDivElement, Props>(function M
     maxSelectCount,
     maxSelectCountPerItem,
   });
+  
 
   return (
-    <Box ref={ref} w="full">
-      <VStack align="start" spacing="9px">
-        <HStack spacing="6px">
-          <Text className="bold-small">{menuItemOption.name}</Text>
-          <OptionIsRequiredChip option={menuItemOption} />
-        </HStack>
+    <Box ref={ref} w="full" px={containerMarginX} pb="16px" bg={errorMessage ? 'mono.errorBackground' : 'transparent'}>
+      <VStack align="start" spacing="4px" py="16px" >
+        <VStack align="start" spacing="4px" position={'sticky'}>
+          <Text className="bold-medium">{menuItemOption.name}</Text>
+          {!errorMessage && <OptionIsRequiredChip option={menuItemOption} />}
+        </VStack>
         {errorMessage && <InputErrorMessage message={errorMessage} />}
       </VStack>
-      <Divider mt="8px" borderColor={dividerColor} />
-      <VStack spacing={0} divider={<Divider as="div" borderColor={dividerColor} />}>
+      <VStack spacing={0} divider={<Divider as="div" borderColor={dividerColor} />} bg="mono.white" borderRadius="4px" pl="12px">
         {menuItemOption.items.map((item) => (
           <MenuItemDetailOptionItem
             key={item.id}
@@ -57,7 +58,6 @@ export const MenuItemDetailOption = forwardRef<HTMLDivElement, Props>(function M
           />
         ))}
       </VStack>
-      <Divider borderColor={dividerColor} />
     </Box>
   );
 });

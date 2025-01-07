@@ -1,13 +1,15 @@
-import React, { FC } from 'react';
+import React, { FC, useState, useCallback } from 'react';
 import { Box, Center, Circle, Icon, LinkBox, Text, VStack } from '@chakra-ui/react';
 import ArrowForwardIos from '@mui/icons-material/ArrowForwardIos';
 
 import { OrderType } from '@/graphql/generated/types';
-import { menuCategoryDetailPage, menuItemDetailPage } from '@/utils/paths/facilityPages';
+import { menuCategoryDetailPage } from '@/utils/paths/facilityPages';
 import { useFacilityId } from '@/providers/tenant/WebOrderPageStateProvider';
 import { containerMarginX } from '@/utils/constants';
 import { useFeatureFlags } from '@/providers/FeatureFlagsProvider';
+import { SwipeableBottomModal } from '@/components/ui/SwipeableBottomModalDialog';
 
+import { MenuItemDetailModalContent } from '../MenuItemDetailMoalContent';
 import { MenuCategoryCarousel } from '../MenuCategoryCarousel';
 import { TenantPageLinkOverlay } from '../TenantPageLink';
 
@@ -24,12 +26,26 @@ type Props = {
 // それが解決するまではClient側で表示件数を制御する
 const maxVisibleMenuItems = 10;
 
+type MenuItem = HomeMenuCategoriesSectionPartsFragment['categories'][0]['items']['nodes'][0];
+
 export const HomeMenuCategoriesSection: FC<Props> = ({ menuCategoriesSection, orderType }: Props) => {
   const facilityId = useFacilityId();
   const { title, categories } = menuCategoriesSection;
 
   const { showPriceExcludingTax } = useFeatureFlags();
   const showAllButtonMenuItemCount = 5;
+
+  const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = useCallback((menuItem: MenuItem) => {
+    setSelectedItem(menuItem);
+    setIsModalOpen(true);
+  }, []);
+
+  const closeModal = useCallback(() => {
+    setIsModalOpen(false);
+  }, []);
 
   return (
     <>
@@ -51,12 +67,12 @@ export const HomeMenuCategoriesSection: FC<Props> = ({ menuCategoriesSection, or
               {category.items.nodes.slice(0, maxVisibleMenuItems).map((menuItem, i) => (
                 <MenuCategoryCarousel.Item
                   key={i}
-                  pathToDetail={menuItemDetailPage(facilityId, menuItem.id, orderType)}
                   image={menuItem.image || null}
                   name={menuItem.name}
                   price={menuItem.price}
                   priceExcludingTax={showPriceExcludingTax ? menuItem.priceExcludingTax : undefined}
                   unavailableReason={menuItem.status.available ? null : menuItem.status.labelUnavailable}
+                  onClick={() => openModal(menuItem)} 
                 />
               ))}
               <>
@@ -99,6 +115,16 @@ export const HomeMenuCategoriesSection: FC<Props> = ({ menuCategoriesSection, or
           );
         })}
       </VStack>
+      <SwipeableBottomModal
+        isOpen={isModalOpen && !!selectedItem?.id}
+        onClose={closeModal}
+        title={selectedItem?.name || ''}
+        footer={null}
+      >
+        {selectedItem?.id && (
+          <MenuItemDetailModalContent menuItemId={selectedItem.id} orderType={orderType} />
+        )}
+      </SwipeableBottomModal>
     </>
   );
 };

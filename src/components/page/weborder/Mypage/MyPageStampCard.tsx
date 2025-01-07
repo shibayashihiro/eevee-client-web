@@ -1,35 +1,31 @@
 import { VStack, Center, Text, Badge, HStack, Icon, Spacer, LinkBox } from '@chakra-ui/react';
 import React, { FC } from 'react';
-import liff from '@line/liff';
 
-import { MyPageStampCardFragment } from '@/components/page/weborder/Mypage/MyPageStampCard.fragment.generated';
 import { useFacilityId } from '@/providers/tenant/WebOrderPageStateProvider';
 import { RightIcon } from '@/components/ui/Icons/RightIcon';
 import { myPageStampCard as myStampCardPage } from '@/utils/paths/facilityPages';
 import { TenantPageLinkOverlay } from '@/components/domain/TenantPageLink';
 
+import { MyPageActiveStampCardFragment, MyPageStampCardFragment } from './MyPageStampCard.fragment.generated';
+// import { PrimaryButton } from '@/components/ui/Button';
+// import { QRCodeScanIcon } from '@/components/ui/Icons/QRCodeScanIcon';
+
 type Props = {
-  myPageStampCard: MyPageStampCardFragment | null;
+  myPageStampCard: MyPageStampCardFragment;
 };
 
-export const MyPageStampCard: FC<Props> = ({ myPageStampCard }: Props) => {
-  const stampCardPage = myStampCardPage(useFacilityId());
-
-  if (
-    !myPageStampCard ||
-    !liff.isInClient() /* 現状、LINEユーザーしかユーザーを追跡できないので、スタンプカード機能はLIFFアプリの場合のみ表示する */
-  ) {
+export const MyPageStampCard: FC<Props> = ({ myPageStampCard: { loyaltyCard } }: Props) => {
+  const facilityId = useFacilityId();
+  const stampCardPage = myStampCardPage(facilityId);
+  if (!loyaltyCard) {
     return null;
   }
-
-  const { currentRank, activeStampCards } = myPageStampCard;
+  const { currentRank, activeStampCards } = loyaltyCard;
   return (
-    <Center m="20px">
-      <VStack spacing={0} align="stretch" w="full">
-        <StampHeader rankName={currentRank.name} color={currentRank.colorRGB} stampCardPage={stampCardPage} />
-        <StampCard activeStampCards={activeStampCards} stampCardPage={stampCardPage} />
-      </VStack>
-    </Center>
+    <VStack spacing="16px" align="stretch">
+      <StampHeader rankName={currentRank.name} color={currentRank.colorRGB} stampCardPage={stampCardPage} />
+      <StampCard activeStampCards={activeStampCards} stampCardPage={stampCardPage} />
+    </VStack>
   );
 };
 
@@ -67,53 +63,65 @@ const StampCard = ({
   activeStampCards,
   stampCardPage,
 }: {
-  activeStampCards: MyPageStampCardFragment['activeStampCards'];
+  activeStampCards: MyPageActiveStampCardFragment[];
   stampCardPage: string;
 }) => {
   const stampCard = activeStampCards[activeStampCards.length - 1];
   const currentPage = activeStampCards.length;
+  // const handleScanQRCode = () => {
+  //   if (liff.isInClient()) {
+  //     liff.scanCodeV2().then((result) => {
+  //       console.log('Scanned QR Code:', result.value);
+  //     });
+  //   } else {
+  //     alert('QRコードスキャンはLINEアプリ内でのみ利用可能です。');
+  //   }
+  // };
   return (
-    <>
-      <LinkBox>
-        <TenantPageLinkOverlay href={stampCardPage}>
-          <Center
-            bg="mono.backGroundLight"
-            borderTopRadius="12px"
-            p="20px"
-            justifyContent="space-between"
-            marginTop="16px"
-          >
-            <VStack align="start">
-              <Text className="text-micro" whiteSpace="nowrap" color="bold.secondary">
-                スタンプ({currentPage}枚目)
+    <LinkBox>
+      <TenantPageLinkOverlay href={stampCardPage}>
+        <Center bg="mono.backGroundLight" borderTopRadius="12px" p="20px" justifyContent="space-between">
+          <VStack align="start">
+            <Text className="text-micro" whiteSpace="nowrap" color="bold.secondary">
+              スタンプ({currentPage}枚目)
+            </Text>
+            <HStack align="flex-end" my="8px">
+              <Text
+                className="bold-32px"
+                whiteSpace="nowrap"
+                lineHeight="70%"
+                color="mono.primary"
+                fontFamily="'SF Hiragino', sans-serif"
+              >
+                {stampCard.currentPoints}
               </Text>
-              <HStack align="flex-end" my="8px">
-                <Text
-                  className="bold-32px"
-                  whiteSpace="nowrap"
-                  lineHeight="70%"
-                  color="mono.primary"
-                  fontFamily="'SF Hiragino', sans-serif"
-                >
-                  {stampCard.currentPoints}
-                </Text>
-                <Text className="bold-small" whiteSpace="nowrap" lineHeight="100%" color="mono.primary">
-                  / {stampCard.maxPointPerPage}個
-                </Text>
-              </HStack>
-            </VStack>
-            <Spacer />
-          </Center>
-          <VStack bg="mono.backGround" borderBottomRadius="12px" align="stretch" spacing="4px" px="20px" py="16px">
-            <Text className="text-micro" color="mono.secondary">
-              プレゼント
-            </Text>
-            <Text className="text-extra-small" color="mono.primary">
-              {stampCard.reward}
-            </Text>
+              <Text className="bold-small" whiteSpace="nowrap" lineHeight="100%" color="mono.primary">
+                / {stampCard.maxPointPerPage}個
+              </Text>
+            </HStack>
           </VStack>
-        </TenantPageLinkOverlay>
-      </LinkBox>
-    </>
+          <Spacer />
+          {/* <PrimaryButton
+              h="32px"
+              w="min-content"
+              borderRadius="22px"
+              onClick={handleScanQRCode}
+              bg="brand.primary"
+              color="white"
+              px="16px"
+            >
+              <QRCodeScanIcon boxSize="24px" mr="4px"/> QRコードを読み取る
+            </PrimaryButton> */}
+        </Center>
+        <VStack bg="mono.backGround" borderBottomRadius="12px" align="stretch" spacing="4px" px="20px" py="16px">
+          <Text className="text-micro" color="mono.secondary">
+            プレゼント
+          </Text>
+          <Text className="text-extra-small" color="mono.primary">
+            {stampCard.reward}
+          </Text>
+        </VStack>
+      </TenantPageLinkOverlay>
+    </LinkBox>
   );
 };

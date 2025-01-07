@@ -116,6 +116,9 @@ const productionIdentifiers = [
   'pisola-narita',
   'pisola-misato',
   'pisola-hachioji-nakano',
+  'pisola-toyokawa-inter',
+  'pisola-toyoyama',
+  'pisola-yokosuka',
   'spice-theater',
   'segafredo',
   'kyotokatsugyu',
@@ -128,6 +131,8 @@ const productionIdentifiers = [
   'chigasaki-cafe',
   'single-o-japan',
   'ryumi',
+  'taiyo-compass',
+  'napoli-pizza',
 ] as const;
 
 export type ProductionIdentifier = (typeof productionIdentifiers)[number];
@@ -143,20 +148,20 @@ const productionConfigs: Record<ProductionIdentifier, AppConfig> = {
     // demoを行うときはこれをコピペして増やす
     tenantUidHeader: demoTenantUid,
     pageMeta: {
-      title: 'PISOLA 八王子中野店',
+      title: 'PISOLA 豊川インター店',
       favicon: '/favicons/chompy-house.ico',
     },
     appColor: buildAppColor('#997525', '#8F6B1B'),
-    liffId: '2006307661-5NN4NLB2',
+    liffId: '2006530706-WGRVZnz8',
   },
   'chompy-demo-2': {
-    tenantUidHeader: demoTenantUid2,
+    tenantUidHeader: demoTenantUid,
     appColor: buildAppColor('#997525', '#8F6B1B'),
     pageMeta: {
-      title: 'PISOLA 成田店',
+      title: 'PISOLA 豊山店',
       favicon: '/favicons/chompy-house.ico',
     },
-    liffId: '2005923701-E42Zabwd',
+    liffId: '2006530718-exrb9K2p',
   },
   'chompy-demo-3': {
     tenantUidHeader: demoTenantUid,
@@ -626,6 +631,7 @@ const productionConfigs: Record<ProductionIdentifier, AppConfig> = {
     },
     uiCustomization: {
       tenantHomeNoteText: '※一部の店舗ではご利用できません',
+      isIkinariSteak: true,
     },
   },
   'ikinaristeak-prd-demo': {
@@ -637,6 +643,7 @@ const productionConfigs: Record<ProductionIdentifier, AppConfig> = {
     },
     uiCustomization: {
       tenantHomeNoteText: '※一部の店舗ではご利用できません',
+      isIkinariSteak: true,
     },
   },
   'healthy-hut': {
@@ -1153,6 +1160,33 @@ const productionConfigs: Record<ProductionIdentifier, AppConfig> = {
     },
     liffId: '2006307662-GqZYZloa',
   },
+  'pisola-toyokawa-inter': {
+    tenantUidHeader: 'fQeZITIAeY7rfGTPYjGX',
+    appColor: buildAppColor('#997525', '#8F6B1B'),
+    pageMeta: {
+      title: 'PISOLA 豊川インター店',
+      favicon: '/favicons/chompy-house.ico',
+    },
+    liffId: '2006530707-J73wz4XO',
+  },
+  'pisola-toyoyama': {
+    tenantUidHeader: 'fQeZITIAeY7rfGTPYjGX',
+    appColor: buildAppColor('#997525', '#8F6B1B'),
+    pageMeta: {
+      title: 'PISOLA 豊山店',
+      favicon: '/favicons/chompy-house.ico',
+    },
+    liffId: '2006530719-0zmadZRg',
+  },
+  'pisola-yokosuka': {
+    tenantUidHeader: 'DHRJih5i3q9BFbF0RC1B', // FCテナント
+    appColor: buildAppColor('#997525', '#8F6B1B'),
+    pageMeta: {
+      title: 'PISOLA 横須賀店',
+      favicon: '/favicons/chompy-house.ico',
+    },
+    liffId: '2006693826-Dpp7V7VO',
+  },
   'spice-theater': {
     tenantUidHeader: 'UslkVopUCYXlcy8BTuLN',
     appColor: buildAppColor('#5f9ea0', '#559496'),
@@ -1238,6 +1272,24 @@ const productionConfigs: Record<ProductionIdentifier, AppConfig> = {
       title: '元祖“名古屋中華“龍美',
       favicon: '/favicons/chompy-house.ico',
     },
+  },
+  'taiyo-compass': {
+    tenantUidHeader: 'rjHYEXrjMPiHyfxlhm7u',
+    appColor: buildAppColor('#58504C', '#4E4642'),
+    pageMeta: {
+      title: '太陽コンパス',
+      favicon: '/favicons/chompy-house.ico',
+    },
+  },
+  'napoli-pizza': {
+    tenantUidHeader: 'f3yVbk7dPOhPr0evtclp',
+    appColor: buildAppColor('#A31616', '#990C0C'),
+    pageMeta: {
+      title: 'ナポリの窯',
+      favicon: '/favicons/napoli-pizza.png',
+    },
+    firebaseAuthProject: 'napoli-pizza',
+    promotionEnabled: true,
   },
 } as const;
 
