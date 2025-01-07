@@ -1,0 +1,16 @@
+fragment TenantForMyPageMenu on Tenant {
+  helpUrl
+  contactUrl
+  termsOfUseUrl
+  privacyPolicyUrl
+  specifiedCommercialTransactionActUrl
+}
+
+fragment UserForMyPageMenu on User {
+  # first(limit)は一旦100を設定している。ユーザーのクーポン所持数の増加が懸念になった場合は修正が必要
+  coupons(first: 100, isAvailable: true) {
+    nodes {
+      id
+    }
+  }
+}

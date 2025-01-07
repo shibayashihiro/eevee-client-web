@@ -1,0 +1,5 @@
+fragment MyPageMembershipCard on User {
+  membershipCard(facilityID: $facilityID) {
+    membershipQRCodeData
+  }
+}

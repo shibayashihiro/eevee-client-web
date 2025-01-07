@@ -1,0 +1,47 @@
+query TableOrdersPaymentPageQuery($facilityID: ID!) {
+  
+  viewer {
+    table(facilityID: $facilityID) {
+      name
+      charge {
+        ...ChargeDetailsFullListParts
+      }
+      order {
+        orderId
+        selectedCouponId
+        customerCount
+      }
+    }
+    payments {
+      ...PaymentDialogParts
+    }
+    coupons {
+      nodes {
+        id
+        title
+        subTitle
+        statusLabel
+        image
+        details {
+            name
+            value
+        }
+        canManualUse
+      }
+      pageInfo {
+          hasNextPage
+          endCursor
+      }
+    }
+  }
+
+  facility: node(id: $facilityID) {
+    ... on Facility {
+      featureFlags {
+        showPriceExcludingTax
+        ...FeatureFlagsForProvider
+      }
+    }
+  }
+
+}

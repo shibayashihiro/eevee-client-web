@@ -1,0 +1,17 @@
+query GetUserProfileSettingFields {
+  tenant: viewing {
+    ...TenantUserProfileFormFields
+  }
+  viewer {
+    profile {
+      displayName
+      lastNameKana
+      gender
+      birthDate {
+        year
+        month
+        day
+      }
+    }
+  }
+}

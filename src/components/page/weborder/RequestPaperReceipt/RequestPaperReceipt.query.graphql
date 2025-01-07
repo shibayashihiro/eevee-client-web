@@ -1,0 +1,23 @@
+query GetCartForRequestPaperReceiptPage($facilityId: ID!, $orderType: OrderType!) {
+  viewer {
+    cart(facilityID: $facilityId, orderType: $orderType) {
+      id
+      order {
+        ... on TakeoutOrder {
+          paperReceiptRequest {
+            ...RequestPaperReceiptFormValue
+          }
+        }
+        ... on DeliveryOrder {
+          paperReceiptRequest {
+            ...RequestPaperReceiptFormValue
+          }
+        }
+      }
+    }
+  }
+}
+
+fragment RequestPaperReceiptFormValue on PaperReceiptRequest {
+  recipientName
+}

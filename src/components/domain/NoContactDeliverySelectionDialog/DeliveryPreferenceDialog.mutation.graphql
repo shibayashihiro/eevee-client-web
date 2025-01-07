@@ -1,0 +1,8 @@
+mutation UpdateNoContactDeliveryOption($requestNoContactDelivery: Boolean!) {
+  updateNoContactDeliveryOption(input: { requestNoContactDelivery: $requestNoContactDelivery }) {
+    clientMutationId
+    noContactDeliveryOption {
+      requestNoContactDelivery
+    }
+  }
+}

@@ -1,0 +1,17 @@
+fragment InProgressOrderStatusViewTakeout on TakeoutOrder {
+  id
+  shortIds
+  progress {
+    scheduledTime
+    prepared
+  }
+  facility {
+    name
+    shortName
+    latLng {
+      latitude
+      longitude
+    }
+    phoneNumber
+  }
+}

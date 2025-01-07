@@ -1,0 +1,4 @@
+fragment DeliveryLastOrderInputParts on LastOrderInput {
+  lastNameKana
+  phoneNumber
+}

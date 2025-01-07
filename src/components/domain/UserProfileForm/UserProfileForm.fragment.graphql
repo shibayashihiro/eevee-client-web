@@ -1,0 +1,14 @@
+fragment TenantUserProfileFormFields on Tenant {
+  userProfileInputFields {
+    ...UserProfileFormInputField
+  }
+}
+
+fragment UserProfileFormInputField on UserProfileInputField {
+  title
+  required
+  type
+  values
+  placeholder
+  helpText
+}

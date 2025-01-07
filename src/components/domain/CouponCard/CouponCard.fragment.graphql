@@ -1,0 +1,12 @@
+fragment CouponCardForList on Coupon {
+  id
+  title
+  subTitle
+  statusLabel
+  image
+  details {
+    name
+    value
+  }
+  canManualUse
+}

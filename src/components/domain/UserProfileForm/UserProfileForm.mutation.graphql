@@ -1,0 +1,9 @@
+mutation SubmitUserProfileForm($input: UpdateProfileInput!) {
+  updateProfile(input: $input) {
+    clientMutationId
+    profile {
+      # mutation後の更新のために取得
+      __typename
+    }
+  }
+}

@@ -1,0 +1,17 @@
+query GetCouponById($couponId: ID!) {
+  Coupon: node(id: $couponId) {
+    __typename
+    ... on Coupon {
+      id
+      title
+      subTitle
+      image
+      statusLabel
+      details {
+        name
+        value
+      }
+      canManualUse
+    }
+  }
+}

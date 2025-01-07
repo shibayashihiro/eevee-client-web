@@ -1,0 +1,7 @@
+mutation SubmitRequestPaperReceipt($input: UpdatePaperReceiptRequestInput!) {
+  updateReceiptRequest(input: $input) {
+    paperReceiptRequest {
+      __typename
+    }
+  }
+}

@@ -1,0 +1,10 @@
+fragment InProgressOrderListItem on Order {
+  id
+  facility {
+    shortName
+  }
+  progress {
+    scheduledTime
+  }
+  shortIds
+}

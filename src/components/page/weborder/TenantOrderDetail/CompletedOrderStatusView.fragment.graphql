@@ -1,0 +1,22 @@
+fragment OrderDetailCompletedOrderStatusView on Order {
+  facility {
+    shortName
+  }
+
+  ... on TakeoutOrder {
+    completionStatus {
+      ...OrderDetailCompletionStatus
+    }
+  }
+
+  ... on DeliveryOrder {
+    completionStatus {
+      ...OrderDetailCompletionStatus
+    }
+  }
+}
+
+fragment OrderDetailCompletionStatus on CompletionStatus {
+  statusLabel
+  completedAt
+}

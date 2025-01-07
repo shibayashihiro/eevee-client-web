@@ -1,0 +1,17 @@
+query GetFacilityMyPage($facilityID: ID!) {
+  viewing {
+    ...NavbarViewingParts
+    ...TenantForMyPageMenu
+  }
+
+  viewer {
+    ...NavbarViewerParts
+    ...MyPageMembershipCard
+    ...MyPageStampCard
+    ...UserForMyPageMenu
+  }
+
+  facility: node(id: $facilityID) {
+    ...NavbarMenuFacility
+  }
+}

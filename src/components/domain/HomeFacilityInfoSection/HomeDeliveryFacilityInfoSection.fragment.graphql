@@ -1,0 +1,5 @@
+fragment HomeDeliveryFacilityInfoSection on FacilityInfoSection {
+  facility {
+    shortName
+  }
+}

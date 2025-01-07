@@ -1,0 +1,9 @@
+query GetSignUpCompletedPage {
+  tenant: viewing {
+    idProviderName
+    accountRegistrationIncentives {
+      # 存在チェックだけで良いため __typename だけ取得
+      __typename
+    }
+  }
+}

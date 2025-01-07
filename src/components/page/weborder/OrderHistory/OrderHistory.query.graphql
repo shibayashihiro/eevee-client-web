@@ -1,0 +1,18 @@
+query GetOrderHistory($first: Int!, $after: DateTime) {
+  viewer {
+    orders(first: $first, after: $after) {
+      nodes {
+        ...OrderForHistory
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+fragment OrderForHistory on Order {
+  ...InProgressOrderListItem
+  ...OrderHistoryListItem
+}

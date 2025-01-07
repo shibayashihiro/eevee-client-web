@@ -1,0 +1,12 @@
+mutation SubmitTableOrderPayment($input: CheckoutTableOrderInput!) {
+  checkoutTableOrder(input: $input) {
+    clientMutationId
+    order {
+      # refetchしてほしいためtypenameを指定
+      __typename
+    }
+    paymentIntent {
+      ...PaymentIntentForConfirmCardPayment
+    }
+  }
+}

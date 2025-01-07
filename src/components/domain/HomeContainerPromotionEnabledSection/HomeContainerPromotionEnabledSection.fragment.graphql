@@ -1,0 +1,19 @@
+fragment HomeContainerPromotionEnabledSection on Tenant {
+    id
+    topPageBannerSections {
+      bannerSection {
+        banners {
+          image
+          url
+          title
+        }
+      }
+      navigationItemsSection {
+        banners {
+          image
+          url
+          title
+        }
+      }
+    }
+}

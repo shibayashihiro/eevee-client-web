@@ -1,0 +1,11 @@
+fragment HomeHeader on User {
+  profile {
+    lastNameKana
+    imageUrl
+  }
+  coupons(isAvailable: true) {
+    nodes {
+      id
+    }
+  }
+}

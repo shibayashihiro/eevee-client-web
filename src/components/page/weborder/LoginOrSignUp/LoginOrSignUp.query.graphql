@@ -1,0 +1,5 @@
+query GetLoginOrSignUpPage {
+  tenant: viewing {
+    idProviderName
+  }
+}

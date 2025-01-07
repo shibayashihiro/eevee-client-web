@@ -1,0 +1,26 @@
+fragment OrderHistoryListItem on Order {
+  id
+  facility {
+    shortName
+  }
+  items {
+    name
+    quantity
+    ...OrderItemOptionItemsTextParts
+  }
+  ... on DeliveryOrder {
+    completionStatus {
+      ...OrderHistoryListItemCompletionStatus
+    }
+  }
+  ... on TakeoutOrder {
+    completionStatus {
+      ...OrderHistoryListItemCompletionStatus
+    }
+  }
+}
+
+fragment OrderHistoryListItemCompletionStatus on CompletionStatus {
+  statusLabel
+  completedAt
+}

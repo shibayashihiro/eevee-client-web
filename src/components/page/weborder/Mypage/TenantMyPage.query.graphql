@@ -1,0 +1,12 @@
+query GetTenantMyPage {
+  viewing {
+    ...NavbarViewingParts
+    ...TenantForMyPageMenu
+  }
+
+  viewer {
+    ...NavbarViewerParts
+    ...MyPageProfileHeader
+    ...UserForMyPageMenu
+  }
+}

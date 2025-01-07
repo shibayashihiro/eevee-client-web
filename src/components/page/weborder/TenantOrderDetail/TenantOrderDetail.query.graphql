@@ -1,0 +1,34 @@
+query GetTenantOrderDetail($orderID: ID!) {
+  order: node(id: $orderID) {
+    id
+    ... on Order {
+      facility {
+        phoneNumber
+      }
+      progress {
+        # 親Componentで存在チェックにのみ使うため __typename だけ取得
+        __typename
+      }
+    }
+
+    ... on TakeoutOrder {
+      ...InProgressOrderStatusViewTakeout
+    }
+
+    ... on DeliveryOrder {
+      ...InProgressOrderStatusViewDelivery
+    }
+
+    ...OrderDetailCompletedOrderStatusView
+    ...OrderDetailOrderItemsSummary
+
+    ...OrderForSubmittedDialog
+  }
+}
+
+fragment OrderForSubmittedDialog on Order {
+  id
+  progress {
+    scheduledTime
+  }
+}

@@ -1,0 +1,7 @@
+mutation ReceiveTakeoutOrderFromTenantOrderDetail($input: ReceiveOrderInput!) {
+  receiveOrder(input: $input) {
+    order {
+      __typename
+    }
+  }
+}

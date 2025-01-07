@@ -1,0 +1,5 @@
+mutation submitUseCoupon($input: UseCouponInput!) {
+  useCoupon(input: $input) {
+    __typename
+  }
+}

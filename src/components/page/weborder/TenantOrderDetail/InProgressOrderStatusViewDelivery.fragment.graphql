@@ -1,0 +1,20 @@
+fragment InProgressOrderStatusViewDelivery on DeliveryOrder {
+  id
+  shortIds
+  progress {
+    scheduledTime
+  }
+  facility {
+    shortName
+    phoneNumber
+  }
+  deliveryAddress {
+    prefecture
+    addressLine
+    buildingName
+    roomNumber
+  }
+  noContactDeliveryOption {
+    requestNoContactDelivery
+  }
+}

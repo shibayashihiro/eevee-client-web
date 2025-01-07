@@ -1,0 +1,9 @@
+fragment HomeEatInFacilityInfoSection on FacilityInfoSection {
+  facility {
+    shortName
+  }
+}
+
+fragment HomeEatInFacilityInfoSectionTable on Table {
+  name
+}

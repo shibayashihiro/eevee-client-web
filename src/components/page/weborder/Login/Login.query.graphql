@@ -1,0 +1,9 @@
+query GetLoginPage {
+  viewing {
+    helpUrl
+    termsOfUseUrl
+    specifiedCommercialTransactionActUrl
+    contactUrl
+    privacyPolicyUrl
+  }
+}

@@ -1,0 +1,5 @@
+query GetUserProfileInputFields {
+  tenant: viewing {
+    ...TenantUserProfileFormFields
+  }
+}

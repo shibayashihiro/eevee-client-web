@@ -1,0 +1,6 @@
+fragment HomeTakeoutFacilityInfoSection on FacilityInfoSection {
+  facility {
+    shortName
+  }
+  hasOtherFacilities(orderType: TAKEOUT)
+}

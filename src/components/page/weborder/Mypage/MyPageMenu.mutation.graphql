@@ -1,0 +1,5 @@
+mutation SuspendUser($input: SuspendUserInput!) {
+  suspendUser(input: $input) {
+    clientMutationId
+  }
+}

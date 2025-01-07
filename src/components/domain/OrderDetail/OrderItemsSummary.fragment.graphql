@@ -1,0 +1,15 @@
+fragment OrderDetailOrderItemsSummary on Order {
+  items {
+    quantity
+    name
+    totalPrice
+    ...OrderItemOptionItemsTextParts
+  }
+  charge {
+    details {
+      name
+      amount
+    }
+    amount
+  }
+}

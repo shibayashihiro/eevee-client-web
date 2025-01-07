@@ -1,0 +1,18 @@
+query GetDeliveryAddressSelect {
+  viewing {
+    ...NavbarViewingParts
+    idProviderName
+  }
+  viewer {
+    ...NavbarViewerParts
+    ...HomeHeader
+    deliveryAddresses {
+      id
+      prefecture
+      addressLine
+      buildingName
+      memo
+      isUsing
+    }
+  }
+}
