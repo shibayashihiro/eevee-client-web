@@ -10,6 +10,7 @@ import {
   UserForSubscriptionPlanRegistrationProcessFragmentDoc,
 } from '../../../domain/SubscriptionRegistrationProcessBottomSheet/SubscriptionRegistrationProcess.fragment.generated';
 import { PaymentDialogPartsFragmentDoc } from '../../../domain/PaymentDialog/PaymentDialog.fragment.generated';
+import { PaymentItemPartsFragmentDoc } from '../../../domain/PaymentItem/PaymentItem.fragment.generated';
 
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 export type GetSubscriptionPlansPageQueryVariables = Types.Exact<{ [key: string]: never }>;
@@ -18,6 +19,7 @@ export type GetSubscriptionPlansPageQuery = {
   __typename: 'Query';
   viewing: {
     __typename: 'Tenant';
+    privacyPolicyUrl: string;
     subscription?: {
       __typename: 'TenantSubscription';
       title: string;
@@ -44,10 +46,11 @@ export type GetSubscriptionPlansPageQuery = {
     payments: Array<{
       __typename: 'Payment';
       id: string;
-      last4: string;
+      paymentType: Types.PaymentType;
+      name: string;
       brand: string;
       isSelected: boolean;
-      paymentType: Types.PaymentType;
+      isSignInRequired: boolean;
     }>;
     profile?: { __typename: 'Profile'; displayName: string } | null;
   };
@@ -73,6 +76,7 @@ export const GetSubscriptionPlansPageDocument = gql`
         contactUrl
         ...SubscriptionForRegistrationProcess
       }
+      privacyPolicyUrl
     }
     viewer {
       ...UserForSubscriptionPlanRegistrationProcess
@@ -84,6 +88,7 @@ export const GetSubscriptionPlansPageDocument = gql`
   ${SubscriptionForRegistrationProcessFragmentDoc}
   ${UserForSubscriptionPlanRegistrationProcessFragmentDoc}
   ${PaymentDialogPartsFragmentDoc}
+  ${PaymentItemPartsFragmentDoc}
 `;
 
 export function useGetSubscriptionPlansPageQuery(

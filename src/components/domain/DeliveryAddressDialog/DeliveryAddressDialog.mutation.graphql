@@ -3,6 +3,7 @@ mutation updateUsingDeliveryAddress($input: UpdateUsingDeliveryAddressInput!) {
         deliveryAddress {
             __typename
         }
+        assignedFacilityId
     }
 }
 

@@ -1,5 +1,4 @@
-import React from 'react';
-import renderer from 'react-test-renderer';
+import { render, screen } from '@testing-library/react';
 import { ChakraProvider } from '@chakra-ui/react';
 
 import { OwnerCommentPartsFragment } from './OwnerComment.fragment.generated';
@@ -25,52 +24,49 @@ const generateOwnerCommentMock = ({
   },
   comment,
 });
-const toJSON = (component: renderer.ReactTestRenderer) => {
-  const result = component.toJSON();
-  expect(result).toBeDefined();
-  return result as renderer.ReactTestRendererJSON;
+
+const renderWithChakra = (ui: React.ReactElement) => {
+  return render(<ChakraProvider>{ui}</ChakraProvider>);
 };
 
-describe('render OwnerComment', () => {
-  test('show owner name', () => {
+describe('OwnerComment', () => {
+  test('shows owner name when showNameLabel is true', () => {
     const ownerComment = generateOwnerCommentMock({
       ownerIcon: mockOwnerIcon,
       comment: 'Hello World',
       ownerName: 'Yamada Taro',
     });
-    const component = renderer.create(
-      <ChakraProvider>
-        <OwnerComment ownerComment={ownerComment} showNameLabel />
-      </ChakraProvider>,
-    );
-    const tree = toJSON(component);
-    expect(tree).toMatchSnapshot();
+
+    const { container } = renderWithChakra(<OwnerComment ownerComment={ownerComment} showNameLabel />);
+
+    expect(container).toMatchSnapshot();
+    expect(screen.getByText('Yamada Taro')).toBeInTheDocument();
+    expect(screen.getByText('Hello World')).toBeInTheDocument();
   });
-  test('hide owner name', () => {
+
+  test('hides owner name when showNameLabel is false', () => {
     const ownerComment = generateOwnerCommentMock({
       ownerIcon: mockOwnerIcon,
       comment: 'Hello World',
       ownerName: 'Yamada Taro',
     });
-    const component = renderer.create(
-      <ChakraProvider>
-        <OwnerComment ownerComment={ownerComment} />
-      </ChakraProvider>,
-    );
-    const tree = toJSON(component);
-    expect(tree).toMatchSnapshot();
+
+    const { container } = renderWithChakra(<OwnerComment ownerComment={ownerComment} />);
+
+    expect(container).toMatchSnapshot();
+    expect(screen.queryByText('Yamada Taro')).not.toBeInTheDocument();
+    expect(screen.getByText('Hello World')).toBeInTheDocument();
   });
-  test('OwnerName is nothing', () => {
+
+  test('renders correctly when ownerName is not provided', () => {
     const ownerComment = generateOwnerCommentMock({
       ownerIcon: mockOwnerIcon,
       comment: 'Hello World',
     });
-    const component = renderer.create(
-      <ChakraProvider>
-        <OwnerComment ownerComment={ownerComment} showNameLabel />
-      </ChakraProvider>,
-    );
-    const tree = toJSON(component);
-    expect(tree).toMatchSnapshot();
+
+    const { container } = renderWithChakra(<OwnerComment ownerComment={ownerComment} showNameLabel />);
+
+    expect(container).toMatchSnapshot();
+    expect(screen.getByText('Hello World')).toBeInTheDocument();
   });
 });

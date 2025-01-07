@@ -1,6 +1,6 @@
-import OrderDetailPage from '@/components/page/weborder/OrderDetail';
+import FacilityOrderDetailPage from '@/components/page/weborder/FacilityOrderDetail';
 import { WebOrderLayout } from '@/components/layouts/WebOrderLayout';
 
-OrderDetailPage.getLayout = WebOrderLayout;
+FacilityOrderDetailPage.getLayout = WebOrderLayout;
 
-export default OrderDetailPage;
+export default FacilityOrderDetailPage;

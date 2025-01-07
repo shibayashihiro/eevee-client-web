@@ -1,19 +1,19 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`render OwnerComment > OwnerName is nothing 1`] = `
-[
+exports[`OwnerComment > hides owner name when showNameLabel is false 1`] = `
+<div>
   <div
-    className="chakra-stack css-1igwmid"
+    class="chakra-stack css-1igwmid"
   >
     <div
-      className="chakra-stack css-sqtrbi"
+      class="chakra-stack css-sqtrbi"
     >
       <span
-        className="chakra-avatar css-1dsc0zq"
+        class="chakra-avatar css-1dsc0zq"
       >
         <svg
           aria-label=" avatar"
-          className="chakra-avatar__svg css-16ite8i"
+          class="chakra-avatar__svg css-16ite8i"
           role="img"
           viewBox="0 0 128 128"
         >
@@ -29,41 +29,40 @@ exports[`render OwnerComment > OwnerName is nothing 1`] = `
       </span>
     </div>
     <div
-      className="css-chicvr"
+      class="css-chicvr"
     >
       <div
-        className="_balloon_8e700f"
+        class="_balloon_8e700f"
       >
         <p
-          className="chakra-text bold-small css-0"
+          class="chakra-text bold-small css-0"
         >
           Hello World
         </p>
       </div>
     </div>
-  </div>,
-  <span />,
+  </div>
   <span
-    hidden={true}
+    hidden=""
     id="__chakra_env"
-  />,
-]
+  />
+</div>
 `;
 
-exports[`render OwnerComment > hide owner name 1`] = `
-[
+exports[`OwnerComment > renders correctly when ownerName is not provided 1`] = `
+<div>
   <div
-    className="chakra-stack css-1igwmid"
+    class="chakra-stack css-1igwmid"
   >
     <div
-      className="chakra-stack css-sqtrbi"
+      class="chakra-stack css-sqtrbi"
     >
       <span
-        className="chakra-avatar css-1dsc0zq"
+        class="chakra-avatar css-1dsc0zq"
       >
         <svg
           aria-label=" avatar"
-          className="chakra-avatar__svg css-16ite8i"
+          class="chakra-avatar__svg css-16ite8i"
           role="img"
           viewBox="0 0 128 128"
         >
@@ -79,41 +78,40 @@ exports[`render OwnerComment > hide owner name 1`] = `
       </span>
     </div>
     <div
-      className="css-chicvr"
+      class="css-chicvr"
     >
       <div
-        className="_balloon_8e700f"
+        class="_balloon_8e700f"
       >
         <p
-          className="chakra-text bold-small css-0"
+          class="chakra-text bold-small css-0"
         >
           Hello World
         </p>
       </div>
     </div>
-  </div>,
-  <span />,
+  </div>
   <span
-    hidden={true}
+    hidden=""
     id="__chakra_env"
-  />,
-]
+  />
+</div>
 `;
 
-exports[`render OwnerComment > show owner name 1`] = `
-[
+exports[`OwnerComment > shows owner name when showNameLabel is true 1`] = `
+<div>
   <div
-    className="chakra-stack css-1igwmid"
+    class="chakra-stack css-1igwmid"
   >
     <div
-      className="chakra-stack css-sqtrbi"
+      class="chakra-stack css-sqtrbi"
     >
       <span
-        className="chakra-avatar css-1dsc0zq"
+        class="chakra-avatar css-1dsc0zq"
       >
         <svg
           aria-label=" avatar"
-          className="chakra-avatar__svg css-16ite8i"
+          class="chakra-avatar__svg css-16ite8i"
           role="img"
           viewBox="0 0 128 128"
         >
@@ -128,29 +126,28 @@ exports[`render OwnerComment > show owner name 1`] = `
         </svg>
       </span>
       <p
-        className="chakra-text text-micro css-0"
+        class="chakra-text text-micro css-0"
       >
         Yamada Taro
       </p>
     </div>
     <div
-      className="css-chicvr"
+      class="css-chicvr"
     >
       <div
-        className="_balloon_8e700f"
+        class="_balloon_8e700f"
       >
         <p
-          className="chakra-text bold-small css-0"
+          class="chakra-text bold-small css-0"
         >
           Hello World
         </p>
       </div>
     </div>
-  </div>,
-  <span />,
+  </div>
   <span
-    hidden={true}
+    hidden=""
     id="__chakra_env"
-  />,
-]
+  />
+</div>
 `;

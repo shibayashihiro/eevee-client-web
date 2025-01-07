@@ -4,5 +4,6 @@ mutation AddDeliveryAddress($input: AddDeliveryAddressInput!) {
     deliveryAddress {
       __typename
     }
+    assignedFacilityId
   }
 }

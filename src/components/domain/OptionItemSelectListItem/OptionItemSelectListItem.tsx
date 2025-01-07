@@ -38,7 +38,7 @@ export const OptionItemSelectListItem = ({ item, action, showImage, disabled, ri
       }
     : {};
   return (
-    <HStack color="mono.primary" w="full" minH="56px" {...boxAdditionalProps}>
+    <HStack color="mono.primary" w="full" {...boxAdditionalProps}>
       <OptionItemContent item={item} showImage={showImage} />
       <Spacer />
       {item.status.available ? (
@@ -62,7 +62,7 @@ const OptionItemContent = ({
 }) => {
   const { name, description, image } = item;
   return (
-    <HStack spacing="7px">
+    <HStack spacing="8px">
       {showImage !== undefined && showImage && (
         <Image
           alt={`${name}の画像`}
@@ -73,9 +73,11 @@ const OptionItemContent = ({
           fallback={<NoImage rounded="4px" boxSize="80px" />}
         />
       )}
-      <VStack alignItems="start" spacing="3px">
-        <Text className="text-medium">{name}</Text>
-        {description && <Text className="text-small">{description}</Text>}
+      <VStack alignItems="start" spacing="4px" py="8px">
+        <VStack alignItems="start" spacing="2px">
+          <Text className="text-medium">{name}</Text>
+          {description && <Text className="text-extra-small">{description}</Text>}
+        </VStack>
         <PriceText item={item} />
       </VStack>
     </HStack>

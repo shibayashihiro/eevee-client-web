@@ -1,21 +1,15 @@
-import React from 'react';
-import renderer from 'react-test-renderer';
+import { render } from '@testing-library/react';
 
 import { BalloonToLeft } from '.';
 
-const toJSON = (component: renderer.ReactTestRenderer) => {
-  const result = component.toJSON();
-  expect(result).toBeDefined();
-  expect(result).not.toBeInstanceOf(Array);
-  return result as renderer.ReactTestRendererJSON;
-};
+describe('BalloonToLeft', () => {
+  test('renders correctly', () => {
+    const { container } = render(
+      <BalloonToLeft>
+        <></>
+      </BalloonToLeft>,
+    );
 
-test('render BalloonToLeft', () => {
-  const component = renderer.create(
-    <BalloonToLeft>
-      <></>
-    </BalloonToLeft>,
-  );
-  const tree = toJSON(component);
-  expect(tree).toMatchSnapshot();
+    expect(container.firstChild).toMatchSnapshot();
+  });
 });

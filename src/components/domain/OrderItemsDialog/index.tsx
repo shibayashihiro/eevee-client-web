@@ -36,7 +36,7 @@ export const OrderItemsDialog: FC<Props> = ({ isOpen, onClose, orderItems }: Pro
                 {item.quantity}
               </Text>
               <VStack width="100%" alignItems="left">
-                <Text className="bold-small">{item.menuItem.name}</Text>
+                <Text className="bold-small">{item.name}</Text>
                 <Text className="text-extra-small">
                   <OrderItemOptionItemsText orderItem={item} />
                 </Text>

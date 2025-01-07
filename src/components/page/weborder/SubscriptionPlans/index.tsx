@@ -30,19 +30,22 @@ export const SubscriptionPlansPage: NextPageWithLayout = () => {
     throw new Error('not found');
   }
 
-  return <SubscriptionPlansPageLayout subscription={subscription} user={data.viewer} />;
+  return <SubscriptionPlansPageLayout subscription={subscription} user={data.viewer} tenant={data.viewing} />;
 };
 
 type querySubscriptionType = Exclude<GetSubscriptionPlansPageQuery['viewing']['subscription'], undefined | null>;
+type queryTenantType = GetSubscriptionPlansPageQuery['viewing'];
 type queryPlanType = querySubscriptionType['plans'][0];
 type queryUserType = GetSubscriptionPlansPageQuery['viewer'];
 
 const SubscriptionPlansPageLayout = ({
   subscription,
   user,
+  tenant,
 }: {
   subscription: querySubscriptionType;
   user: queryUserType;
+  tenant: queryTenantType;
 }) => {
   const [selectedPlan, setSelectedPlan] = useState<queryPlanType | null>(null);
 
@@ -113,6 +116,7 @@ const SubscriptionPlansPageLayout = ({
           subscription={subscription}
           plan={selectedPlan}
           user={user}
+          tenant={tenant}
         />
       )}
     </Flex>

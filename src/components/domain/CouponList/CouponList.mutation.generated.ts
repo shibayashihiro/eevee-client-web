@@ -12,6 +12,15 @@ export type SelectCouponMutation = {
   selectCoupon: { __typename: 'SelectCouponPayload'; cart: { __typename: 'Cart' } };
 };
 
+export type SelectTableCouponMutationVariables = Types.Exact<{
+  input: Types.SelectTableCouponInput;
+}>;
+
+export type SelectTableCouponMutation = {
+  __typename: 'Mutation';
+  selectTableCoupon: { __typename: 'SelectTableCouponPayload'; clientMutationId?: string | null };
+};
+
 export const SelectCouponDocument = gql`
   mutation selectCoupon($input: SelectCouponInput!) {
     selectCoupon(input: $input) {
@@ -24,4 +33,15 @@ export const SelectCouponDocument = gql`
 
 export function useSelectCouponMutation() {
   return Urql.useMutation<SelectCouponMutation, SelectCouponMutationVariables>(SelectCouponDocument);
+}
+export const SelectTableCouponDocument = gql`
+  mutation selectTableCoupon($input: SelectTableCouponInput!) {
+    selectTableCoupon(input: $input) {
+      clientMutationId
+    }
+  }
+`;
+
+export function useSelectTableCouponMutation() {
+  return Urql.useMutation<SelectTableCouponMutation, SelectTableCouponMutationVariables>(SelectTableCouponDocument);
 }

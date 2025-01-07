@@ -8,40 +8,48 @@ import { useSubmitTakeoutOrderMutation } from '@/components/domain/TakeoutOrderS
 import { toJpPhoneNumber } from '@/utils/formatUtils';
 import { useConfirmCardPayment } from '@/utils/stripe/useConfirmCardPayment';
 import { localizedMessages } from '@/utils/errors';
+import { useAuthUser } from '@/auth/provider/AuthUserProvider';
+import { useSignInRequiredDialog } from '@/hooks/domain/useSignInRequiredDialog';
 
 import { FixedOrderSubmitButton } from '../FixedOrderSubmitButton';
 import { OrderPrivacyPolicyAgreement } from '../OrderPrivacyPolicyAgreement';
+import { hasError, useCartUserInfoFormState } from '../CartUserInfoForm/provider';
 
 type Props = {
   orderId: string;
-  lastNameKana: string;
-  phoneNumber: string;
-  email: string;
-  disabled: boolean;
+  ageVerified: boolean;
+  isSignInRequired: boolean;
   onAfterOrderSubmitted: () => void;
 };
 
-export const TakeoutOrderSubmit: FC<Props> = ({
-  orderId,
-  lastNameKana,
-  phoneNumber,
-  email,
-  disabled,
-  onAfterOrderSubmitted,
-}) => {
+export const TakeoutOrderSubmit: FC<Props> = ({ orderId, ageVerified, isSignInRequired, onAfterOrderSubmitted }) => {
+  const { isAnonymous } = useAuthUser();
   const [result, submitOrder] = useSubmitTakeoutOrderMutation();
   const { isReady, confirmCardPayment } = useConfirmCardPayment();
 
+  const userInfo = useCartUserInfoFormState();
+  const { familyNameKana, phoneNumber, email } = userInfo;
+
   const { showAlertDialog } = useShowAlertDialog();
   const { handleErrorWithAlertDialog } = useHandleErrorWithAlertDialog();
+  const { renderDialog: renderSignInRequiredDialog, onOpen: openSignInRequiredDialog } = useSignInRequiredDialog();
+
+  const canSubmit = !hasError(userInfo) && ageVerified;
 
   const handleSubmit = useCallback(async () => {
+    if (!canSubmit) {
+      return;
+    }
+    if (isSignInRequired && isAnonymous) {
+      openSignInRequiredDialog('注文するにはログインが必要です');
+      return;
+    }
     const { data, error } = await submitOrder({
       input: {
         clientMutationId: generateMutationId(),
-        lastNameKana: lastNameKana,
+        lastNameKana: familyNameKana,
         phoneNumber: toJpPhoneNumber(phoneNumber),
-        email: email,
+        email,
         orderId,
         liffAccessToken: getLINEToken(),
       },
@@ -61,12 +69,16 @@ export const TakeoutOrderSubmit: FC<Props> = ({
 
     onAfterOrderSubmitted();
   }, [
+    canSubmit,
+    isSignInRequired,
+    isAnonymous,
     submitOrder,
-    lastNameKana,
+    familyNameKana,
     phoneNumber,
     email,
     orderId,
     onAfterOrderSubmitted,
+    openSignInRequiredDialog,
     handleErrorWithAlertDialog,
     confirmCardPayment,
     showAlertDialog,
@@ -77,7 +89,8 @@ export const TakeoutOrderSubmit: FC<Props> = ({
   return (
     <>
       <OrderPrivacyPolicyAgreement />
-      <FixedOrderSubmitButton onSubmit={handleSubmit} disabled={disabled} />
+      <FixedOrderSubmitButton onSubmit={handleSubmit} disabled={!canSubmit} />
+      {renderSignInRequiredDialog()}
     </>
   );
 };

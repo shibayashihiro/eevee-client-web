@@ -10,6 +10,7 @@ fragment OrderConfirmCartParts on Cart {
       }
       memo
       payment {
+        paymentType
         ...PaymentItemParts
       }
       coupon {
@@ -24,6 +25,21 @@ fragment OrderConfirmCartParts on Cart {
     ... on EatInOrder {
       courseMenuItems {
         ...CartCourseMenuItem
+      }
+    }
+
+    ... on TakeoutOrder {
+      paperReceiptRequest {
+        ...PaperReceiptRequestSelection
+      }
+    }
+
+    ... on DeliveryOrder {
+      paperReceiptRequest {
+        ...PaperReceiptRequestSelection
+      }
+      noContactDeliveryOption {
+        requestNoContactDelivery
       }
     }
   }

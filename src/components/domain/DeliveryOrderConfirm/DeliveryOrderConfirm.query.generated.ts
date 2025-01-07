@@ -11,7 +11,10 @@ import { OrderItemOptionItemsTextPartsFragmentDoc } from '../OrderItemOptionItem
 import { PaymentItemPartsFragmentDoc } from '../PaymentItem/PaymentItem.fragment.generated';
 import { CartDisposableItemPartsFragmentDoc } from '../CartDisposableItem/CartDisposableItem.fragment.generated';
 import { CartCourseMenuItemFragmentDoc } from '../CartCourseMenuItem/CartCourseMenuItem.fragment.generated';
+import { PaperReceiptRequestSelectionFragmentDoc } from '../OrderConfirmCart/PaperReceiptRequestSelection.fragment.generated';
 import { PaymentDialogPartsFragmentDoc } from '../PaymentDialog/PaymentDialog.fragment.generated';
+
+import { DeliveryLastOrderInputPartsFragmentDoc } from './DeliveryLastOrderInput.fragment.generated';
 
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 export type GetCartForDeliveryOrderConfirmQueryVariables = Types.Exact<{
@@ -36,6 +39,7 @@ export type GetCartForDeliveryOrderConfirmQuery = {
           showPriceExcludingTax: boolean;
           loyaltyProgramEnabled: boolean;
           itemCodeSearchEnabled: boolean;
+          OnlinePaymentEnabled: boolean;
         };
       }
     | { __typename: 'MenuCategory' }
@@ -58,7 +62,6 @@ export type GetCartForDeliveryOrderConfirmQuery = {
         | {
             __typename: 'DeliveryOrder';
             scheduledTime: string;
-            requirement?: string | null;
             memo?: string | null;
             id: string;
             deliveryAddress: {
@@ -70,14 +73,17 @@ export type GetCartForDeliveryOrderConfirmQuery = {
               roomNumber: string;
               memo?: string | null;
             };
+            requirements?: { __typename: 'Requirements'; requirement: string; requirementLabel: string } | null;
             availablePayments: Array<{
               __typename: 'Payment';
               id: string;
-              last4: string;
+              paymentType: Types.PaymentType;
+              name: string;
               brand: string;
               isSelected: boolean;
-              paymentType: Types.PaymentType;
+              isSignInRequired: boolean;
             }>;
+            noContactDeliveryOption: { __typename: 'NoContactDeliveryOption'; requestNoContactDelivery: boolean };
             charge: {
               __typename: 'Charge';
               amount: number;
@@ -86,6 +92,7 @@ export type GetCartForDeliveryOrderConfirmQuery = {
             items: Array<{
               __typename: 'OrderItem';
               id: string;
+              name: string;
               totalPrice: number;
               quantity: number;
               menuItem: { __typename: 'MenuItem'; id: string; name: string; alcoholicBeverage: boolean };
@@ -98,10 +105,11 @@ export type GetCartForDeliveryOrderConfirmQuery = {
             }>;
             payment?: {
               __typename: 'Payment';
-              last4: string;
+              paymentType: Types.PaymentType;
+              name: string;
               brand: string;
               isSelected: boolean;
-              paymentType: Types.PaymentType;
+              isSignInRequired: boolean;
             } | null;
             coupon?: { __typename: 'Coupon'; id: string; title: string } | null;
             disposableItems: Array<{
@@ -111,6 +119,7 @@ export type GetCartForDeliveryOrderConfirmQuery = {
               price: number;
               selected: boolean;
             }>;
+            paperReceiptRequest?: { __typename: 'PaperReceiptRequest'; needsPaperReceipt: boolean } | null;
           }
         | {
             __typename: 'EatInOrder';
@@ -124,6 +133,7 @@ export type GetCartForDeliveryOrderConfirmQuery = {
             items: Array<{
               __typename: 'OrderItem';
               id: string;
+              name: string;
               totalPrice: number;
               quantity: number;
               menuItem: { __typename: 'MenuItem'; id: string; name: string; alcoholicBeverage: boolean };
@@ -136,10 +146,11 @@ export type GetCartForDeliveryOrderConfirmQuery = {
             }>;
             payment?: {
               __typename: 'Payment';
-              last4: string;
+              paymentType: Types.PaymentType;
+              name: string;
               brand: string;
               isSelected: boolean;
-              paymentType: Types.PaymentType;
+              isSignInRequired: boolean;
             } | null;
             coupon?: { __typename: 'Coupon'; id: string; title: string } | null;
             disposableItems: Array<{
@@ -175,6 +186,7 @@ export type GetCartForDeliveryOrderConfirmQuery = {
             items: Array<{
               __typename: 'OrderItem';
               id: string;
+              name: string;
               totalPrice: number;
               quantity: number;
               menuItem: { __typename: 'MenuItem'; id: string; name: string; alcoholicBeverage: boolean };
@@ -187,10 +199,11 @@ export type GetCartForDeliveryOrderConfirmQuery = {
             }>;
             payment?: {
               __typename: 'Payment';
-              last4: string;
+              paymentType: Types.PaymentType;
+              name: string;
               brand: string;
               isSelected: boolean;
-              paymentType: Types.PaymentType;
+              isSignInRequired: boolean;
             } | null;
             coupon?: { __typename: 'Coupon'; id: string; title: string } | null;
             disposableItems: Array<{
@@ -213,6 +226,7 @@ export type GetCartForDeliveryOrderConfirmQuery = {
             items: Array<{
               __typename: 'OrderItem';
               id: string;
+              name: string;
               totalPrice: number;
               quantity: number;
               menuItem: { __typename: 'MenuItem'; id: string; name: string; alcoholicBeverage: boolean };
@@ -225,10 +239,11 @@ export type GetCartForDeliveryOrderConfirmQuery = {
             }>;
             payment?: {
               __typename: 'Payment';
-              last4: string;
+              paymentType: Types.PaymentType;
+              name: string;
               brand: string;
               isSelected: boolean;
-              paymentType: Types.PaymentType;
+              isSignInRequired: boolean;
             } | null;
             coupon?: { __typename: 'Coupon'; id: string; title: string } | null;
             disposableItems: Array<{
@@ -238,9 +253,11 @@ export type GetCartForDeliveryOrderConfirmQuery = {
               price: number;
               selected: boolean;
             }>;
+            paperReceiptRequest?: { __typename: 'PaperReceiptRequest'; needsPaperReceipt: boolean } | null;
           }
         | null;
     };
+    lastOrderInput?: { __typename: 'LastOrderInput'; lastNameKana: string; phoneNumber: string } | null;
   };
 };
 
@@ -271,12 +288,21 @@ export const GetCartForDeliveryOrderConfirmDocument = gql`
               memo
             }
             scheduledTime
-            requirement
+            requirements {
+              requirement
+              requirementLabel
+            }
             availablePayments {
               ...PaymentDialogParts
             }
+            noContactDeliveryOption {
+              requestNoContactDelivery
+            }
           }
         }
+      }
+      lastOrderInput {
+        ...DeliveryLastOrderInputParts
       }
     }
   }
@@ -289,7 +315,9 @@ export const GetCartForDeliveryOrderConfirmDocument = gql`
   ${PaymentItemPartsFragmentDoc}
   ${CartDisposableItemPartsFragmentDoc}
   ${CartCourseMenuItemFragmentDoc}
+  ${PaperReceiptRequestSelectionFragmentDoc}
   ${PaymentDialogPartsFragmentDoc}
+  ${DeliveryLastOrderInputPartsFragmentDoc}
 `;
 
 export function useGetCartForDeliveryOrderConfirmQuery(

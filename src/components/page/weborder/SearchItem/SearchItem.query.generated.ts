@@ -9,11 +9,12 @@ import { FeatureFlagsForProviderFragmentDoc } from '../../../../providers/Featur
 import {
   NavbarViewingPartsFragmentDoc,
   NavbarViewerPartsFragmentDoc,
+  NavbarMenuViewerFragmentDoc,
 } from '../../../domain/Navbar/Navbar.fragment.generated';
 import { TableCourseMenuStatsHeaderFragmentDoc } from '../../../domain/TableCourseMenuStatsHeader/TableCourseMenuStatsHeader.fragment.generated';
 import { TableCourseMenuForTimerFragmentDoc } from '../../../domain/TableCourseMenuStatsHeader/LastOrderTimer.fragment.generated';
 import { CartFooterButtonPartsFragmentDoc } from '../../../domain/FixedCartFooterButton/FixedCartFooterButton.fragment.generated';
-import { NavbarMenuViewerFragmentDoc } from '../../../domain/Navbar/NavbarMenu.fragment.generated';
+import { GeneralNavbarMenuViewerFragmentDoc } from '../../../domain/Navbar/GeneralNavbarMenu.generated';
 
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 export type GetSearchItemPageQueryVariables = Types.Exact<{
@@ -38,6 +39,7 @@ export type GetSearchItemPageQuery = {
           showPriceExcludingTax: boolean;
           loyaltyProgramEnabled: boolean;
           itemCodeSearchEnabled: boolean;
+          OnlinePaymentEnabled: boolean;
         };
       }
     | { __typename: 'MenuCategory' }
@@ -106,6 +108,7 @@ export const GetSearchItemPageDocument = gql`
   ${CartFooterButtonPartsFragmentDoc}
   ${NavbarViewerPartsFragmentDoc}
   ${NavbarMenuViewerFragmentDoc}
+  ${GeneralNavbarMenuViewerFragmentDoc}
 `;
 
 export function useGetSearchItemPageQuery(options: Omit<Urql.UseQueryArgs<GetSearchItemPageQueryVariables>, 'query'>) {

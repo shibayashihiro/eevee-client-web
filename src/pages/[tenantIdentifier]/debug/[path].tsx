@@ -9,6 +9,8 @@ type Props = {
   debugEnabled: boolean;
 };
 
+const endpoint = process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT;
+
 export const getStaticPaths = (() => {
   const paths = apps.identifiers.map((identifier) => ({ params: { tenantIdentifier: identifier, path: 'info' } }));
   return {
@@ -44,9 +46,14 @@ const DebugPage: NextPageWithLayout<InferGetStaticPropsType<typeof getStaticProp
   };
 
   return (
-    <div>
-      <p>user id: {userId}</p>
-      <button onClick={handleClickCopy}>copy(タップしてください)</button>
+    <div style={{ padding: '20px' }}>
+      <div>
+        <p>user id: {userId}</p>
+        <button type="button" onClick={handleClickCopy}>
+          copy(タップしてください)
+        </button>
+      </div>
+      <div style={{ marginTop: '40px' }}>現在のAPI向き先: {endpoint}</div>
     </div>
   );
 };

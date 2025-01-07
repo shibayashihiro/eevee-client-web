@@ -8,7 +8,7 @@ import router from 'next/router';
 
 import { NavigationHeaderLayout } from '@/components/layouts/NavigationHeaderLayout';
 import { ActionKeyIcon } from '@/components/ui/Icons/ActionKeyIcon';
-import { PinIcon } from '@/components/ui/Icons/PinIcon';
+import { NumberSearchIcon } from '@/components/ui/Icons/PinIcon';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { NextLink } from '@/components/ui/NextLink';
 import { WrappedLink } from '@/components/ui/WrappedLink';
@@ -105,7 +105,7 @@ const InitialHomeView = ({ facilityId, orderType }: { facilityId: string; orderT
       <CardForHome
         title="番号を入力"
         description="メニュー番号を入力して商品を注文する"
-        icon={PinIcon}
+        icon={NumberSearchIcon}
         onClickSet={() => setItemCodeForSearchMethod()}
         href={searchItemPage(facilityId, orderType)}
       />

@@ -1,11 +1,17 @@
-fragment MyPageStampCard on UserLoyaltyCard {
+fragment MyPageStampCard on User {
+  loyaltyCard {
     currentRank {
-        name
-        colorRGB
+      name
+      colorRGB
     }
     activeStampCards {
-        currentPoints
-        maxPointPerPage
-        reward
+      ...MyPageActiveStampCard
     }
+  }
+}
+
+fragment MyPageActiveStampCard on StampCard {
+  currentPoints
+  maxPointPerPage
+  reward
 }

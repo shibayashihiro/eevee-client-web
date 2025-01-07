@@ -21,7 +21,6 @@ query GetWebDeliveryHomeSections($facilityID: ID!, $orderType: OrderType!) {
           ...HomeFacilityInfoSectionParts
           ...HomeMenuItemsSectionParts
           ...HomeMenuCategoriesSectionParts
-          ...SelectOrderTypeSectionParts
         }
       }
     }
@@ -38,6 +37,7 @@ query GetWebDeliveryHomeSections($facilityID: ID!, $orderType: OrderType!) {
         longitude
       }
     }
+    ...HomeHeader
     ...NavbarViewerParts
   }
 

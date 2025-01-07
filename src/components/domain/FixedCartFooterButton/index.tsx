@@ -10,6 +10,7 @@ import { useFeatureFlags } from '@/providers/FeatureFlagsProvider';
 import { OrderType } from '@/graphql/generated/types';
 import { cartPage, tableOrderCartPage } from '@/utils/paths/facilityPages';
 import { useHandleErrorWithAlertDialog } from '@/providers/tenant/GlobalModalDialogProvider/hooks';
+import variables from '@/styles/variables.module.scss';
 
 import { CartWatcher } from '../CartWatcher';
 
@@ -125,7 +126,7 @@ const FixedCartFooterButtonLayout = ({
       _hover={{ cursor: 'pointer', bg: 'brand.primaryText' }}
       _loading={{ opacity: 1 }}
     >
-      <HStack align="center" justify="space-between" w="full">
+      <HStack align="center" justify="space-between" w="full" maxW={variables.containerMaxWidth}>
         <HStack spacing="10px">
           <Icon as={ShoppingCartIcon} boxSize="24px" />
           <Text className="bold-small">

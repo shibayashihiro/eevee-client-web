@@ -34,17 +34,11 @@ export const SelectPlacePrediction: FC<Props> = ({ onClickPlacePrediction }) => 
     [setPlaceKeyword],
   );
 
-  const geneHandleClickPlacePrediction: (place: string) => () => void = useCallback(
-    (place: string) => () => {
-      onClickPlacePrediction(place);
-    },
-    [onClickPlacePrediction],
-  );
 
   return (
-    <VStack spacing="24px">
+    <VStack spacing="24px" mt="24px">
       <InputSearch placeholder="住所・ビル名・地名を入力" h="56px" onChange={handleChangeInput} />
-      <VStack w="full" divider={<StackDivider color="mono.divider" />}>
+      <VStack w="full" spacing="0" divider={<StackDivider color="mono.divider" />}>
         {placeKeyword !== '' &&
           data?.placePredictions?.map((place, i) => (
             <VStack
@@ -56,11 +50,9 @@ export const SelectPlacePrediction: FC<Props> = ({ onClickPlacePrediction }) => 
               _hover={{
                 cursor: 'pointer',
               }}
-              onClick={geneHandleClickPlacePrediction(place.placeId)}
+              onClick={() => onClickPlacePrediction(place.placeId)}
             >
-              <Text className="bold-medium" lineHeight="22px">
-                {place.mainText}
-              </Text>
+              <Text className="bold-medium">{place.mainText}</Text>
               <Text className="text-extra-small" color="mono.secondary">
                 {place.secondaryText}
               </Text>

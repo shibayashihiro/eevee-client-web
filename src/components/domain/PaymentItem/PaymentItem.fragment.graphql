@@ -1,6 +1,7 @@
 fragment PaymentItemParts on Payment {
-    last4
-    brand
-    isSelected
-    paymentType
+  name
+  brand
+  isSelected
+  paymentType
+  isSignInRequired
 }

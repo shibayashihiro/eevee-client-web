@@ -12,6 +12,8 @@ import { useTenantRouter } from '@/providers/tenant/WebOrderPageStateProvider';
 import { creditCardAddPage } from '@/utils/paths/tenantPages';
 import { useLoadingOverlay } from '@/providers/GlobalLoadingSpinnerProvider';
 import { PaymentType } from '@/graphql/generated/types';
+import { useAuthUser } from '@/auth/provider/AuthUserProvider';
+import { useSignInRequiredDialog } from '@/hooks/domain/useSignInRequiredDialog';
 
 type Props = {
   isOpen: boolean;
@@ -40,10 +42,13 @@ export const usePaymentDeleteDialogState = () => {
 };
 
 export const PaymentDialog: FC<Props> = ({ isOpen, onClose, fragment }) => {
+  const { isAnonymous } = useAuthUser();
   const router = useTenantRouter();
 
   const deleteDialogState = usePaymentDeleteDialogState();
   const [updateDefaultResult, updateDefault] = useUpdateDefaultPaymentMutation();
+
+  const { renderDialog: renderSignInRequiredDialog, onOpen: openSignInRequiredDialog } = useSignInRequiredDialog();
 
   const handleOnClickAddCreditCard = useCallback(async () => {
     await router.push(creditCardAddPage);
@@ -51,6 +56,11 @@ export const PaymentDialog: FC<Props> = ({ isOpen, onClose, fragment }) => {
 
   const handleOnClickUpdateSelect = async (item: PaymentDialogPartsFragment) => {
     if (item.isSelected) return;
+
+    if (item.isSignInRequired && isAnonymous) {
+      openSignInRequiredDialog(`${item.name}をするにはログインが必要です`);
+      return;
+    }
 
     await updateDefault({
       input: {
@@ -85,10 +95,10 @@ export const PaymentDialog: FC<Props> = ({ isOpen, onClose, fragment }) => {
           onClick: onClose,
         }}
       >
-        <VStack align="start">
+        <VStack align="start" spacing="0">
           <Text
             className="bold-extra-small"
-            mt="32px"
+            mt="0"
             pb="8px"
             w="full"
             color={variables.monoSecondary}
@@ -99,7 +109,7 @@ export const PaymentDialog: FC<Props> = ({ isOpen, onClose, fragment }) => {
           </Text>
           {creditCardList.length > 0 && (
             <>
-              <Box mt="8px" mb="16px" w="full">
+              <Box my="0" w="full">
                 <OrderedList styleType="none" marginStart="0px">
                   {creditCardList.map((item) => (
                     <React.Fragment key={item.id}>
@@ -121,7 +131,7 @@ export const PaymentDialog: FC<Props> = ({ isOpen, onClose, fragment }) => {
           </Link>
         </VStack>
         {registerPayment && (
-          <VStack align="start">
+          <VStack align="start" spacing="0">
             <Text
               className="bold-extra-small"
               mt="32px"
@@ -133,7 +143,7 @@ export const PaymentDialog: FC<Props> = ({ isOpen, onClose, fragment }) => {
             >
               その他の支払い方法
             </Text>
-            <Box mt="8px" mb="16px" w="full">
+            <Box mt="0" mb="16px" w="full">
               <OrderedList styleType="none" marginStart="0px">
                 <React.Fragment key={registerPayment.id}>
                   <PaymentListItem
@@ -147,6 +157,7 @@ export const PaymentDialog: FC<Props> = ({ isOpen, onClose, fragment }) => {
           </VStack>
         )}
       </ModalDialog>
+      {renderSignInRequiredDialog()}
     </>
   );
 };

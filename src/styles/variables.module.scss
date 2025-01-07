@@ -4,6 +4,7 @@
  */
 
 $container-max-width: 640px;
+$page-max-width: 100%;
 
 /**
  * Colors
@@ -43,4 +44,5 @@ $text-32px: 32px;
   monoError: $mono-error;
   errorBackground: $error-background;
   containerMaxWidth: $container-max-width;
+  pageMaxWidth: $page-max-width;
 }

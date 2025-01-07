@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`render BalloonToLeft 1`] = `
+exports[`BalloonToLeft > renders correctly 1`] = `
 <div
-  className="_balloon_8e700f"
+  class="_balloon_8e700f"
 />
 `;

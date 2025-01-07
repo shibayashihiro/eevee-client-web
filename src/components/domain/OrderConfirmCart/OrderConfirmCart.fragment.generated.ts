@@ -17,6 +17,7 @@ export type OrderConfirmCartPartsFragment = {
         items: Array<{
           __typename: 'OrderItem';
           id: string;
+          name: string;
           totalPrice: number;
           quantity: number;
           menuItem: { __typename: 'MenuItem'; id: string; name: string; alcoholicBeverage: boolean };
@@ -29,10 +30,11 @@ export type OrderConfirmCartPartsFragment = {
         }>;
         payment?: {
           __typename: 'Payment';
-          last4: string;
+          paymentType: Types.PaymentType;
+          name: string;
           brand: string;
           isSelected: boolean;
-          paymentType: Types.PaymentType;
+          isSignInRequired: boolean;
         } | null;
         coupon?: { __typename: 'Coupon'; id: string; title: string } | null;
         disposableItems: Array<{
@@ -42,6 +44,8 @@ export type OrderConfirmCartPartsFragment = {
           price: number;
           selected: boolean;
         }>;
+        paperReceiptRequest?: { __typename: 'PaperReceiptRequest'; needsPaperReceipt: boolean } | null;
+        noContactDeliveryOption: { __typename: 'NoContactDeliveryOption'; requestNoContactDelivery: boolean };
       }
     | {
         __typename: 'EatInOrder';
@@ -54,6 +58,7 @@ export type OrderConfirmCartPartsFragment = {
         items: Array<{
           __typename: 'OrderItem';
           id: string;
+          name: string;
           totalPrice: number;
           quantity: number;
           menuItem: { __typename: 'MenuItem'; id: string; name: string; alcoholicBeverage: boolean };
@@ -66,10 +71,11 @@ export type OrderConfirmCartPartsFragment = {
         }>;
         payment?: {
           __typename: 'Payment';
-          last4: string;
+          paymentType: Types.PaymentType;
+          name: string;
           brand: string;
           isSelected: boolean;
-          paymentType: Types.PaymentType;
+          isSignInRequired: boolean;
         } | null;
         coupon?: { __typename: 'Coupon'; id: string; title: string } | null;
         disposableItems: Array<{
@@ -104,6 +110,7 @@ export type OrderConfirmCartPartsFragment = {
         items: Array<{
           __typename: 'OrderItem';
           id: string;
+          name: string;
           totalPrice: number;
           quantity: number;
           menuItem: { __typename: 'MenuItem'; id: string; name: string; alcoholicBeverage: boolean };
@@ -116,10 +123,11 @@ export type OrderConfirmCartPartsFragment = {
         }>;
         payment?: {
           __typename: 'Payment';
-          last4: string;
+          paymentType: Types.PaymentType;
+          name: string;
           brand: string;
           isSelected: boolean;
-          paymentType: Types.PaymentType;
+          isSignInRequired: boolean;
         } | null;
         coupon?: { __typename: 'Coupon'; id: string; title: string } | null;
         disposableItems: Array<{
@@ -141,6 +149,7 @@ export type OrderConfirmCartPartsFragment = {
         items: Array<{
           __typename: 'OrderItem';
           id: string;
+          name: string;
           totalPrice: number;
           quantity: number;
           menuItem: { __typename: 'MenuItem'; id: string; name: string; alcoholicBeverage: boolean };
@@ -153,10 +162,11 @@ export type OrderConfirmCartPartsFragment = {
         }>;
         payment?: {
           __typename: 'Payment';
-          last4: string;
+          paymentType: Types.PaymentType;
+          name: string;
           brand: string;
           isSelected: boolean;
-          paymentType: Types.PaymentType;
+          isSignInRequired: boolean;
         } | null;
         coupon?: { __typename: 'Coupon'; id: string; title: string } | null;
         disposableItems: Array<{
@@ -166,6 +176,7 @@ export type OrderConfirmCartPartsFragment = {
           price: number;
           selected: boolean;
         }>;
+        paperReceiptRequest?: { __typename: 'PaperReceiptRequest'; needsPaperReceipt: boolean } | null;
       }
     | null;
 };
@@ -183,6 +194,7 @@ export const OrderConfirmCartPartsFragmentDoc = gql`
         }
         memo
         payment {
+          paymentType
           ...PaymentItemParts
         }
         coupon {
@@ -196,6 +208,19 @@ export const OrderConfirmCartPartsFragmentDoc = gql`
       ... on EatInOrder {
         courseMenuItems {
           ...CartCourseMenuItem
+        }
+      }
+      ... on TakeoutOrder {
+        paperReceiptRequest {
+          ...PaperReceiptRequestSelection
+        }
+      }
+      ... on DeliveryOrder {
+        paperReceiptRequest {
+          ...PaperReceiptRequestSelection
+        }
+        noContactDeliveryOption {
+          requestNoContactDelivery
         }
       }
     }

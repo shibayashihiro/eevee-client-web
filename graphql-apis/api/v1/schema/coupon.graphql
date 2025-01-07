@@ -1,19 +1,31 @@
 type Coupon implements Node {
-    id: ID!
-    title: String!
-    subTitle: String!
-    image: String!
-    statusLabel: String!
+  id: ID!
+  title: String!
+  subTitle: String!
+  image: String!
+  statusLabel: String!
+  # 手動で利用(通称スワイプ消し込み)可能かどうか
+  canManualUse: Boolean!
 
-    details: [CouponDetail!]!
+  details: [CouponDetail!]!
 }
 
 type CouponDetail {
-    name: String!
-    value: String!
+  name: String!
+  value: String!
 }
 
 type CouponConnection {
-    nodes: [Coupon!]!
-    pageInfo: PageInfo!
+  nodes: [Coupon!]!
+  pageInfo: PageInfo!
+}
+
+input UseCouponInput {
+  clientMutationId: String
+
+  couponId: ID!
+}
+
+extend type Mutation {
+  useCoupon(input: UseCouponInput!): Coupon!
 }

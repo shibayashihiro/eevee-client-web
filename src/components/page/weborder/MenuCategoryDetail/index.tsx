@@ -8,7 +8,6 @@ import { captureException } from '@sentry/nextjs';
 import { containerMarginX } from '@/utils/constants';
 import { OrderType, ScheduledOrderTime } from '@/graphql/generated/types';
 import { isFacility, isMenuCategory, useAdditionalTypeNamesContext } from '@/graphql/helper';
-import { Navbar } from '@/components/domain/Navbar';
 import {
   GetMoreMenuCategoryItemsDocument,
   GetMoreMenuCategoryItemsQuery,
@@ -24,6 +23,7 @@ import { useFacilityId, useTenantRouter } from '@/providers/tenant/WebOrderPageS
 import { CarouselItemPrice } from '@/components/domain/MenuCategoryCarousel/CarouselItemPrice';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { InfiniteScroll } from '@/components/ui/InfiniteScroll';
+import { NavigationHeaderLayout } from '@/components/layouts/NavigationHeaderLayout';
 
 import { MenuCategoryItemsFragment } from './MenuCategoryDetail.fragment.generated';
 
@@ -88,22 +88,28 @@ const MenuCategoryDetail: NextPageWithLayout = () => {
   return (
     <>
       {data && data.facility && isFacility(data.facility) && (
-        <Navbar viewing={data.viewing} viewer={data.viewer} facility={data.facility} orderType={orderType} />
-      )}
-      {menuCategory && isMenuCategory(menuCategory) && (
-        <Box py="40px">
-          <VStack ml={containerMarginX} align="left">
-            <Text mr="20px" className="bold-large">
-              {menuCategory.name}
-            </Text>
-            <Divider pt="32px" />
-          </VStack>
-          <MenuCategoryItemsList
-            category={menuCategory}
-            showPriceExcludingTax={showPriceExcludingTax}
-            orderType={orderType}
-          />
-        </Box>
+        <NavigationHeaderLayout
+          viewing={data.viewing}
+          viewer={data.viewer}
+          facility={data.facility}
+          orderType={orderType}
+        >
+          {menuCategory && isMenuCategory(menuCategory) && (
+            <Box as="main" pt="24px" pb="40px">
+              <VStack ml={containerMarginX} align="left">
+                <Text mr="20px" className="bold-large">
+                  {menuCategory.name}
+                </Text>
+                <Divider pt="12px" />
+              </VStack>
+              <MenuCategoryItemsList
+                category={menuCategory}
+                showPriceExcludingTax={showPriceExcludingTax}
+                orderType={orderType}
+              />
+            </Box>
+          )}
+        </NavigationHeaderLayout>
       )}
     </>
   );

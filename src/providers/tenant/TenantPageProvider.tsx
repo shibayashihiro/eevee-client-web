@@ -62,6 +62,8 @@ export const TenantPageProvider: FC<Props> = ({ children }) => {
 
   const { tenantIdentifier, facilityId } = router.query;
   const { title, favicon } = cfg.pageMeta;
+
+  const firebaseAuthProject = cfg.firebaseAuthProject ?? 'default';
   return (
     <>
       <Head>
@@ -76,15 +78,13 @@ export const TenantPageProvider: FC<Props> = ({ children }) => {
         facilityId={facilityId}
         orderType={orderType}
         uiCustomization={cfg.uiCustomization}
+        usingOriginalIdProvider={firebaseAuthProject !== 'default'}
       >
         <ChakraWithThemeProvider appColor={cfg.appColor}>
           <GlobalLoadingSpinnerProvider>
             <GlobalDialogProvider>
               <LIFFProvider liffId={cfg.liffId ?? null}>
-                <AuthWithUrqlClientProvider
-                  tenantId={cfg.tenantUidHeader}
-                  authProject={cfg.firebaseAuthProject ?? 'default'}
-                >
+                <AuthWithUrqlClientProvider tenantId={cfg.tenantUidHeader} authProject={firebaseAuthProject}>
                   {children}
                 </AuthWithUrqlClientProvider>
               </LIFFProvider>

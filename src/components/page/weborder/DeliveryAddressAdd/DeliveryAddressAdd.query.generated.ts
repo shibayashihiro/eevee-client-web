@@ -2,8 +2,6 @@ import gql from 'graphql-tag';
 import * as Urql from 'urql';
 
 import * as Types from '../../../../graphql/generated/types';
-import { InputAddressesInitializePartsFragmentDoc } from '../../../domain/DeliveryAddressAdd/DeliveryAddressAdd.fragment.generated';
-
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 export type GetPlaceDetailsForInputAddressQueryVariables = Types.Exact<{
   placeId: Types.Scalars['String']['input'];
@@ -11,16 +9,25 @@ export type GetPlaceDetailsForInputAddressQueryVariables = Types.Exact<{
 
 export type GetPlaceDetailsForInputAddressQuery = {
   __typename: 'Query';
-  placeAddress: { __typename: 'PlaceAddress'; prefecture: string; addressLine: string };
+  placeAddress: {
+    __typename: 'PlaceAddress';
+    prefecture: string;
+    addressLine: string;
+    latLng: { __typename: 'LatLng'; latitude: number; longitude: number };
+  };
 };
 
 export const GetPlaceDetailsForInputAddressDocument = gql`
   query GetPlaceDetailsForInputAddress($placeId: String!) {
     placeAddress(placeId: $placeId) {
-      ...InputAddressesInitializeParts
+      prefecture
+      addressLine
+      latLng {
+        latitude
+        longitude
+      }
     }
   }
-  ${InputAddressesInitializePartsFragmentDoc}
 `;
 
 export function useGetPlaceDetailsForInputAddressQuery(

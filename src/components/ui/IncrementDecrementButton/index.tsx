@@ -1,6 +1,6 @@
 import { FC, useCallback } from 'react';
 import { Add, Remove } from '@mui/icons-material';
-import { Center, ButtonGroup, IconButton, Text, HStack } from '@chakra-ui/react';
+import { ButtonGroup, IconButton, Text, HStack } from '@chakra-ui/react';
 
 export type Props = {
   value: number;
@@ -20,25 +20,26 @@ export const IncrementDecrementButton: FC<Props> = ({ value, onChange, min, max 
 
   return (
     <HStack alignItems="center">
-      <ButtonGroup isAttached variant="outline" colorScheme="brand">
+      <ButtonGroup isAttached={false} variant="outline" colorScheme="brand">
         <IconButton
           aria-label="Decrement"
           icon={<Remove />}
-          rounded="22px"
-          borderRightStyle="none"
+          rounded="full"
+          border="1px solid"
           onClick={decrement}
           disabled={min !== undefined && value <= min}
+          _disabled={{
+            color:"mono.divider",
+            borderColor: 'mono.divider',
+          }}
         />
-        <Center px="34px" borderWidth="1px" borderStyle="solid none" borderColor="brand.primary">
-          <Text w="full" color="brand.primaryText" className="text-medium">
-            {value}
-          </Text>
-        </Center>
+        <Text minW="44px" color="brand.primaryText" fontSize="20px" fontWeight="600" textAlign="center" >
+          {value}
+        </Text>
         <IconButton
           aria-label="Increment"
           icon={<Add />}
-          rounded="22px"
-          borderLeftStyle="none"
+          rounded="full"
           onClick={increment}
           disabled={max !== undefined && value >= max}
         />

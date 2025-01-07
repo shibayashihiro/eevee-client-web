@@ -1,3 +1,6 @@
+"""
+HOME(※店舗のHOME)画面に表示するコンテンツの定義
+"""
 type WebHome {
   sections: [WebHomeSection!]!
 }
@@ -16,6 +19,14 @@ union WebHomeSection =
   | CourseMenuCategoriesSection
   | TakeoutSection
 
+"""
+トップページ(※店舗選択前のHOME)に表示するコンテンツの定義
+"""
+type TopPageBannerSections {
+  bannerSection: BannerSection!
+  # ナビゲーションもバナーで表現する
+  navigationItemsSection: BannerSection!
+}
 
 type MenuItemsSection {
   title: String!
@@ -75,12 +86,17 @@ type Banner {
   title: String!
   message: String!
   behavior: BannerInteractionBehavior!
+  image: String!
+  url: String
 
   # 追加でアイコンも必要になりそうだが、まだパターンは1つしかないため、必要になった時に追加する
 }
 
 # バナーの振る舞い
 enum BannerInteractionBehavior {
+  # 外部リンク(この場合urlフィールドを返す)
+  EXTERNAL_LINK
+  # 注文履歴へ遷移
   SHOW_ORDER_HISTORY
 }
 

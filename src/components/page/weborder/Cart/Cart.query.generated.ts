@@ -5,13 +5,16 @@ import * as Types from '../../../../graphql/generated/types';
 import {
   NavbarViewingPartsFragmentDoc,
   NavbarViewerPartsFragmentDoc,
+  NavbarMenuViewerFragmentDoc,
+  NavbarMenuFacilityFragmentDoc,
 } from '../../../domain/Navbar/Navbar.fragment.generated';
 import { DeliveryAddressDialogPartsFragmentDoc } from '../../../domain/DeliveryAddressDialog/DeliveryAddressDialog.fragment.generated';
 import { PaymentDialogPartsFragmentDoc } from '../../../domain/PaymentDialog/PaymentDialog.fragment.generated';
+import { PaymentItemPartsFragmentDoc } from '../../../domain/PaymentItem/PaymentItem.fragment.generated';
 import {
-  NavbarMenuViewerFragmentDoc,
-  NavbarMenuFacilityFragmentDoc,
-} from '../../../domain/Navbar/NavbarMenu.fragment.generated';
+  GeneralNavbarMenuViewerFragmentDoc,
+  GeneralNavbarMenuFacilityFragmentDoc,
+} from '../../../domain/Navbar/GeneralNavbarMenu.generated';
 import { FeatureFlagsForProviderFragmentDoc } from '../../../../providers/FeatureFlagsProvider/FeatureFlagsProvider.fragment.generated';
 
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
@@ -36,10 +39,11 @@ export type GetTenantForNavbarQuery = {
     payments: Array<{
       __typename: 'Payment';
       id: string;
-      last4: string;
+      paymentType: Types.PaymentType;
+      name: string;
       brand: string;
       isSelected: boolean;
-      paymentType: Types.PaymentType;
+      isSignInRequired: boolean;
     }>;
     profile?: { __typename: 'Profile'; imageUrl: string } | null;
     loyaltyCard?: { __typename: 'UserLoyaltyCard' } | null;
@@ -58,6 +62,7 @@ export type GetTenantForNavbarQuery = {
           showPriceExcludingTax: boolean;
           loyaltyProgramEnabled: boolean;
           itemCodeSearchEnabled: boolean;
+          OnlinePaymentEnabled: boolean;
         };
       }
     | { __typename: 'MenuCategory' }
@@ -92,9 +97,12 @@ export const GetTenantForNavbarDocument = gql`
   ${NavbarViewingPartsFragmentDoc}
   ${DeliveryAddressDialogPartsFragmentDoc}
   ${PaymentDialogPartsFragmentDoc}
+  ${PaymentItemPartsFragmentDoc}
   ${NavbarViewerPartsFragmentDoc}
   ${NavbarMenuViewerFragmentDoc}
+  ${GeneralNavbarMenuViewerFragmentDoc}
   ${NavbarMenuFacilityFragmentDoc}
+  ${GeneralNavbarMenuFacilityFragmentDoc}
   ${FeatureFlagsForProviderFragmentDoc}
 `;
 

@@ -18,6 +18,7 @@ query GetSubscriptionPlansPage {
 
       ...SubscriptionForRegistrationProcess
     }
+    privacyPolicyUrl
   }
 
   viewer {

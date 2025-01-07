@@ -5,9 +5,10 @@ import { PrimaryButton } from '@/components/ui/Button';
 type Props = {
   onSubmit: () => Promise<void>;
   disabled: boolean;
+  submitLabel?: string;
 };
 
-export const FixedOrderSubmitButton = ({ onSubmit, disabled }: Props) => {
+export const FixedOrderSubmitButton = ({ onSubmit, disabled, submitLabel }: Props) => {
   return (
     <VStack
       py="16px"
@@ -21,7 +22,7 @@ export const FixedOrderSubmitButton = ({ onSubmit, disabled }: Props) => {
       bottom="0"
     >
       <PrimaryButton h="56px" rounded="32px" onClick={onSubmit} isDisabled={disabled}>
-        この内容で注文する
+        {submitLabel ? submitLabel : 'この内容で注文する'}
       </PrimaryButton>
     </VStack>
   );

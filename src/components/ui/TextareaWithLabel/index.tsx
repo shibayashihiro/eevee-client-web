@@ -11,11 +11,11 @@ type WithLabelProps = TextareaProps & {
 export const TextareaWithLabel: FC<WithLabelProps> = (props) => {
   const { id, label, ...textareaProps } = props;
   return (
-    <VStack w={textareaProps.w} width={textareaProps.width} alignItems="start">
-      <FormLabel htmlFor={id} className="bold-extra-small" color="mono.secondary">
+    <VStack w={textareaProps.w} width={textareaProps.width} alignItems="start" spacing="0">
+      <FormLabel htmlFor={id} mb="4px" fontWeight="bold" fontSize="extra-small" color="mono.secondary">
         {label}
       </FormLabel>
-      <Textarea id={id} className="bold-medium" bg="mono.bg" color="mono.primary" {...textareaProps} />
+      <Textarea id={id} className="bold-medium" bg="mono.bg" color="mono.primary" border="0" {...textareaProps} />
     </VStack>
   );
 };
