@@ -1,31 +1,60 @@
-import { Box, Divider, HStack, Icon, ListItem, OrderedList, Text, useDisclosure, VStack } from '@chakra-ui/react';
+import {
+  Box,
+  Divider,
+  HStack,
+  Icon,
+  ListItem,
+  OrderedList,
+  Text,
+  useDisclosure,
+  VStack,
+  Container,
+} from '@chakra-ui/react';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import React from 'react';
 
 import { NextPageWithLayout } from '@/types';
-import { OrderType, DateInput, ScheduledOrderTimeType, ScheduledOrderTimeItem } from '@/graphql/generated/types';
+import {
+  OrderType,
+  DateInput,
+  ScheduledOrderTimeType,
+  ScheduledOrderTimeItem,
+  DeliveryType,
+  UpdateScheduledOrderTimeInput,
+} from '@/graphql/generated/types';
 import { useFacilityId, useTenantRouter } from '@/providers/tenant/WebOrderPageStateProvider';
 import { useHandleErrorWithAlertDialog } from '@/providers/tenant/GlobalModalDialogProvider/hooks';
 import { useGlobalLoadingSpinnerDispatch, useLoadingOverlay } from '@/providers/GlobalLoadingSpinnerProvider';
 import { PrimaryButton, SecondaryButton } from '@/components/ui/Button';
+import { InsideNavbar } from '@/components/ui/InsideNavbar';
 import { ModalDialog } from '@/components/ui/ModalDialog';
 import { CheckIcon } from '@/components/ui/Icons/CheckIcon';
 import { generateMutationId } from '@/graphql/helper';
 import { useUpdateScheduledOrderTimeMutation } from '@/components/domain/ScheduledOrderTimeListDialog/ScheduledOrderTimeListDialog.mutation.generated';
+import { containerMarginX } from '@/utils/constants';
 
 import { useGetScheduledOrderTimeListByDateQuery } from './scheduledOrderTimesByDate.fragment.generated';
 import { CalendarComponent } from './Calender';
 
+export const genOrderDateSelectionPage = (orderType: OrderType): NextPageWithLayout => {
+  return function OrderDateSelection() {
+    return <OrderDateSelectionPage orderType={orderType} />;
+  };
+};
+
+type Props = {
+  orderType: OrderType;
+};
+
 // 現状はテイクアウトのみの対応
-const OrderDateSelection: NextPageWithLayout = () => {
+const OrderDateSelectionPage = ({ orderType }: Props) => {
   const router = useTenantRouter();
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedScheduledOrderTimeItem, setSelectedScheduledOrderTimeItem] = useState<ScheduledOrderTimeItem | null>(
     null,
   );
   const facilityId = useFacilityId();
-  const orderType = OrderType.Takeout;
 
   const itemListDialogState = useDisclosure();
   const setLoading = useGlobalLoadingSpinnerDispatch();
@@ -48,21 +77,24 @@ const OrderDateSelection: NextPageWithLayout = () => {
   const onSubmit = async () => {
     if (!selectedScheduledOrderTimeItem) return;
     setLoading(true);
-    const { error } = await updateSchedule({
-      input: {
-        clientMutationId: generateMutationId(),
-        type: ScheduledOrderTimeType.ScheduleDate,
-        orderType: orderType,
-        facilityId: facilityId,
-        maxArrival: selectedScheduledOrderTimeItem.maxArrival,
-        minArrival: selectedScheduledOrderTimeItem.minArrival,
-        date: {
-          year: selectedDate!.getFullYear(),
-          month: selectedDate!.getMonth() + 1,
-          day: selectedDate!.getDate(),
-        },
+
+    const input: UpdateScheduledOrderTimeInput = {
+      clientMutationId: generateMutationId(),
+      type: ScheduledOrderTimeType.ScheduleDate,
+      orderType: orderType,
+      facilityId: facilityId,
+      maxArrival: selectedScheduledOrderTimeItem.maxArrival,
+      minArrival: selectedScheduledOrderTimeItem.minArrival,
+      date: {
+        year: selectedDate!.getFullYear(),
+        month: selectedDate!.getMonth() + 1,
+        day: selectedDate!.getDate(),
       },
-    });
+    };
+    if (orderType == OrderType.Delivery) {
+      input.deliveryType = DeliveryType.PreOrder; // 日時指定は常に予約注文
+    }
+    const { error } = await updateSchedule({ input });
     setLoading(false);
     if (error) {
       handleErrorWithAlertDialog(error);
@@ -72,30 +104,29 @@ const OrderDateSelection: NextPageWithLayout = () => {
 
   return (
     <>
-      <Box style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-        <Box as="main" flex="1">
-          <VStack flex={1} spacing={4} alignItems="start" px={30} py={20} overflowY="auto">
-            <Text fontSize={18} fontWeight="bold">
-              受け取り日付を選択してください
-            </Text>
-            <CalendarComponent
-              orderType={orderType}
-              handleDateSelect={handleDateSelect}
-              isSelected={(date) => selectedDate?.toDateString() === date.toDateString()}
-            />
-            <TimeRangeSection
-              selectedDate={selectedDate}
-              selectedScheduledOrderTimeItem={selectedScheduledOrderTimeItem}
-              onClick={() => selectedDate && itemListDialogState.onOpen()}
-            />
-          </VStack>
-        </Box>
-        <Footer
-          onCancel={() => router.back()}
-          onSubmit={onSubmit}
-          notReadyToSubmit={selectedDate == null || selectedScheduledOrderTimeItem == null}
-        />
-      </Box>
+      <InsideNavbar title="日時を指定する" />
+      <Container as="main" px={containerMarginX}>
+        <VStack flex={1} spacing="0" alignItems="start" pt="24px" pb="160px" overflowY="auto">
+          <Text className="bold-large" mb="16px">
+            受け取り日付を選択してください
+          </Text>
+          <CalendarComponent
+            orderType={orderType}
+            handleDateSelect={handleDateSelect}
+            isSelected={(date) => selectedDate?.toDateString() === date.toDateString()}
+          />
+          <TimeRangeSection
+            selectedDate={selectedDate}
+            selectedScheduledOrderTimeItem={selectedScheduledOrderTimeItem}
+            onClick={() => selectedDate && itemListDialogState.onOpen()}
+          />
+        </VStack>
+      </Container>
+      <Footer
+        onCancel={() => router.back()}
+        onSubmit={onSubmit}
+        notReadyToSubmit={selectedDate == null || selectedScheduledOrderTimeItem == null}
+      />
 
       {selectedDate && itemListDialogState.isOpen && (
         <ScheduledOrderTimeListDialog
@@ -131,24 +162,28 @@ const TimeRangeSection = ({
 }) => {
   return (
     <>
-      <Text fontSize={18} fontWeight="bold" mt={20}>
+      <Text className="bold-large" mt="32px" mb="8px">
         時間を選択してください
       </Text>
-      <VStack w="full" opacity={1}>
-        <Divider />
-        <HStack py={4} w="full" justify="space-between" opacity={selectedDate ? 1 : 0.3} onClick={onClick}>
+      <VStack w="full" opacity={1} gap="0">
+        <HStack
+          py="16px"
+          w="full"
+          justify="space-between"
+          opacity={selectedDate ? 1 : 0.3}
+          onClick={onClick}
+          borderTop="1px"
+          borderTopColor="mono.divider"
+          borderBottom="1px"
+          borderBottomColor="mono.divider"
+        >
           {(selectedScheduledOrderTimeItem && (
-            <Text fontSize={14} fontWeight="bold">
+            <Text className="bold-small">
               {selectedScheduledOrderTimeItem.minArrival} 〜 {selectedScheduledOrderTimeItem.maxArrival}
             </Text>
-          )) ?? (
-            <Text fontSize={14} fontWeight="bold">
-              選択してください
-            </Text>
-          )}
-          <Icon as={ChevronRightIcon} w="30px" h="30px" mr="8px" />
+          )) ?? <Text className="bold-small">選択してください</Text>}
+          <Icon as={ChevronRightIcon} w="24px" h="24px" />
         </HStack>
-        <Divider />
       </VStack>
     </>
   );
@@ -166,17 +201,16 @@ const Footer = ({
   return (
     <HStack
       zIndex="sticky"
-      h="56px"
-      p="18px"
       w="full"
       backgroundColor="mono.white"
-      position="sticky"
+      position="fixed"
       bottom="0"
+      // top="100vh"
       left="auto"
-      height="56px"
       justifyContent="space-between"
-      px={30}
-      py={12}
+      px="20px"
+      pt="20px"
+      pb="32px"
       borderTop="1px"
       borderTopColor="mono.divider"
     >
@@ -292,8 +326,6 @@ const ScheduledOrderTimeListDialog = ({
     </ModalDialog>
   );
 };
-
-export default OrderDateSelection;
 
 const isSameDate = (date1: Date, date2?: Date | null): boolean => {
   if (!date2) {

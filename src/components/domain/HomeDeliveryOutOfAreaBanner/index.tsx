@@ -28,7 +28,6 @@ export const HomeDeliveryOutOfAreaBanner: FC<Props> = ({ fragment }: Props) => {
         borderRadius="12px"
         alignItems="left"
         spacing="0px"
-        mt="40px"
         p="16px"
         w="full"
         h="114px"

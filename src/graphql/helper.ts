@@ -75,3 +75,10 @@ export const getOrderType = (obj: GraphQLResult): OrderType => {
 
 // DateTime型はRFC3339形式の文字列(例: 2023-09-04T11:35:45Z)であるため、そのままDateコンストラクタに渡せば良い
 export const dateTimeToDate = (datetime: DateTime): Date => new Date(datetime);
+
+export const isOrderType = (val: unknown): val is OrderType => {
+  if (typeof val !== 'string') {
+    return false;
+  }
+  return Object.values(OrderType).includes(val as OrderType);
+};

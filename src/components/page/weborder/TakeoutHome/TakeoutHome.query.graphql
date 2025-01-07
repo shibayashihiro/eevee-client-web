@@ -17,7 +17,6 @@ query GetWebTakeoutHomeSections($facilityID: ID!, $orderType: OrderType!) {
           ...HomeFacilityInfoSectionParts
           ...HomeMenuItemsSectionParts
           ...HomeMenuCategoriesSectionParts
-          ...SelectOrderTypeSectionParts
           ...HomeInProgressOrderSectionParts
         }
       }

@@ -1,6 +1,6 @@
-import LoginPage from '@/components/page/weborder/Login';
+import { LoginOrSignUp } from '@/components/page/weborder/LoginOrSignUp';
 import { WebOrderLayout } from '@/components/layouts/WebOrderLayout';
 
-LoginPage.getLayout = WebOrderLayout;
+LoginOrSignUp.getLayout = WebOrderLayout;
 
-export default LoginPage;
+export default LoginOrSignUp;

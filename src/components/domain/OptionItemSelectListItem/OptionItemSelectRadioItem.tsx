@@ -15,7 +15,7 @@ export const OptionItemSelectRadioItem = ({ item, showImage, checked, showNext, 
   return (
     <OptionItemSelectListItem
       item={item}
-      action={<CheckboxIcon checked={checked} disabled={!item.status.available} />}
+      action={checked || !showNext ? <CheckboxIcon checked={checked} disabled={!item.status.available} /> : null}
       showImage={showImage}
       rightElement={showNext && !checked && <ShowNextIcon />}
       onClickRow={onClick}

@@ -5,6 +5,8 @@ import * as Types from '../../../../graphql/generated/types';
 import {
   NavbarViewingPartsFragmentDoc,
   NavbarViewerPartsFragmentDoc,
+  NavbarMenuViewerFragmentDoc,
+  NavbarMenuFacilityFragmentDoc,
 } from '../../../domain/Navbar/Navbar.fragment.generated';
 import { MenuItemDetailPartsFragmentDoc } from '../../../domain/MenuItemDetail/MenuItemDetail.fragment.generated';
 import { OwnerCommentPartsFragmentDoc } from '../../../domain/OwnerComment/OwnerComment.fragment.generated';
@@ -22,9 +24,9 @@ import {
   MenuItemOptionForValidationPartsFragmentDoc,
 } from '../../../../utils/domain/selectMenuOptionsReducer.fragment.generated';
 import {
-  NavbarMenuViewerFragmentDoc,
-  NavbarMenuFacilityFragmentDoc,
-} from '../../../domain/Navbar/NavbarMenu.fragment.generated';
+  GeneralNavbarMenuViewerFragmentDoc,
+  GeneralNavbarMenuFacilityFragmentDoc,
+} from '../../../domain/Navbar/GeneralNavbarMenu.generated';
 import { FeatureFlagsForProviderFragmentDoc } from '../../../../providers/FeatureFlagsProvider/FeatureFlagsProvider.fragment.generated';
 
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
@@ -155,6 +157,7 @@ export type GetMenuItemDetailQuery = {
           showPriceExcludingTax: boolean;
           loyaltyProgramEnabled: boolean;
           itemCodeSearchEnabled: boolean;
+          OnlinePaymentEnabled: boolean;
         };
       }
     | { __typename: 'MenuCategory' }
@@ -221,7 +224,9 @@ export const GetMenuItemDetailDocument = gql`
   ${InitialOrderItemForCartItemEditFragmentDoc}
   ${NavbarViewerPartsFragmentDoc}
   ${NavbarMenuViewerFragmentDoc}
+  ${GeneralNavbarMenuViewerFragmentDoc}
   ${NavbarMenuFacilityFragmentDoc}
+  ${GeneralNavbarMenuFacilityFragmentDoc}
   ${FeatureFlagsForProviderFragmentDoc}
 `;
 

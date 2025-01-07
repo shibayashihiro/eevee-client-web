@@ -3,12 +3,13 @@ import { useCallback, useState } from 'react';
 
 import { InsideNavbar } from '@/components/ui/InsideNavbar';
 import { NextPageWithLayout } from '@/types';
-import { containerMarginX } from '@/utils/constants';
 import { InputWithLabel } from '@/components/ui/Input';
 import { PrimaryButton } from '@/components/ui/Button';
 import { useShowAlertDialog } from '@/providers/tenant/GlobalModalDialogProvider/hooks';
 import { ModalDialog } from '@/components/ui/ModalDialog';
-import { useTenantRouter } from '@/providers/tenant/WebOrderPageStateProvider';
+import { useTenantRouter, useUsingOriginalIdProvider } from '@/providers/tenant/WebOrderPageStateProvider';
+import variables from '@/styles/variables.module.scss';
+import { containerMarginX } from '@/utils/constants';
 import {
   useGlobalLoadingSpinnerDispatch,
   useGlobalLoadingSpinnerState,
@@ -19,6 +20,7 @@ const PasswordResetPage: NextPageWithLayout = () => {
   const { sendPasswordResetEmail } = useAuth();
   const router = useTenantRouter();
   const { showAlertDialog } = useShowAlertDialog();
+  const usingOriginalIdProvider = useUsingOriginalIdProvider();
 
   const [email, setEmail] = useState('');
   const loading = useGlobalLoadingSpinnerState();
@@ -55,7 +57,7 @@ const PasswordResetPage: NextPageWithLayout = () => {
   return (
     <>
       <InsideNavbar title="パスワード再設定" onClickBackIcon={handleClickBackIcon} />
-      <VStack mx={containerMarginX} pt="24px" spacing="16px">
+      <VStack mx="auto" pt="24px" px={containerMarginX} pb="32px" spacing="16px" maxW={variables.containerMaxWidth}>
         <Text w="full" className="bold-small">
           パスワードの再設定手続きのご案内を送信します
         </Text>
@@ -65,17 +67,19 @@ const PasswordResetPage: NextPageWithLayout = () => {
               <InputWithLabel
                 id="email"
                 label="メールアドレス"
-                placeholder="food@chompy.com"
+                placeholder="mail@example.com"
                 value={email}
                 onChange={handleChangeEmail}
               />
             </Box>
           </VStack>
         </FormControl>
-        <Text w="full" className="text-extra-small">
-          当アプリをサポートしているChompy(チョンピー)がメールをお送りします。chompy.jp
-          からのメールを受信できるよう設定のご確認をお願いいたします。
-        </Text>
+        {!usingOriginalIdProvider && (
+          <Text w="full" className="text-extra-small">
+            当アプリをサポートしているChompy(チョンピー)がメールをお送りします。chompy.jp
+            からのメールを受信できるよう設定のご確認をお願いいたします。
+          </Text>
+        )}
         <Box w="full" pt="34px">
           <PrimaryButton h="56px" disabled={!submitButtonEnabled} onClick={handleClickSubmit}>
             メールを送信する

@@ -8,13 +8,12 @@ import { useToast } from '@chakra-ui/react';
 
 import { EatInOrderConfirm } from '@/components/domain/EatInOrderConfirm';
 import { OrderCompleted } from '@/components/domain/OrderCompleted';
-import { Navbar } from '@/components/domain/Navbar';
 import { NotFoundError } from '@/utils/errors';
 import { OrderItem, OrderType } from '@/graphql/generated/types';
 import { NextPageWithLayout } from '@/types';
 import { DeliveryOrderConfirm } from '@/components/domain/DeliveryOrderConfirm';
 import { OrderSubmittedDialog } from '@/components/domain/OrderSubmittedDialog';
-import { useFacilityId, useTenantRouter } from '@/providers/tenant/WebOrderPageStateProvider';
+import { useFacilityId, usePromotionEnabled, useTenantRouter } from '@/providers/tenant/WebOrderPageStateProvider';
 import { orderDetailPage } from '@/utils/paths/facilityPages';
 import { useGlobalLoadingSpinnerDispatch, useLoadingOverlay } from '@/providers/GlobalLoadingSpinnerProvider';
 import { TakeoutOrderConfirm } from '@/components/domain/TakeoutOrderConfirm';
@@ -22,6 +21,8 @@ import { EatInTableOrderConfirm } from '@/components/domain/EatInTableOrderConfi
 import { CartMenuItemFragment } from '@/components/domain/CartMenuItem/CartMenuItem.fragment.generated';
 import { useHomePath } from '@/hooks/domain/useHomePath';
 import { isFacility } from '@/graphql/helper';
+import { NavigationHeaderLayout } from '@/components/layouts/NavigationHeaderLayout';
+import { myPageOrderDetail } from '@/utils/paths/tenantPages';
 
 import { useGetTenantForNavbarQuery } from './Cart.query.generated';
 
@@ -86,6 +87,7 @@ const Cart: NextPageWithLayout = () => {
   const [orderedItems, setOrderedItems] = useState<CartMenuItemFragment[]>([]);
   const toast = useToast();
   const facilityId = useFacilityId();
+  const promotionEnabled = usePromotionEnabled();
 
   const router = useTenantRouter();
   if (!isValidQuery(router.query)) {
@@ -119,20 +121,17 @@ const Cart: NextPageWithLayout = () => {
     [router, home, isTableOrder, setLoading, toast],
   );
 
-  const onAfterOrderSubmittedForDelivery = useCallback(
-    (orderId: string) => {
+  const onAfterOrderSubmittedForDeliveryAndTakeout = useCallback(
+    async (orderId: string) => {
       setViewStatus('completed');
-      orderSubmittedDialogState.onOpen(orderId);
+      setLoading(false);
+      if (promotionEnabled) {
+        await router.push(myPageOrderDetail(orderId, { fromSubmitOrder: true }));
+      } else {
+        orderSubmittedDialogState.onOpen(orderId);
+      }
     },
-    [orderSubmittedDialogState],
-  );
-
-  const onAfterOrderSubmittedForTakeout = useCallback(
-    (orderId: string) => {
-      setViewStatus('completed');
-      orderSubmittedDialogState.onOpen(orderId);
-    },
-    [orderSubmittedDialogState],
+    [orderSubmittedDialogState, promotionEnabled, router, setLoading],
   );
 
   const { data, fetching, error } = result;
@@ -151,35 +150,40 @@ const Cart: NextPageWithLayout = () => {
   return (
     <>
       {data.facility && isFacility(data.facility) && (
-        <Navbar viewing={data.tenant} viewer={data.viewer} facility={data.facility} orderType={orderType} />
+        <NavigationHeaderLayout
+          viewing={data.tenant}
+          viewer={data.viewer}
+          facility={data.facility}
+          orderType={orderType}
+        >
+          {/* EatIn */}
+          {viewStatus === 'confirm' &&
+            orderType == OrderType.EatIn &&
+            (isTableOrder ? (
+              <EatInTableOrderConfirm onAfterOrderSubmitted={onAfterOrderSubmittedForEatIn} />
+            ) : (
+              <EatInOrderConfirm onAfterOrderSubmitted={onAfterOrderSubmittedForEatIn} />
+            ))}
+          {viewStatus === 'completed' && orderType == OrderType.EatIn && (
+            <OrderCompleted orderedItems={orderedItems} orderType={OrderType.EatIn} />
+          )}
+
+          {/* Delivery */}
+          {viewStatus === 'confirm' && orderType == OrderType.Delivery && (
+            <DeliveryOrderConfirm onAfterOrderSubmitted={onAfterOrderSubmittedForDeliveryAndTakeout} />
+          )}
+
+          {/* Takeout */}
+          {viewStatus === 'confirm' && orderType == OrderType.Takeout && (
+            <TakeoutOrderConfirm onAfterOrderSubmitted={onAfterOrderSubmittedForDeliveryAndTakeout} />
+          )}
+        </NavigationHeaderLayout>
       )}
       <OrderSubmittedDialog
         isOpen={orderSubmittedDialogState.isOpen}
         onClose={orderSubmittedDialogState.onClose}
         orderType={orderType}
       />
-
-      {/* EatIn */}
-      {viewStatus === 'confirm' &&
-        orderType == OrderType.EatIn &&
-        (isTableOrder ? (
-          <EatInTableOrderConfirm onAfterOrderSubmitted={onAfterOrderSubmittedForEatIn} />
-        ) : (
-          <EatInOrderConfirm onAfterOrderSubmitted={onAfterOrderSubmittedForEatIn} />
-        ))}
-      {viewStatus === 'completed' && orderType == OrderType.EatIn && (
-        <OrderCompleted orderedItems={orderedItems} orderType={OrderType.EatIn} />
-      )}
-
-      {/* Delivery */}
-      {viewStatus === 'confirm' && orderType == OrderType.Delivery && (
-        <DeliveryOrderConfirm onAfterOrderSubmitted={onAfterOrderSubmittedForDelivery} />
-      )}
-
-      {/* Takeout */}
-      {viewStatus === 'confirm' && orderType == OrderType.Takeout && (
-        <TakeoutOrderConfirm onAfterOrderSubmitted={onAfterOrderSubmittedForTakeout} />
-      )}
     </>
   );
 };

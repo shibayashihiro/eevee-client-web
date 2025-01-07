@@ -14,7 +14,6 @@ query GetWebEatInHomeSections($facilityID: ID!, $orderType: OrderType!) {
           ...HomeFacilityInfoSectionParts
           ...HomeMenuItemsSectionParts
           ...HomeMenuCategoriesSectionParts
-          ...SelectOrderTypeSectionParts
           ...HomeBannerSectionParts
           ...HomeCourseMenuCategoriesSection
         }
@@ -29,7 +28,7 @@ query GetWebEatInHomeSections($facilityID: ID!, $orderType: OrderType!) {
 
     table(facilityID: $facilityID) {
       cartRawId
-      ...HomeFacilityInfoSectionCurrentTableParts
+      ...HomeEatInFacilityInfoSectionTable
       ...TableCourseMenuStatsHeader
       mainCourseMenu {
         ...HomeLastOrderPassedBanner

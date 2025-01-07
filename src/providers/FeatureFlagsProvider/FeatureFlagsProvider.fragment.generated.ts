@@ -4,6 +4,7 @@ export type FeatureFlagsForProviderFragment = {
   showPriceExcludingTax: boolean;
   loyaltyProgramEnabled: boolean;
   itemCodeSearchEnabled: boolean;
+  OnlinePaymentEnabled: boolean;
 };
 
 export const FeatureFlagsForProviderFragmentDoc = gql`
@@ -11,5 +12,6 @@ export const FeatureFlagsForProviderFragmentDoc = gql`
     showPriceExcludingTax
     loyaltyProgramEnabled
     itemCodeSearchEnabled
+    OnlinePaymentEnabled
   }
 `;

@@ -1,9 +1,9 @@
-import { HStack, VStack, Text, List, Divider, ListItem } from '@chakra-ui/react';
-import { forwardRef } from 'react';
+import { VStack, Text, List, Divider, ListItem } from '@chakra-ui/react';
+import React, { forwardRef } from 'react';
 
 import { resolveMenuItemOptionInputType } from '@/utils/domain/menuItemOption';
 import { useCartItemEditDispatch, useCartItemEditState } from '@/providers/CartItemEditProvider';
-import { ModalFullscreenDialog } from '@/components/ui/ModalFullscreenDialog';
+import { SwipeableBottomModal } from '@/components/ui/SwipeableBottomModalDialog';
 import { PrimaryButton } from '@/components/ui/Button';
 import { useRefMap } from '@/hooks/useRefMap';
 import { InputErrorMessage } from '@/components/ui/InputErrorMessage';
@@ -74,14 +74,16 @@ export const OptionItemSubOptionEditDialog = () => {
     onClose();
   };
 
+  const hasSelectedItems = selectAllSelectedOptionItems(selectedOptions).length > 0;
+  const buttonText = hasSelectedItems ? 'オプションを選択' : 'オプションを選択しない';
   return (
-    <ModalFullscreenDialog
+    <SwipeableBottomModal
       title={`${viewingItem.item.name}のオプション選択`}
       isOpen={isOpen}
       onClose={onClose}
-      footer={<PrimaryButton onClick={handleClickSubmit}>オプションを選択</PrimaryButton>}
+      footer={<PrimaryButton onClick={handleClickSubmit}>{buttonText}</PrimaryButton>}
     >
-      <VStack spacing="32px" align="stretch">
+      <VStack spacing="0"  align="stretch">
         {viewingItem.item.subOptions.map((option) => (
           <SubOptionInputForm
             key={option.id}
@@ -91,7 +93,7 @@ export const OptionItemSubOptionEditDialog = () => {
           />
         ))}
       </VStack>
-    </ModalFullscreenDialog>
+    </SwipeableBottomModal>
   );
 };
 
@@ -101,7 +103,7 @@ const SubOptionInputForm = forwardRef<HTMLDivElement, { option: SubOption; error
   function SubOptionInputForm(props, ref) {
     const { option, error } = props;
     return (
-      <VStack ref={ref} spacing="16px" align="stretch">
+      <VStack ref={ref} spacing="16px" px="20px" py="16px" align="stretch" bg={error ? 'mono.errorBackground' : 'transparent'}>
         <SubOptionTitle option={option} error={error} />
         <SubOptionItems option={option} />
       </VStack>
@@ -111,13 +113,11 @@ const SubOptionInputForm = forwardRef<HTMLDivElement, { option: SubOption; error
 
 const SubOptionTitle = ({ option, error }: { option: SubOption; error?: string }) => {
   return (
-    <VStack spacing="9px" align="start">
-      <HStack spacing="6px">
-        <Text fontSize="md" fontWeight="semibold">
-          {option.name}
-        </Text>
-        <OptionIsRequiredChip option={option} />
-      </HStack>
+    <VStack spacing="8px" align="start">
+      <VStack spacing="2px" align="start">
+        <Text className="bold-normal">{option.name}</Text>
+        {!error && <OptionIsRequiredChip option={option} />}
+      </VStack>
       {error && <InputErrorMessage message={error} />}
     </VStack>
   );
@@ -126,19 +126,20 @@ const SubOptionTitle = ({ option, error }: { option: SubOption; error?: string }
 const SubOptionItems = ({ option }: { option: SubOption }) => {
   const inputType = resolveMenuItemOptionInputType(option);
   return (
-    <List>
-      <Divider />
+    <List pl="12px" bg="mono.white" borderRadius="4px">
       {option.items.map((item) => (
-        <ListItem key={item.id}>
-          <SubOptionItem
-            optionId={option.id}
-            inputType={inputType}
-            item={item}
-            maxSelectCount={option.maxSelectCount}
-            maxSelectCountPerItem={option.maxSelectCountPerItem}
-          />
+        <React.Fragment key={item.id}>
+          <ListItem pr="12px">
+            <SubOptionItem
+              optionId={option.id}
+              inputType={inputType}
+              item={item}
+              maxSelectCount={option.maxSelectCount}
+              maxSelectCountPerItem={option.maxSelectCountPerItem}
+            />          
+          </ListItem>
           <Divider />
-        </ListItem>
+        </React.Fragment>
       ))}
     </List>
   );

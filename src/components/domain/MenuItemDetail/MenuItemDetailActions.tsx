@@ -1,14 +1,13 @@
 import { UrlObject } from 'url';
 
 import React from 'react';
-import { Box, Center, HStack, Text, useDisclosure, VStack } from '@chakra-ui/react';
+import { Box, HStack, Text, VStack } from '@chakra-ui/react';
 
 import { formatPrice } from '@/utils/formatUtils';
 import { IncrementDecrementButton } from '@/components/ui/IncrementDecrementButton';
 import { PrimaryButton } from '@/components/ui/Button';
 import { useHandleErrorWithAlertDialog } from '@/providers/tenant/GlobalModalDialogProvider/hooks';
 import { OrderType, SelectedOptionItemInput, TaxRateType } from '@/graphql/generated/types';
-import { DeliveryAddressRegistrationDialog } from '@/components/domain/DeliveryAddressRegistrationDialog';
 import { useFacilityId, useTenantRouter } from '@/providers/tenant/WebOrderPageStateProvider';
 import {
   selectCurrentSubtotalPrice,
@@ -23,6 +22,7 @@ import { selectAllSelectedOptionItems, validateOptions } from '@/utils/domain/se
 import { useFeatureFlags } from '@/providers/FeatureFlagsProvider';
 import { searchItemPage } from '@/utils/paths/facilityPages';
 import { isItemSearchMethodItemCodeForm } from '@/utils/localstorage/item_search_method';
+import { useSignInRequiredDialog } from '@/hooks/domain/useSignInRequiredDialog';
 
 import { useAddCartItemMutation, useUpdateCartItemMutation } from './MenuItemDetail.mutation.generated';
 
@@ -45,11 +45,6 @@ export const MenuItemDetailActions = ({
   backTo?: UrlObject;
 }) => {
   const router = useTenantRouter();
-  const {
-    isOpen: deliveryAddressRegistrationDialogIsOpen,
-    onOpen: openDeliveryAddressRegistrationDialog,
-    onClose: closeDeliveryAddressRegistrationDialog,
-  } = useDisclosure();
   const state = useCartItemEditState();
   const dispatch = useCartItemEditDispatch();
   const [addCartItemResult, addCartItem] = useAddCartItemMutation();
@@ -58,6 +53,10 @@ export const MenuItemDetailActions = ({
   const { showPriceExcludingTax } = useFeatureFlags();
   const facilityId = useFacilityId();
   const home = useHomePath(orderType);
+
+  const { renderDialog: renderSignInRequiredDialog, onOpen: openSignInRequiredDialog } = useSignInRequiredDialog({
+    backTo: home,
+  });
 
   const setQuantity = (quantity: number) => dispatch({ type: 'SET_QUANTITY', payload: quantity });
 
@@ -80,7 +79,7 @@ export const MenuItemDetailActions = ({
     }
 
     if (shouldRegisterAddress) {
-      openDeliveryAddressRegistrationDialog();
+      openSignInRequiredDialog('宅配・デリバリーで注文するにはログインが必要です');
       return;
     }
 
@@ -123,7 +122,8 @@ export const MenuItemDetailActions = ({
       await router.push(backTo ?? home);
     } else {
       const isCodeSearchSelected = isItemSearchMethodItemCodeForm();
-      if (isCodeSearchSelected) {
+      //デリバリーは商品コード検索非対応
+      if (isCodeSearchSelected && orderType != OrderType.Delivery) {
         await router.push(searchItemPage(facilityId, orderType));
       } else {
         router.push(home);
@@ -133,15 +133,13 @@ export const MenuItemDetailActions = ({
 
   return (
     <>
-      <Center>
-        <IncrementDecrementButton value={state.quantity} onChange={setQuantity} min={1} />
-      </Center>
       {/* ボタンを下部固定にする */}
       {/* src/components/ui/FixedFooter のコンポーネントを使うようにしたいが、MenuItemDetailの構造が入り組んでてstickyで動くようにできてないので今は断念 */}
       <Box
         position="fixed"
         bottom={0}
-        py="16px"
+        pt="16px"
+        pb="64px"
         w="full"
         maxW={variables.containerMaxWidth}
         px={containerMarginX}
@@ -150,25 +148,27 @@ export const MenuItemDetailActions = ({
         borderTopColor="mono.divider"
         zIndex="sticky"
       >
-        <PrimaryButton
-          onClick={handleSubmit}
-          disabled={!viewerCanAddToCart}
-          isLoading={addCartItemResult.fetching || updateCartItemResult.fetching}
-          h="56px"
-        >
-          <HStack w="full" justify="space-between" align="stretch" alignItems="center">
-            <Text>{isUpdate ? 'カートの内容を更新する' : 'カートに追加する'}</Text>
-            <VStack align="end" spacing={0}>
-              <Text>{formatPrice(showPriceExcludingTax ? subtotalPriceExcludingTax : subtotalPrice)}</Text>
-              {showPriceExcludingTax && <Text className="text-micro">{`(税込${formatPrice(subtotalPrice)})`}</Text>}
+        <HStack justify="space-between" align="center" spacing="20px">
+          <IncrementDecrementButton value={state.quantity} onChange={setQuantity} min={1} />
+          <PrimaryButton
+            onClick={handleSubmit}
+            disabled={!viewerCanAddToCart}
+            isLoading={addCartItemResult.fetching || updateCartItemResult.fetching}
+            h="56px"
+          >
+            <VStack alignItems="center" px="24px" w="full" spacing="0">
+              <Box display="flex" alignItems="center">
+                <Text>{isUpdate ? 'カートの内容を更新する' : 'カートに追加する'}</Text>
+              </Box>
+              <HStack spacing="4px" alignItems="center">
+                <Text>{formatPrice(showPriceExcludingTax ? subtotalPriceExcludingTax : subtotalPrice)}</Text>
+                {showPriceExcludingTax && <Text className="text-micro">{`(税抜${formatPrice(subtotalPriceExcludingTax)})`}</Text>}
+              </HStack>
             </VStack>
-          </HStack>
-        </PrimaryButton>
+          </PrimaryButton>
+        </HStack>
       </Box>
-      <DeliveryAddressRegistrationDialog
-        isOpen={deliveryAddressRegistrationDialogIsOpen}
-        onClose={closeDeliveryAddressRegistrationDialog}
-      />
+      {renderSignInRequiredDialog()}
     </>
   );
 };

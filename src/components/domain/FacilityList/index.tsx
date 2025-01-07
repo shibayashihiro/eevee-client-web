@@ -1,4 +1,4 @@
-import { VStack, HStack, Text, Spinner, Image, StackDivider, Spacer, LinkBox, Box } from '@chakra-ui/react';
+import { VStack, Text, Spinner, StackDivider, Spacer, LinkBox, Box } from '@chakra-ui/react';
 import { FC, useCallback, useMemo } from 'react';
 
 import { useHandleErrorWithAlertDialog } from '@/providers/tenant/GlobalModalDialogProvider/hooks';
@@ -6,7 +6,6 @@ import { meterToKmText } from '@/utils/formatUtils';
 import { OrderType } from '@/graphql/generated/types';
 import { deliveryHome, takeoutHome, eatInHome, initialHome } from '@/utils/paths/facilityPages';
 
-import { AvailableOrderTypeBadge } from '../AvailableOrderTypeBadge';
 import { TenantPageLinkOverlay } from '../TenantPageLink';
 
 import { useGetFacilitiesForFacilityListPageQuery } from './FacilityList.query.generated';
@@ -14,6 +13,7 @@ import { useGetFacilitiesForFacilityListPageQuery } from './FacilityList.query.g
 type Props = {
   location: LatLng | null;
   searchText: string;
+  sortOption: 'nearest' | 'farthest';
 };
 
 type LatLng = {
@@ -21,7 +21,9 @@ type LatLng = {
   longitude: number;
 };
 
-export const FacilityList: FC<Props> = ({ location, searchText }) => {
+const normalizeText = (text: string) => text.replace(/\s+/g, '');
+
+export const FacilityList: FC<Props> = ({ location, searchText, sortOption }) => {
   const [result] = useGetFacilitiesForFacilityListPageQuery({
     variables: {
       location,
@@ -34,16 +36,37 @@ export const FacilityList: FC<Props> = ({ location, searchText }) => {
     if (!data || !data.viewing.facilities) {
       return [];
     }
-    return data.viewing.facilities.filter((facility) => {
+    
+    const normalizedSearchText = normalizeText(searchText); 
+  
+    const filteredFacilities = data.viewing.facilities.filter((facility) => {
       if (facility.availableOrderTypes.length === 0) {
-        // NOTE: availableOrderTypes が空の店舗はOrderTypeの初期状態を決定できず詰むので省く
         return false;
       }
-      // NOTE: アプリだとカタカナによるHITもさせているのでやった方が良いかも
-      const fullAddress = `${facility.address1}${facility.address2}`;
-      return facility.shortName.includes(searchText) || fullAddress.includes(searchText);
+      const fullAddress = `${facility.address1}${facility.address2}`;      
+      
+      const normalizedShortName = normalizeText(facility.shortName);
+      const normalizedFullAddress = normalizeText(fullAddress);
+      
+      return normalizedShortName.includes(normalizedSearchText) || normalizedFullAddress.includes(normalizedSearchText);
     });
-  }, [data, searchText]);
+  
+    if (sortOption === 'nearest') {
+      return filteredFacilities.sort((a, b) => {
+        const aDistance = a.metaByLocation?.distance ?? Infinity;
+        const bDistance = b.metaByLocation?.distance ?? Infinity;
+        return aDistance - bDistance;
+      });
+    } else if (sortOption === 'farthest') {
+      return filteredFacilities.sort((a, b) => {
+        const aDistance = a.metaByLocation?.distance ?? -Infinity;
+        const bDistance = b.metaByLocation?.distance ?? -Infinity;
+        return bDistance - aDistance;
+      });
+    }
+  
+    return filteredFacilities;
+  }, [data, searchText, sortOption]);
 
   const resolveFacilityHomePage = useCallback((facilityId: string, orderType: OrderType): string => {
     switch (orderType) {
@@ -90,25 +113,17 @@ export const FacilityList: FC<Props> = ({ location, searchText }) => {
             }
             passHref
           >
-            <HStack w="full" spacing="12px" alignItems="start">
-              <Image boxSize="88px" alt={`${f.shortName}店舗画像`} src={f.image} objectFit="cover" rounded="4px" />
-              <VStack alignItems="start" spacing="8px">
-                <VStack alignItems="start">
-                  <Text className="bold-medium">{f.shortName}</Text>
-                  {useLocation && (
-                    <Text className="bold-extra-small">現在地から{meterToKmText(f.metaByLocation?.distance ?? 0)}</Text>
-                  )}
-                </VStack>
-                <Text className="text-extra-small" color="mono.secondary">
-                  {`${f.address1}${f.address2}`}
-                </Text>
-                <VStack spacing="6px" alignItems="start">
-                  {f.availableOrderTypes.map((ot, i) => (
-                    <AvailableOrderTypeBadge key={i} availableOrderType={ot} />
-                  ))}
-                </VStack>
+            <VStack alignItems="start" spacing="8px">
+              <VStack alignItems="start">
+                <Text className="bold-medium">{f.shortName}</Text>
+                {useLocation && (
+                  <Text className="bold-extra-small">現在地から{meterToKmText(f.metaByLocation?.distance ?? 0)}</Text>
+                )}
               </VStack>
-            </HStack>
+              <Text className="text-extra-small" color="mono.secondary">
+                {`${f.address1}${f.address2}`}
+              </Text>
+            </VStack>
           </TenantPageLinkOverlay>
         </LinkBox>
       ))}

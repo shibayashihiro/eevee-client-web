@@ -25,7 +25,15 @@ export const ModalFullscreenDialog = ({ title, children, footer, ...props }: Pro
     <Modal {...props} size="full" scrollBehavior="inside">
       <ModalOverlay bg="rgba(51,51,51,0.77)" />
       <ModalContent maxW={variables.containerMaxWidth}>
-        <ModalHeader p="20px" borderBottom="1px solid" borderBottomColor="mono.divider">
+        <ModalHeader
+          display="flex"
+          alignItems="center"
+          px="20px"
+          py="0"
+          minH="60px"
+          borderBottom="1px solid"
+          borderBottomColor="mono.divider"
+        >
           <Header title={title} onClose={props.onClose} />
         </ModalHeader>
         <ModalBody py="24px" px="20px">
@@ -50,7 +58,9 @@ const Header = ({ title, onClose }: { title: string; onClose: () => void }) => {
         onClick={onClose}
         colorScheme="whiteAlpha"
       />
-      <Text>{title}</Text>
+      <Text className="bold-large" lineHeight={1.3}>
+        {title}
+      </Text>
     </HStack>
   );
 };

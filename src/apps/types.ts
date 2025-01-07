@@ -45,4 +45,7 @@ type PageMeta = {
 export type UICustomization = {
   // テナントホーム画面の注意書き（いきなりステーキさま向けに追加: https://chompy-inc.slack.com/archives/C021QNPTXDX/p1697447351970879 )
   tenantHomeNoteText?: string;
+
+  // いきなりステーキさま向けの特別仕様が多いので追加
+  isIkinariSteak?: boolean;
 };

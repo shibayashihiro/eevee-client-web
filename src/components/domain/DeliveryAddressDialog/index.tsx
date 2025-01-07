@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useState } from 'react';
 import { Box, VStack, Text, OrderedList, Divider, useDisclosure } from '@chakra-ui/react';
 
-import { DeliveryAddressCreateButton } from '@/components/domain/DeliveryAddressCreateButton';
+import { AddressRegistrationOptions } from '@/components/domain/AddressRegistrationOptions';
 import { SelectDeliveryAddressItem } from '@/components/domain/DeliveryAddressDialog/SelectDeliveryAddressItem';
 import { UnSelectDeliveryAddressItem } from '@/components/domain/DeliveryAddressDialog/UnSelectDeliveryAddressItem';
 import { useUpdateUsingDeliveryAddressMutation } from '@/components/domain/DeliveryAddressDialog/DeliveryAddressDialog.mutation.generated';
@@ -11,6 +11,7 @@ import { DeliveryAddressDialogPartsFragment } from '@/components/domain/Delivery
 import { ModalDialog } from '@/components/ui/ModalDialog';
 import { toFullAddress } from '@/utils/formatUtils';
 import { useLoadingOverlay } from '@/providers/GlobalLoadingSpinnerProvider';
+import { useHandleErrorWithAlertDialog } from '@/providers/tenant/GlobalModalDialogProvider/hooks';
 
 type Props = {
   isOpen: boolean;
@@ -41,14 +42,18 @@ export const useDeliveryAddressDeleteDialogState = () => {
 export const DeliveryAddressDialog: FC<Props> = ({ isOpen, onClose, fragment }) => {
   const deleteDialogState = useDeliveryAddressDeleteDialogState();
   const [result, updateUsing] = useUpdateUsingDeliveryAddressMutation();
+  const { handleErrorWithAlertDialog } = useHandleErrorWithAlertDialog();
 
   const handleOnClick = async (id: string) => {
-    await updateUsing({
+    const result = await updateUsing({
       input: {
         clientMutationId: generateMutationId(),
         deliveryAddressId: id,
       },
     });
+    if (result.error) {
+      await handleErrorWithAlertDialog(result.error);
+    }
     onClose();
   };
 
@@ -67,14 +72,14 @@ export const DeliveryAddressDialog: FC<Props> = ({ isOpen, onClose, fragment }) 
       <ModalDialog
         isOpen={isOpen}
         onClose={onClose}
-        title="新しいお届け先を登録"
-        linkAction={{
+        title="お届け先を登録してください"
+        secondaryAction={{
           text: '閉じる',
           onClick: onClose,
         }}
       >
         <VStack align="start">
-          <DeliveryAddressCreateButton />
+          <AddressRegistrationOptions />
           {fragment.length > 0 && (
             <>
               <Box pt="24px" w="full">

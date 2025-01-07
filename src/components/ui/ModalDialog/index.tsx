@@ -13,6 +13,9 @@ import {
   useBreakpointValue,
 } from '@chakra-ui/react';
 
+import { containerMarginX } from '@/utils/constants';
+import variables from '@/styles/variables.module.scss';
+
 import { PrimaryButton, SecondaryButton } from '../Button';
 
 type Props = {
@@ -33,6 +36,7 @@ export type ModalButtonAction = {
   onClick: () => void | Promise<void>;
   isLoading?: boolean;
   disabled?: boolean;
+  height?: string;
 };
 
 type ScrollBehavior = 'inside' | 'outside';
@@ -60,7 +64,13 @@ export const ModalDialog: FC<Props> = ({
       scrollBehavior={scrollBehavior}
     >
       <ModalOverlay bg="rgba(51,51,51,0.77)" />
-      <ModalContent mt="auto" mb="12px" p="32px 20px 24px 20px">
+      <ModalContent
+        mt="auto"
+        mb="20px"
+        p="32px 20px 24px 20px"
+        mx={containerMarginX}
+        maxW={variables.containerMaxWidth}
+      >
         {title && (
           <ModalHeader mb="16px" p="0px">
             <Text className="bold-large">{title}</Text>
@@ -72,7 +82,7 @@ export const ModalDialog: FC<Props> = ({
         </ModalBody>
 
         {primaryAction || secondaryAction || linkAction ? (
-          <ModalFooter justifyContent="center" mt="16px" p="0px">
+          <ModalFooter justifyContent="center" mt="24px" p="0px">
             <HStack spacing="11.5px" w="full">
               {secondaryAction && (
                 <SecondaryButton
@@ -88,6 +98,7 @@ export const ModalDialog: FC<Props> = ({
                   onClick={primaryAction.onClick}
                   isLoading={primaryAction?.isLoading}
                   isDisabled={primaryAction?.disabled}
+                  height={primaryAction?.height}
                 >
                   {primaryAction.text}
                 </PrimaryButton>

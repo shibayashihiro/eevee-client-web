@@ -10,12 +10,17 @@ type Tenant implements Node {
   termsOfUseUrl: String!
   privacyPolicyUrl: String!
   specifiedCommercialTransactionActUrl: String!
+  contactUrl: String!
   appPromotion: Promotion
   """
   本来は WebHome(MainVisualSection) を使えるようにするとよさそうだが、そちらは現状Facility用に実装されており
   Tenantの情報だけ欲しい時に取得できないため一旦ここにフィールドを追加している
   """
   mainVisualImage: String!
+  """
+  TOPページのカスタム表示に使う。現状は中規模UIの場合のみ利用
+  """
+  topPageBannerSections: TopPageBannerSections
   """
   Locationを付与すると距離を考慮して返却する
   """
@@ -25,6 +30,14 @@ type Tenant implements Node {
   companyAddress: String!
   tecAlignment: Boolean!
   subscription: TenantSubscription
+  """
+  認証IDの名前。(例: Chompy ID など。)
+  """
+  idProviderName: String!
+  """
+  プロフィールの登録で入力可能なフィールド
+  """
+  userProfileInputFields: [UserProfileInputField!]!
 }
 
 type AccountRegistrationIncentive {

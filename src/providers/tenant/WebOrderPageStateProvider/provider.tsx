@@ -4,11 +4,12 @@ import { createContext } from 'react';
 import { deliveryHome, eatInHome, takeoutHome } from '@/utils/paths/facilityPages';
 import { OrderType } from '@/graphql/generated/types';
 import { home } from '@/utils/paths/tenantPages';
-import { UICustomization } from '@/apps';
+import { apps, UICustomization } from '@/apps';
 
 type State = {
   tenantIdentifier: string;
   tenantUid: string;
+  usingOriginalIdProvider: boolean;
   facilityId?: string;
   orderType?: OrderType;
   uiCustomization?: UICustomization;
@@ -46,6 +47,17 @@ export const useFacilityIdOrNull = (): string | null => {
 export const useUICustomization = (): UICustomization | null => {
   const state = useState();
   return state?.uiCustomization ?? null;
+};
+
+export const useUsingOriginalIdProvider = (): boolean => {
+  const state = useState();
+  return state?.usingOriginalIdProvider ?? false;
+};
+
+export const usePromotionEnabled = (): boolean => {
+  const tenantIdentifier = useTenantIdentifier();
+  const cfg = apps.getConfig(tenantIdentifier);
+  return cfg?.promotionEnabled ?? false;
 };
 
 /**

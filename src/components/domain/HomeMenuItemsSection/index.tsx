@@ -1,13 +1,12 @@
-import React, { FC } from 'react';
-import { Box, Text, SimpleGrid } from '@chakra-ui/react';
+import React, { FC, useCallback, useState } from 'react';
+import { Box, Text, SimpleGrid, Image } from '@chakra-ui/react';
 
-import { MenuItemImage } from '@/components/ui/MenuItemImage';
 import { OrderType } from '@/graphql/generated/types';
-import { menuItemDetailPage } from '@/utils/paths/facilityPages';
-import { useFacilityId } from '@/providers/tenant/WebOrderPageStateProvider';
 import { useFeatureFlags } from '@/providers/FeatureFlagsProvider';
+import { NoImage } from '@/components/ui/NoImage';
+import { SwipeableBottomModal } from '@/components/ui/SwipeableBottomModalDialog';
 
-import { TenantPageLink } from '../TenantPageLink';
+import { MenuItemDetailModalContent } from '../MenuItemDetailMoalContent';
 import { CarouselItemPrice } from '../MenuCategoryCarousel/CarouselItemPrice';
 
 import { HomeMenuItemsSectionPartsFragment } from './HomeMenuItemsSection.fragment.generated';
@@ -18,10 +17,21 @@ type Props = {
   menuItemsSection: HomeMenuItemsSectionPartsFragment;
   orderType: OrderType;
 };
-
+type item = HomeMenuItemsSectionPartsFragment['items'][0];
 export const HomeMenuItemsSection: FC<Props> = ({ menuItemsSection, orderType }: Props) => {
   const { title, items } = menuItemsSection;
-  const facilityId = useFacilityId();
+  const [selectedItem, setSelectedItem] = useState<item | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = useCallback((item: item) => {
+    setSelectedItem(item);
+    setIsModalOpen(true);
+  }, []);
+
+  const closeModal = useCallback(() => {
+    setIsModalOpen(false);
+  }, []);
+
   const imageSize = { base: '160px', md: '272px' };
   const { showPriceExcludingTax } = useFeatureFlags();
   return (
@@ -31,15 +41,17 @@ export const HomeMenuItemsSection: FC<Props> = ({ menuItemsSection, orderType }:
       </Box>
       <SimpleGrid mt="16px" columns={2} spacing="16px">
         {items.map((item, i) => (
-          <Box key={i}>
-            <MenuItemImage
-              href={menuItemDetailPage(facilityId, item.id, orderType)}
-              image={item.image || undefined}
-              name={item.name}
+          <Box key={i} onClick={() => openModal(item)} >
+            <Image
+              src={item.image?.includes('img_placeholder_') ? undefined : item.image}
+              alt={item.name}
               boxSize={imageSize}
+              fallback={<NoImage rounded="4px" boxSize={imageSize} />}
+              rounded="4px"
+              objectFit="cover"
             />
             <Text mt="8px" className="bold-small">
-              <TenantPageLink href={menuItemDetailPage(facilityId, item.id, orderType)}>{item.name}</TenantPageLink>
+              {item.name}
             </Text>
             <Box mt="4px">
               {/* NOTE: ここでCarouselItemPriceを使うのは少し違和感あるが、MenuItemSection自体が現状使われておらず
@@ -53,6 +65,16 @@ export const HomeMenuItemsSection: FC<Props> = ({ menuItemsSection, orderType }:
           </Box>
         ))}
       </SimpleGrid>
+      <SwipeableBottomModal
+        isOpen={isModalOpen && !!selectedItem?.id}
+        onClose={closeModal}
+        title={selectedItem?.name || ''}
+        footer={null}
+      >
+      {selectedItem?.id && (
+        <MenuItemDetailModalContent menuItemId={selectedItem.id} orderType={orderType} /> 
+      )}
+    </SwipeableBottomModal>
     </>
   );
 };

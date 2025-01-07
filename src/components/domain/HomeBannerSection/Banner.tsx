@@ -38,6 +38,9 @@ const useBannerInteractions = (): Record<BannerInteractionBehavior, BannerIntera
     [BannerInteractionBehavior.ShowOrderHistory]: {
       linkTo: tableOrdersPage(facilityId),
     },
+    [BannerInteractionBehavior.ExternalLink]: {
+      linkTo: 'https://example.com',
+    },
   };
 };
 

@@ -1,17 +1,21 @@
-import { Box, HStack, Spacer, VStack, Text, Image } from '@chakra-ui/react';
+import { HStack } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 
 import { OrderType } from '@/graphql/generated/types';
 import { useResolvedHomePath } from '@/providers/tenant/WebOrderPageStateProvider';
 import { validateQueryTenantIdentifier } from '@/utils/validator';
 import { apps } from '@/apps';
+import { home } from '@/utils/paths/tenantPages';
 
+import {
+  NavbarViewerPartsFragment,
+  NavbarViewingPartsFragment,
+  NavbarMenuFacilityFragment,
+} from './Navbar.fragment.generated';
+import { GeneralNavbarMenu } from './GeneralNavbarMenu';
 import { Logo } from './Logo';
-import { NavbarViewerPartsFragment, NavbarViewingPartsFragment } from './Navbar.fragment.generated';
-import { NavbarMenu, ItemSearchMethodButtonType } from './NavbarMenu';
-import { NavbarMenuFacilityFragment } from './NavbarMenu.fragment.generated';
-
-export * from './Navbar.fragment.generated';
+import { ItemSearchMethodButtonType } from './types';
+import { PromotionEnabledNavbarMenu } from './PromotionEnabledNavbarMenu';
 
 type Props = {
   viewing: NavbarViewingPartsFragment;
@@ -21,52 +25,45 @@ type Props = {
   disableHomeLink?: boolean;
   itemSearchMethodButtonType?: ItemSearchMethodButtonType;
   showOrderHistory?: boolean;
+  showTableOrderPayment?: boolean;
 };
 
 export const Navbar = (props: Props) => {
   const { viewing, viewer, facility, disableHomeLink, orderType } = props;
-  const home = useResolvedHomePath();
+  const selectedShopHome = useResolvedHomePath();
   const router = useRouter();
   const cfg = validateQueryTenantIdentifier(router.query) ? apps.getConfig(router.query.tenantIdentifier) : null;
 
   return (
     <HStack
       as="nav"
-      h="80px"
+      h="78px"
       bg="white"
       borderBottomStyle="solid"
-      borderBottomWidth={'4px'}
-      borderBottomColor={ cfg?.promotionEnabled? "brand.primary": "mono.primary"}
-      py="22px"
-      px="20px"
-      justifyContent={'space-between'}
-      alignItems={'center'}
+      borderBottomWidth="2px"
+      borderBottomColor="brand.primary"
+      py="16px"
+      pl="16px"
+      pr="12px"
+      justifyContent="space-between"
+      alignItems="center"
     >
-      <Logo imageUrl={viewing.logo} homePath={disableHomeLink ? undefined : home} />
-      <Spacer />
+      <Logo
+        imageUrl={viewing.logo}
+        homePath={cfg?.promotionEnabled ? home : disableHomeLink ? undefined : selectedShopHome}
+      />
       {cfg?.promotionEnabled ? (
-        <Box px="12px">
-          <NavbarMenu
-            viewer={viewer}
-            facility={facility}
-            orderType={orderType}
-            showOrderHistory={props.showOrderHistory}
-            itemSearchMethodButtonType={props.itemSearchMethodButtonType}
-          />
-        </Box>
+        <PromotionEnabledNavbarMenu />
       ) : (
-      <HStack spacing="24px">
-        <VStack spacing="4px" align="center">
-          <Image src="/assets/icons/memo.svg" boxSize="24px" alt="注文履歴アイコン" /> 
-          <Text fontSize="sm">注文履歴</Text>
-        </VStack>
-
-        <VStack spacing="4px" align="center">
-          <Image src="/assets/icons/help.svg" boxSize="24px" alt="ヘルプアイコン" /> 
-          <Text fontSize="sm">ヘルプ</Text>
-        </VStack>
-      </HStack> 
-      )}     
+        <GeneralNavbarMenu
+          viewer={viewer}
+          facility={facility}
+          orderType={orderType}
+          showOrderHistory={props.showOrderHistory}
+          showTableOrderPayment={props.showTableOrderPayment}
+          itemSearchMethodButtonType={props.itemSearchMethodButtonType}
+        />
+      )}
     </HStack>
   );
 };

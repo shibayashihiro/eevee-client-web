@@ -69,15 +69,14 @@ export const FacilityLocationDialog: FC<Props> = ({ isOpen, onClose }) => {
         }}
       >
         {facility && isFacility(facility) && (
-          <VStack align="start" pt="12px" spacing={0}>
+          <VStack align="start" spacing={0}>
             <Text className="bold-large">{facility.name}</Text>
             <Box h="4px" />
-            <Text className="bold-small" mt="100px">
+            <Text className="bold-small" mt="12px" mb="24px">
               {fullAddress(facility)}
             </Text>
-            <Box h="16px" />
             <CopyToClipboard text={fullAddress(facility)}>
-              <SecondaryButton onClick={onClickShow} h="64px" rounded="20px" borderRadius="2px">
+              <SecondaryButton onClick={onClickShow} h="64px" rounded="20px">
                 <HStack justifyContent={'space-between'} width={'full'}>
                   <Text className="bold-small">住所をコピーする</Text>
                   <Icon as={ContentCopyIcon} boxSize="24px" />

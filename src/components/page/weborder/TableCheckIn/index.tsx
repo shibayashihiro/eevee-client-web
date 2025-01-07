@@ -8,10 +8,10 @@ import { useTenantRouter } from '@/providers/tenant/WebOrderPageStateProvider';
 import { useTableCheckInPageQueryQuery } from '@/components/page/weborder/TableCheckIn/TableCheckIn.query.generated';
 import { isFacility, isTable } from '@/graphql/helper';
 import { useHandleErrorWithAlertDialog } from '@/providers/tenant/GlobalModalDialogProvider/hooks';
-import { Navbar } from '@/components/domain/Navbar';
 import { CustomerAttributeInput, OrderType } from '@/graphql/generated/types';
 import { CustomerAttributeSelect } from '@/components/domain/CustomerAttributeSelect';
 import { useLoadingOverlay } from '@/providers/GlobalLoadingSpinnerProvider';
+import { NavigationHeaderLayout } from '@/components/layouts/NavigationHeaderLayout';
 
 import { useCheckInTableMutation } from './TableCheckIn.mutation.generated';
 
@@ -113,10 +113,14 @@ const CheckInPage: NextPageWithLayout = () => {
         data.facility &&
         isFacility(data.facility) &&
         !table.isCustomerAttributesCollected && (
-          <>
-            <Navbar viewing={data.viewing} viewer={data.viewer} facility={data.facility} orderType={orderType} />
+          <NavigationHeaderLayout
+            viewing={data.viewing}
+            viewer={data.viewer}
+            facility={data.facility}
+            orderType={orderType}
+          >
             <CustomerAttributeSelect onSubmit={onSubmit} />
-          </>
+          </NavigationHeaderLayout>
         )}
     </>
   );

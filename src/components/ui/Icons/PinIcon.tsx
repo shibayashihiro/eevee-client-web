@@ -1,9 +1,9 @@
 import { Icon } from '@chakra-ui/react';
 import { ComponentProps } from 'react';
 
-export const PinIcon = (props: ComponentProps<typeof Icon>) => {
+export const NumberSearchIcon = (props: ComponentProps<typeof Icon>) => {
   return (
-    <Icon {...props} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <Icon {...props} viewBox="0 0 24 24">
       <path
         fillRule="evenodd"
         clipRule="evenodd"

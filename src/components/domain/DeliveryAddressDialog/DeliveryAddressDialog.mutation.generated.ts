@@ -11,6 +11,7 @@ export type UpdateUsingDeliveryAddressMutation = {
   __typename: 'Mutation';
   updateUsingDeliveryAddress: {
     __typename: 'UpdateUsingDeliveryAddressPayload';
+    assignedFacilityId: string;
     deliveryAddress: { __typename: 'DeliveryAddress' };
   };
 };
@@ -33,6 +34,7 @@ export const UpdateUsingDeliveryAddressDocument = gql`
       deliveryAddress {
         __typename
       }
+      assignedFacilityId
     }
   }
 `;

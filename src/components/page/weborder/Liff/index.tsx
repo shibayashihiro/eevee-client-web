@@ -8,7 +8,6 @@ import {
   deliveryHome,
   eatInHome,
   myPageHome,
-  myPageCoupon,
   tableCheckInPage,
   takeoutHome,
   myPageStampCard,
@@ -16,7 +15,7 @@ import {
 } from '@/utils/paths/facilityPages';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { isFacility } from '@/graphql/helper';
-import { debugPage, home, linkOrderPage, subscriptionHomePage } from '@/utils/paths/tenantPages';
+import { debugPage, home, linkOrderPage, myPageCoupon, subscriptionHomePage } from '@/utils/paths/tenantPages';
 
 import { useCheckInTableFromLineMutation } from './LiffRedirect.mutation.generated';
 import { useGetCourseMenuFeatureFlagForLiffInitQuery, useGetTableForLiffInitQuery } from './Liff.query.generated';
@@ -82,7 +81,7 @@ const LIFFEndpointController = () => {
       case 'myStampCard':
         return router.replace(myPageStampCard(destination.facilityId));
       case 'myCoupon':
-        return router.replace(myPageCoupon(destination.facilityId));
+        return router.replace(myPageCoupon);
       case 'subscription':
         return router.replace(subscriptionHomePage);
       case 'home':

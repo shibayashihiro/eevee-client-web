@@ -16,7 +16,19 @@ npm run open
 ### 認証について
 
 LINE Developersにはログイン情報が必要。
-自身のブラウザでログインした状態でCookieをexportするなどして、`tools/line-submission/playwright/.auth/user.json` を作成する必要がある。（TBU: いつか手順をちゃんと書く）
+自身のブラウザでログインした状態でCookieをexportするなどして、`tools/line-submission/playwright/.auth/user.json` を作成する必要がある。
+
+.auth/user.json
+
+```json
+{
+  "cookies": [
+    // (ここにcookiesを貼り付ける。)
+    // 大文字小文字の表記揺れでエラーになるので注意
+    // 例えば `"sameSite": "lax"` => `"sameSite": "Lax"` に修正する必要あり
+  ]
+}
+```
 
 以前は本ツール内でログインも自動でおこなっていたが、LINE側に対策されてしまったため今は使えない。
 

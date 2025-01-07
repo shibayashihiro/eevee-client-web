@@ -8,7 +8,11 @@ export const CreditCardForm = () => {
   return (
     <>
       <Center mb="24px">
-        <Image src="/assets/card_brands.png" alt="CardBrands" h="24px" />
+        <Image
+          src="/assets/card_brands.png"
+          alt="対応クレジットカード：VISA、Mastercard、アメリカン・エキスプレス、JCB、ダイナース、ディスカバー"
+          h="24px"
+        />
       </Center>
       <StripeProvider>
         <StripeCreditCardForm />

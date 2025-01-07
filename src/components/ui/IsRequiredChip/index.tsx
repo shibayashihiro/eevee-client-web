@@ -9,16 +9,19 @@ export type Variants = 'required' | 'optional';
 
 type ChipStyle = {
   fontColor: string;
+  fontWeight: string;
   bgColor: string;
 };
 
 const requiredStyle: ChipStyle = {
   fontColor: 'white',
+  fontWeight: '600',
   bgColor: 'brand.primary',
 } as const;
 
 const optionalStyle: ChipStyle = {
-  fontColor: 'mono.secondary',
+  fontColor: 'mono.primary',  
+  fontWeight: '400',
   bgColor: 'mono.backGround',
 } as const;
 
@@ -33,11 +36,12 @@ export const IsRequiredChip = ({ label, variant }: Props) => {
     <Text
       color={style.fontColor}
       bgColor={style.bgColor}
-      fontSize="12px"
-      fontWeight="semibold"
-      lineHeight="140%"
-      px="6px"
+      className='text-extra-small'
+      fontWeight={style.fontWeight}
+      lineHeight="16.8px"
+      px="4px"
       borderRadius="4px"
+      py="2px"
     >
       {label}
     </Text>

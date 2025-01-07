@@ -1,57 +1,36 @@
 import { FC } from 'react';
 import { ChakraProvider, extendTheme } from '@chakra-ui/react';
 
-import variables from '@/styles/variables.module.scss';
 import { AppColor } from '@/apps';
 import { toString, toStrings } from '@/utils/color';
-
-const breakpoints = {
-  // デザイン仕様に沿ってbreakpointを上書き
-  sm: '320px',
-  md: '640px',
-};
-
-// ChakraUIのThemeを活用しないと一部のComponent(Radio、Checkbox)のスタイリングが厳しかったためThemeをextendするようにしている
-const baseTheme = {
-  breakpoints,
-  colors: {
-    black: variables.monoPrimary,
-    white: variables.monoWhite,
-    mono: {
-      primary: variables.monoPrimary,
-      secondary: variables.monoSecondary,
-      white: variables.monoWhite,
-      bg: variables.monoBackGround,
-      backGround: variables.monoBackGround,
-      backGroundLight: variables.monoBackGroundLight,
-      divider: variables.monoDivider,
-      hint: variables.monoHint,
-      error: variables.monoError,
-      errorBackground: variables.errorBackground,
-    },
-  },
-  styles: {
-    global: {
-      // hack: https://github.com/chakra-ui/chakra-ui/issues/2234
-      '.js-focus-visible :focus:not(.focus-visible), .js-focus-visible :focus:not(.focus-visible) + [data-focus]': {
-        outline: 'none',
-        shadow: 'none',
-      },
-    },
-  },
-};
+import { theme } from '@/theme';
+import type { BasicColors } from '@/theme/foundations/colors';
+import variables from '@/styles/variables.module.scss';
 
 type Props = {
   children: React.ReactNode;
   appColor: AppColor;
 };
 
-type ChakraColor = {
-  [key: string]: string;
-};
+const basicColors: BasicColors = {
+  black: variables.monoPrimary,
+  white: variables.monoWhite,
+  mono: {
+    primary: variables.monoPrimary,
+    secondary: variables.monoSecondary,
+    white: variables.monoWhite,
+    bg: variables.monoBackGround,
+    backGround: variables.monoBackGround,
+    backGroundLight: variables.monoBackGroundLight,
+    divider: variables.monoDivider,
+    hint: variables.monoHint,
+    error: variables.monoError,
+    errorBackground: variables.errorBackground,
+  },
+} as const;
 
 export const ChakraWithThemeProvider: FC<Props> = ({ appColor, children }) => {
-  const brandColor: ChakraColor = {
+  const brandColor = {
     ...toStrings(appColor.colorPalette),
     // 例) <Text color="brand.primary">...</Text> のようにして利用可能
     primary: toString(appColor.primaryColor),
@@ -59,12 +38,14 @@ export const ChakraWithThemeProvider: FC<Props> = ({ appColor, children }) => {
     background: toString(appColor.backgroundColor),
     backgroundSoft: toString(appColor.backgroundSoftColor),
   };
-  const theme = extendTheme({
-    ...baseTheme,
-    colors: {
-      ...baseTheme.colors,
-      brand: brandColor,
+  const customTheme = extendTheme(
+    {
+      colors: {
+        brand: brandColor,
+        ...basicColors,
+      },
     },
-  });
-  return <ChakraProvider theme={theme}>{children}</ChakraProvider>;
+    theme,
+  );
+  return <ChakraProvider theme={customTheme}>{children}</ChakraProvider>;
 };

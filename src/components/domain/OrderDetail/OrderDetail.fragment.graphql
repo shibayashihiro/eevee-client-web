@@ -1,15 +1,5 @@
 fragment OrderDetailParts on Order {
   shortIds
-  charge {
-    amount
-    details {
-      name
-      amount
-    }
-  }
-  items {
-    ...CartMenuItem
-  }
   facility {
     name
     latLng {
@@ -26,4 +16,5 @@ fragment OrderDetailParts on Order {
       memo
     }
   }
+  ...OrderDetailOrderItemsSummary
 }

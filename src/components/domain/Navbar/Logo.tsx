@@ -1,6 +1,6 @@
 import { Image } from '@chakra-ui/react';
 
-import { TenantPageLink } from '../TenantPageLink';
+import { TenantPageLink } from '@/components/domain/TenantPageLink';
 
 type Props = {
   imageUrl: string;
@@ -12,12 +12,12 @@ export const Logo = ({ imageUrl, homePath }: Props) => {
     return <LogoImage imageUrl={imageUrl} />;
   }
   return (
-    <TenantPageLink href={homePath}>
-      <LogoImage imageUrl={imageUrl} />
+    <TenantPageLink href={homePath} h="full">
+      <LogoImage imageUrl={imageUrl} hasHomeLink={true} />
     </TenantPageLink>
   );
 };
 
-const LogoImage = ({ imageUrl }: { imageUrl: string }) => (
-  <Image src={imageUrl} alt="Logo" h="36px" objectFit="cover" />
+const LogoImage = ({ imageUrl, hasHomeLink }: { imageUrl: string; hasHomeLink?: boolean }) => (
+  <Image src={imageUrl} alt={hasHomeLink ? 'ホームへ戻る' : ''} maxH="full" objectFit="contain" />
 );

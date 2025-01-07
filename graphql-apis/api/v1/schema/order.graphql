@@ -28,6 +28,11 @@ interface Order implements Node {
   submittedAt: DateTime @restricted
 }
 
+type OrderConnection {
+  nodes: [Order!]!
+  pageInfo: PageInfoTimeBased!
+}
+
 type EatInOrder implements Node & Order {
   id: ID!
   facility: Facility! @restricted
@@ -73,10 +78,15 @@ type TakeoutOrder implements Node & Order {
   shortIds: [String!]! @restricted
   progress: Progress @restricted
   disposableItems: [DisposableItem!]! @restricted
+  paperReceiptRequest: PaperReceiptRequest @restricted
   submittedAt: DateTime @restricted
 
   scheduledTime: String! @restricted
   availablePayments: [Payment!]! @restricted
+  """
+  完了ステータス。完了済みの場合のみ返される。
+  """
+  completionStatus: CompletionStatus @restricted
 }
 
 type DeliveryOrder implements Node & Order {
@@ -90,12 +100,30 @@ type DeliveryOrder implements Node & Order {
   shortIds: [String!]! @restricted
   progress: Progress @restricted
   disposableItems: [DisposableItem!]! @restricted
+  paperReceiptRequest: PaperReceiptRequest @restricted
   submittedAt: DateTime @restricted
 
   deliveryAddress: DeliveryAddress! @restricted
   scheduledTime: String! @restricted
-  requirement: String @restricted
+  requirement: String @restricted @deprecated(reason: "Use requirements field instead.")
+  requirements: Requirements @restricted
   availablePayments: [Payment!]! @restricted
+
+  noContactDeliveryOption: NoContactDeliveryOption! @restricted
+  """
+  完了ステータス。完了済みの場合のみ返される。
+  """
+  completionStatus: CompletionStatus @restricted
+}
+
+"""
+Requirementsは、注文するために不足しているものがある場合に表示するメッセージ
+"""
+type Requirements {
+  # 注文ボタンの上に表示する注意文言
+  requirement: String!
+  # 注文ボタンに表示するテキスト
+  requirementLabel: String!
 }
 
 """
@@ -207,7 +235,6 @@ type ScheduledOrderTimeItem {
   maxArrival: String!
 }
 
-
 type AvailableDate {
   year: Int!
   month: Int!
@@ -224,6 +251,38 @@ type CustomerAttribute {
 type CustomerAttributeDetail {
   id: ID!
   name: String!
+}
+
+enum DeliveryType {
+  ON_DEMAND
+  PRE_ORDER
+}
+
+# 置き配オプション
+# NOTE: 将来配達指示のテキストフィールドが必要になるため最初から構造化しています
+type NoContactDeliveryOption {
+  # 置き配を希望するか
+  requestNoContactDelivery: Boolean!
+}
+
+# 紙の領収書の希望
+type PaperReceiptRequest {
+  # 紙の領収書を希望する
+  needsPaperReceipt: Boolean!
+  # 宛名
+  recipientName: String
+}
+
+type CompletionStatus {
+  """
+  完了ステータスのラベル
+  @example "お届け済み, 受け取り済み, キャンセル"
+  """
+  statusLabel: String!
+  """
+  完了日時
+  """
+  completedAt: DateTime!
 }
 
 extend type Query {

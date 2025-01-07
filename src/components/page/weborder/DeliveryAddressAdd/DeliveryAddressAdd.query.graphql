@@ -1,5 +1,10 @@
 query GetPlaceDetailsForInputAddress($placeId: String!) {
   placeAddress(placeId: $placeId) {
-    ...InputAddressesInitializeParts
+    prefecture
+    addressLine
+    latLng {
+      latitude
+      longitude
+    }
   }
 }

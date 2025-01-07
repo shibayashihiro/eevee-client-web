@@ -3,8 +3,8 @@ import { Box, Button, Center, Heading, HStack, List, Text, useDisclosure, VStack
 import { CircleNumber } from '@/components/ui/CircleNumber';
 import { formatPrice } from '@/utils/formatUtils';
 import { WrappedLink } from '@/components/ui/WrappedLink';
-import { privacyPage } from '@/utils/paths/tenantPages';
 import { PrimaryButton } from '@/components/ui/Button';
+import { privacyPage } from '@/utils/paths/tenantPages';
 
 import { PaymentDialog } from '../PaymentDialog';
 import { PaymentItem } from '../PaymentItem';
@@ -13,6 +13,7 @@ import { TenantPageLink } from '../TenantPageLink';
 import {
   SubscriptionForRegistrationProcessFragment,
   SubscriptionPlanForRegistrationProcessFragment,
+  TenantForSubscriptionPlanRegistrationProcessFragment,
   UserForSubscriptionPlanRegistrationProcessFragment,
 } from './SubscriptionRegistrationProcess.fragment.generated';
 import { useSubscriptionRegistrationProcessContext } from './Provider';
@@ -21,9 +22,10 @@ type Props = {
   subscription: SubscriptionForRegistrationProcessFragment;
   plan: SubscriptionPlanForRegistrationProcessFragment;
   user: UserForSubscriptionPlanRegistrationProcessFragment;
+  tenant: TenantForSubscriptionPlanRegistrationProcessFragment;
 };
 
-export const SubscriptionRegistration = ({ subscription, plan, user }: Props) => {
+export const SubscriptionRegistration = ({ subscription, plan, user, tenant }: Props) => {
   const { submitting, submitSubscribe } = useSubscriptionRegistrationProcessContext();
 
   const selectedPaymentMethod = user.payments.find((p) => p.isSelected);
@@ -52,7 +54,7 @@ export const SubscriptionRegistration = ({ subscription, plan, user }: Props) =>
         <PaymentMethod user={user} />
       </Box>
       <Box mt="24px">
-        <Notice subscription={subscription} />
+        <Notice subscription={subscription} tenant={tenant} />
       </Box>
       <PrimaryButton mt="40px" isDisabled={!selectedPaymentMethod} isLoading={submitting} onClick={handleClickSubmit}>
         {plan.title}に登録する
@@ -116,15 +118,27 @@ const PaymentMethod = ({ user }: { user: UserForSubscriptionPlanRegistrationProc
   );
 };
 
-const Notice = ({ subscription }: { subscription: SubscriptionForRegistrationProcessFragment }) => {
+const Notice = ({
+  subscription,
+  tenant,
+}: {
+  subscription: SubscriptionForRegistrationProcessFragment;
+  tenant: TenantForSubscriptionPlanRegistrationProcessFragment;
+}) => {
   const { title, availableDays, specialAgreementUrl, termsOfUseUrl } = subscription;
+  const { privacyPolicyUrl } = tenant;
   return (
     <Text className="text-extra-small">
       {title}は1ヶ月単位({availableDays}
       日間)の定期購読サービスです。次回更新日時の前まで解約できます。解約しない場合、自動的に継続更新されます。
       <br />
       <InnerTextLink href={termsOfUseUrl} text="サービス利用規約" isExternal />、
-      <InnerTextLink href={privacyPage} text="プライバシーポリシー" />、
+      {privacyPolicyUrl ? (
+        <InnerTextLink href={privacyPolicyUrl} text="プライバシーポリシー" isExternal />
+      ) : (
+        <InnerTextLink href={privacyPage} text="プライバシーポリシー" />
+      )}
+      、
       <InnerTextLink href={specialAgreementUrl} text="サブスク特約" isExternal />
       に同意のうえ、登録するボタンを押してください
     </Text>

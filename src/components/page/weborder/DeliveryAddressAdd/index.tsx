@@ -1,15 +1,17 @@
 import { ParsedUrlQuery } from 'querystring';
 
-import { useCallback, useState } from 'react';
-import { Box } from '@chakra-ui/react';
+import { useCallback, useEffect, useState } from 'react';
+import { Container } from '@chakra-ui/react';
 
 import { InsideNavbar } from '@/components/ui/InsideNavbar';
 import { NextPageWithLayout } from '@/types';
-import { containerMarginX } from '@/utils/constants';
 import { SelectPlacePrediction, InputAddresses } from '@/components/domain/DeliveryAddressAdd';
 import { useTenantRouter } from '@/providers/tenant/WebOrderPageStateProvider';
 import { useHandleErrorWithAlertDialog } from '@/providers/tenant/GlobalModalDialogProvider/hooks';
 import { useLoadingOverlay } from '@/providers/GlobalLoadingSpinnerProvider';
+import { deliveryHome } from '@/utils/paths/facilityPages';
+import { containerMarginX } from '@/utils/constants';
+import { deliveryCurrentAddressAddPage } from '@/utils/paths/tenantPages';
 
 import { useGetPlaceDetailsForInputAddressQuery } from './DeliveryAddressAdd.query.generated';
 
@@ -53,19 +55,22 @@ const DeliveryAddressAddPage: NextPageWithLayout = () => {
     handleErrorWithAlertDialog(error);
   }
 
-  const toNextStep = useCallback(() => {
-    if (step >= lastStep) {
-      if (isExpectedQuery(router.query) && router.query.src) {
-        router.push(router.query.src);
-      } else {
-        router.back();
+  const toNextStep = useCallback(
+    (assignedFacilityId: string) => {
+      if (step >= lastStep) {
+        if (isExpectedQuery(router.query) && router.query.src) {
+          router.push(router.query.src);
+        } else {
+          router.push(deliveryHome(assignedFacilityId));
+        }
+        return;
       }
-      return;
-    }
-    setStep((step) => {
-      return (step + 1) as Step;
-    });
-  }, [router, step]);
+      setStep((step) => {
+        return (step + 1) as Step;
+      });
+    },
+    [router, step],
+  );
 
   const toPrevStep = useCallback(() => {
     setStep((step) => {
@@ -87,22 +92,30 @@ const DeliveryAddressAddPage: NextPageWithLayout = () => {
   const handleClickPlacePrediction = useCallback(
     (placeId: string) => {
       setSelectedPlaceId(placeId);
-      toNextStep();
     },
-    [toNextStep],
+    [setSelectedPlaceId],
   );
+  
+  useEffect(() => {
+    if (selectedPlaceId && data?.placeAddress?.latLng?.latitude && data?.placeAddress?.latLng?.longitude) {
+      const latitude = data.placeAddress.latLng.latitude;
+      const longitude = data.placeAddress.latLng.longitude;
+      const addUrl = deliveryCurrentAddressAddPage({ latitude, longitude });
+      router.push(addUrl);
+    }
+  }, [selectedPlaceId, data, router]);
 
   return (
     <>
       <InsideNavbar title={titles[step]} onClickBackIcon={handleClickBackIcon} />
-      <Box mx={containerMarginX} pt="24px">
+      <Container as="main" px={containerMarginX}>
         {step === steps.selectPlacePrediction && (
           <SelectPlacePrediction onClickPlacePrediction={handleClickPlacePrediction} />
         )}
         {step === steps.inputAddresses && !fetching && data?.placeAddress && (
-          <InputAddresses fragment={data.placeAddress} onSubmit={toNextStep} />
+          <InputAddresses initialValue={data.placeAddress} onSubmit={toNextStep} />
         )}
-      </Box>
+      </Container>
     </>
   );
 };

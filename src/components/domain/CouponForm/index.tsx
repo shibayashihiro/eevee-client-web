@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { Box, FormControl, VStack } from '@chakra-ui/react';
+import { Box, FormControl, VStack, Text, FormLabel } from '@chakra-ui/react';
 
 import { containerMarginX } from '@/utils/constants';
 import { BasicInput } from '@/components/ui/Input';
@@ -8,7 +8,7 @@ import { useAddCouponMutation } from '@/components/domain/CouponForm/CouponForm.
 import { generateMutationId } from '@/graphql/helper';
 import { useHandleErrorWithAlertDialog } from '@/providers/tenant/GlobalModalDialogProvider/hooks';
 import { useTenantRouter } from '@/providers/tenant/WebOrderPageStateProvider';
-import { useLoadingOverlay } from '@/providers/GlobalLoadingSpinnerProvider';
+import variables from '@/styles/variables.module.scss';
 
 export const CouponForm = ({}) => {
   const router = useTenantRouter();
@@ -16,7 +16,6 @@ export const CouponForm = ({}) => {
   const [code, setCode] = useState('');
   const [result, addCoupon] = useAddCouponMutation();
   const { handleErrorWithAlertDialog } = useHandleErrorWithAlertDialog();
-
   const submitButtonEnabled = code.length > 0;
 
   const handleChangeCode = (e: React.ChangeEvent<HTMLInputElement>) => setCode(e.target.value);
@@ -34,19 +33,18 @@ export const CouponForm = ({}) => {
     }
     router.back();
   }, [addCoupon, code, handleErrorWithAlertDialog, router]);
-
-  const { fetching } = result;
-  useLoadingOverlay(fetching);
   return (
     <>
-      <VStack mx={containerMarginX} pt="24px">
-        <FormControl>
-          <Box w="full">
-            <BasicInput id="email" type="email" placeholder="クーポンコード" value={code} onChange={handleChangeCode} />
-          </Box>
+      <VStack mx="auto" px={containerMarginX} spacing={0} pt="40px" pb="32px" maxW={variables.containerMaxWidth}>
+        <Text className="text-small">クーポンコードをお持ちの場合は、こちらにご入力ください。</Text>
+        <FormControl mt="32px">
+          <FormLabel fontWeight="bold" fontSize="extra-small" color="mono.secondary">
+            クーポンコード
+          </FormLabel>
+          <BasicInput type="text" value={code} onChange={handleChangeCode} />
         </FormControl>
-        <Box w="full" pt="34px">
-          <PrimaryButton h="56px" disabled={!submitButtonEnabled} onClick={handleSubmit}>
+        <Box w="full" py="32px" pos="sticky" bottom={0} left={0} right={0}>
+          <PrimaryButton h="56px" disabled={!submitButtonEnabled} onClick={handleSubmit} isLoading={result.fetching}>
             追加する
           </PrimaryButton>
         </Box>

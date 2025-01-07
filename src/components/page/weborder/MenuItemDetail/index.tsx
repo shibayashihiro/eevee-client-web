@@ -3,7 +3,6 @@ import { UrlObject } from 'url';
 
 import React, { useMemo } from 'react';
 
-import { Navbar } from '@/components/domain/Navbar';
 import { OrderType } from '@/graphql/generated/types';
 import { useFacilityId, useTenantRouter } from '@/providers/tenant/WebOrderPageStateProvider';
 import { MenuItemDetail } from '@/components/domain/MenuItemDetail';
@@ -12,6 +11,7 @@ import { NextPageWithLayout } from '@/types';
 import { useLoadingOverlay } from '@/providers/GlobalLoadingSpinnerProvider';
 import { cartPage, tableOrderCartPage } from '@/utils/paths/facilityPages';
 import { WithFeatureFlagsProvider } from '@/providers/FeatureFlagsProvider/WithFeatureFlagsProvider';
+import { NavigationHeaderLayout } from '@/components/layouts/NavigationHeaderLayout';
 
 import { GetMenuItemDetailQuery, useGetMenuItemDetailQuery } from './MenuItemDetail.query.generated';
 
@@ -99,8 +99,7 @@ const MenuItemDetailPageLayout = ({
   }
 
   return (
-    <>
-      <Navbar viewing={tenant} viewer={viewer} facility={facility} orderType={orderType} />
+    <NavigationHeaderLayout viewing={tenant} viewer={viewer} facility={facility} orderType={orderType}>
       <WithFeatureFlagsProvider facility={facility}>
         <MenuItemDetail
           menuItem={menuItem}
@@ -111,7 +110,7 @@ const MenuItemDetailPageLayout = ({
           backTo={backTo}
         />
       </WithFeatureFlagsProvider>
-    </>
+    </NavigationHeaderLayout>
   );
 };
 

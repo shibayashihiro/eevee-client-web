@@ -181,3 +181,13 @@ export const localizedMessages = {
   NetworkError: '通信エラーが発生しました。時間を置いてもう一度お試しください。',
   APIGeneralError: '予期しないエラーが発生しました。時間を置いてもう一度お試しください。',
 } as const;
+
+export const isCanceledError = (error: CombinedError): Error | null => {
+  if (error.networkError) {
+    return error;
+  }
+  if (error.graphQLErrors.some((err) => parseGraphQLError(err).code !== APIErrorCodes.Canceled)) {
+    return error;
+  }
+  return null;
+};

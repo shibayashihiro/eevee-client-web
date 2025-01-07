@@ -4,14 +4,15 @@
  */
 
 $container-max-width: 640px;
-$page-max-width:100%;
+$page-max-width: 100%;
+
 /**
  * Colors
  */
-$mono-primary: #A31616;
+$mono-primary: #333;
 $mono-secondary: #888;
 $mono-hint: #bbb;
-$mono-background: #EFEFEF;
+$mono-background: #efefef;
 $mono-background-light: rgb(239 239 239 / 30%);
 $mono-white: #fff;
 $mono-divider: #ddd;
@@ -43,5 +44,5 @@ $text-32px: 32px;
   monoError: $mono-error;
   errorBackground: $error-background;
   containerMaxWidth: $container-max-width;
-  pageMaxWidth : $page-max-width;
+  pageMaxWidth: $page-max-width;
 }

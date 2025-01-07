@@ -1,4 +1,4 @@
-import React, { FC, useCallback } from 'react';
+import { FC, useCallback } from 'react';
 import { Box, Text, Avatar, HStack, VStack } from '@chakra-ui/react';
 
 import { BalloonToLeft } from '@/components/ui/BalloonToLeft';

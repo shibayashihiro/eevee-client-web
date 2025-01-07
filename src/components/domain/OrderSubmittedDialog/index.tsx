@@ -19,19 +19,18 @@ type Props = {
 export const OrderSubmittedDialog: FC<Props> = ({ isOpen, onClose, orderType }: Props) => {
   return (
     <ModalDialog
+      title="注文が完了しました"
       isOpen={isOpen}
       onClose={onClose}
-      secondaryAction={{
+      primaryAction={{
         text: '閉じる',
         onClick: onClose,
+        height: '56px',
       }}
     >
-      <VStack mt="24px" alignItems="start">
-        <Text className="bold-large" mb="16px">
-          注文が完了しました 🎉
-        </Text>
+      <VStack alignItems="start">
         <Stack spacing={0}>
-          <Text className="text-medium">ご注文ありがとうございます！</Text>
+          <Text className="text-medium">ご注文ありがとうございます。</Text>
           <Text className="text-medium">{descriptions[orderType]}</Text>
         </Stack>
       </VStack>

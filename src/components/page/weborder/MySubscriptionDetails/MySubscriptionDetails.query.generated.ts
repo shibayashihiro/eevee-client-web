@@ -44,8 +44,10 @@ export type GetMySubscriptionDetailsPageQuery = {
         __typename: 'Payment';
         brand: string;
         last4: string;
+        name: string;
         isSelected: boolean;
         paymentType: Types.PaymentType;
+        isSignInRequired: boolean;
       };
     } | null;
   };
@@ -78,7 +80,15 @@ export type UserSubscriptionForDetailsPageFragment = {
     planTitle: string;
     amount: number;
   }>;
-  payment: { __typename: 'Payment'; brand: string; last4: string; isSelected: boolean; paymentType: Types.PaymentType };
+  payment: {
+    __typename: 'Payment';
+    brand: string;
+    last4: string;
+    name: string;
+    isSelected: boolean;
+    paymentType: Types.PaymentType;
+    isSignInRequired: boolean;
+  };
 };
 
 export type UserSubscriptionStatusDescriptionFragment = {

@@ -3,6 +3,7 @@ import gql from 'graphql-tag';
 export type CartMenuItemFragment = {
   __typename: 'OrderItem';
   id: string;
+  name: string;
   totalPrice: number;
   quantity: number;
   menuItem: { __typename: 'MenuItem'; id: string; name: string; alcoholicBeverage: boolean };
@@ -17,6 +18,7 @@ export type CartMenuItemFragment = {
 export const CartMenuItemFragmentDoc = gql`
   fragment CartMenuItem on OrderItem {
     id
+    name
     menuItem {
       id
       name

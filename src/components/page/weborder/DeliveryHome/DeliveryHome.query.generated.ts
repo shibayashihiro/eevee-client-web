@@ -5,19 +5,24 @@ import * as Types from '../../../../graphql/generated/types';
 import {
   NavbarViewingPartsFragmentDoc,
   NavbarViewerPartsFragmentDoc,
+  NavbarMenuViewerFragmentDoc,
+  NavbarMenuFacilityFragmentDoc,
 } from '../../../domain/Navbar/Navbar.fragment.generated';
 import { HomeMembershipCardSectionPartsFragmentDoc } from '../../../domain/HomeMembershipCardSection/HomeMembershipCardSection.fragment.generated';
 import { HomeInProgressOrderSectionPartsFragmentDoc } from '../../../domain/HomeInProgressOrderSection/HomeInProgressOrderSection.fragment.generated';
 import { HomeFacilityInfoSectionPartsFragmentDoc } from '../../../domain/HomeFacilityInfoSection/HomeFacilityInfoSection.fragment.generated';
+import { HomeTakeoutFacilityInfoSectionFragmentDoc } from '../../../domain/HomeFacilityInfoSection/HomeTakeoutFacilityInfoSection.fragment.generated';
+import { HomeDeliveryFacilityInfoSectionFragmentDoc } from '../../../domain/HomeFacilityInfoSection/HomeDeliveryFacilityInfoSection.fragment.generated';
+import { HomeEatInFacilityInfoSectionFragmentDoc } from '../../../domain/HomeFacilityInfoSection/HomeEatInFacilityInfoSection.fragment.generated';
 import { HomeMenuItemsSectionPartsFragmentDoc } from '../../../domain/HomeMenuItemsSection/HomeMenuItemsSection.fragment.generated';
 import { HomeMenuCategoriesSectionPartsFragmentDoc } from '../../../domain/HomeMenuCategoriesSection/HomeMenuCategoriesSection.fragment.generated';
-import { SelectOrderTypeSectionPartsFragmentDoc } from '../../../domain/SelectOrderTypeSection/SelectOrderTypeSection.fragment.generated';
 import { CartFooterButtonPartsFragmentDoc } from '../../../domain/FixedCartFooterButton/FixedCartFooterButton.fragment.generated';
 import { DeliveryAddressIndicatorPartsFragmentDoc } from '../../../domain/DeliveryAddressIndicator/DeliveryAddressIndicator.fragment.generated';
+import { HomeHeaderFragmentDoc } from '../../../domain/HomeHeader/HomeHeader.fragment.generated';
 import {
-  NavbarMenuViewerFragmentDoc,
-  NavbarMenuFacilityFragmentDoc,
-} from '../../../domain/Navbar/NavbarMenu.fragment.generated';
+  GeneralNavbarMenuViewerFragmentDoc,
+  GeneralNavbarMenuFacilityFragmentDoc,
+} from '../../../domain/Navbar/GeneralNavbarMenu.generated';
 import { FeatureFlagsForProviderFragmentDoc } from '../../../../providers/FeatureFlagsProvider/FeatureFlagsProvider.fragment.generated';
 
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
@@ -115,7 +120,7 @@ export type GetWebDeliveryHomeSectionsQuery = {
                 status: { __typename: 'MenuItemStatus'; available: boolean; labelUnavailable?: string | null };
               }>;
             }
-          | { __typename: 'SelectOrderTypeSection'; orderTypes: Array<Types.OrderType> }
+          | { __typename: 'SelectOrderTypeSection' }
           | { __typename: 'StatusSection'; title: string }
           | { __typename: 'TakeoutSection' }
         >;
@@ -135,7 +140,8 @@ export type GetWebDeliveryHomeSectionsQuery = {
       isUsing: boolean;
       latLng: { __typename: 'LatLng'; latitude: number; longitude: number };
     }>;
-    profile?: { __typename: 'Profile'; imageUrl: string } | null;
+    profile?: { __typename: 'Profile'; lastNameKana?: string | null; imageUrl: string } | null;
+    coupons: { __typename: 'CouponConnection'; nodes: Array<{ __typename: 'Coupon'; id: string }> };
     loyaltyCard?: { __typename: 'UserLoyaltyCard' } | null;
   };
   facility?:
@@ -152,6 +158,7 @@ export type GetWebDeliveryHomeSectionsQuery = {
           showPriceExcludingTax: boolean;
           loyaltyProgramEnabled: boolean;
           itemCodeSearchEnabled: boolean;
+          OnlinePaymentEnabled: boolean;
         };
       }
     | { __typename: 'MenuCategory' }
@@ -189,7 +196,6 @@ export const GetWebDeliveryHomeSectionsDocument = gql`
             ...HomeFacilityInfoSectionParts
             ...HomeMenuItemsSectionParts
             ...HomeMenuCategoriesSectionParts
-            ...SelectOrderTypeSectionParts
           }
         }
       }
@@ -205,6 +211,7 @@ export const GetWebDeliveryHomeSectionsDocument = gql`
           longitude
         }
       }
+      ...HomeHeader
       ...NavbarViewerParts
     }
     facility: node(id: $facilityID) {
@@ -220,14 +227,19 @@ export const GetWebDeliveryHomeSectionsDocument = gql`
   ${HomeMembershipCardSectionPartsFragmentDoc}
   ${HomeInProgressOrderSectionPartsFragmentDoc}
   ${HomeFacilityInfoSectionPartsFragmentDoc}
+  ${HomeTakeoutFacilityInfoSectionFragmentDoc}
+  ${HomeDeliveryFacilityInfoSectionFragmentDoc}
+  ${HomeEatInFacilityInfoSectionFragmentDoc}
   ${HomeMenuItemsSectionPartsFragmentDoc}
   ${HomeMenuCategoriesSectionPartsFragmentDoc}
-  ${SelectOrderTypeSectionPartsFragmentDoc}
   ${CartFooterButtonPartsFragmentDoc}
   ${DeliveryAddressIndicatorPartsFragmentDoc}
+  ${HomeHeaderFragmentDoc}
   ${NavbarViewerPartsFragmentDoc}
   ${NavbarMenuViewerFragmentDoc}
+  ${GeneralNavbarMenuViewerFragmentDoc}
   ${NavbarMenuFacilityFragmentDoc}
+  ${GeneralNavbarMenuFacilityFragmentDoc}
   ${FeatureFlagsForProviderFragmentDoc}
 `;
 

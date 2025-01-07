@@ -42,6 +42,7 @@ export type TableOrdersPageQueryQuery = {
         items: Array<{
           __typename: 'OrderItem';
           id: string;
+          name: string;
           totalPrice: number;
           quantity: number;
           menuItem: { __typename: 'MenuItem'; id: string; name: string; alcoholicBeverage: boolean };
@@ -103,6 +104,7 @@ export type TableOrdersPageQueryQuery = {
           showPriceExcludingTax: boolean;
           loyaltyProgramEnabled: boolean;
           itemCodeSearchEnabled: boolean;
+          OnlinePaymentEnabled: boolean;
         };
       }
     | { __typename: 'MenuCategory' }

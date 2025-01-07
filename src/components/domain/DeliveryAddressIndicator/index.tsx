@@ -1,11 +1,12 @@
 import React, { FC } from 'react';
-import { Button, HStack, Icon, Text, useDisclosure, VStack } from '@chakra-ui/react';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import { HStack, Icon, Text, useDisclosure, VStack } from '@chakra-ui/react';
 import PinDropIcon from '@mui/icons-material/PinDrop';
 
 import variables from '@/styles/variables.module.scss';
 import { DeliveryAddressIndicatorPartsFragment } from '@/components/domain/DeliveryAddressIndicator/DeliveryAddressIndicator.fragment.generated';
 import { DeliveryAddressDialog } from '@/components/domain/DeliveryAddressDialog';
+import { HomeClickableCard } from '@/components/ui/HomeClickableCard';
+import { ChevronDownIcon } from '@/components/ui/Icons/ChevronDownIcon';
 
 type Props = {
   fragment?: DeliveryAddressIndicatorPartsFragment[];
@@ -28,18 +29,9 @@ export const DeliveryAddressIndicator: FC<Props> = ({ fragment }: Props) => {
         onClose={deliveryAddressDialogState.onClose}
         fragment={fragment}
       />
-      <Button
-        as="a"
-        variant="outline"
-        rounded="12px"
-        h="76px"
-        p="18px"
-        w="full"
-        left="auto"
-        onClick={deliveryAddressDialogState.onOpen}
-      >
+      <HomeClickableCard onClick={deliveryAddressDialogState.onOpen}>
         <HStack align="center" justify="space-between" w="full">
-          <VStack align="trailing" isTruncated>
+          <VStack align="start" spacing="4px" isTruncated>
             <Text className="bold-extra-small" color={variables.monoSecondary}>
               お届け先
             </Text>
@@ -48,11 +40,9 @@ export const DeliveryAddressIndicator: FC<Props> = ({ fragment }: Props) => {
               <Text className="bold-small">{addressText}</Text>
             </HStack>
           </VStack>
+          <Icon as={ChevronDownIcon} boxSize="16px" />
         </HStack>
-        <HStack spacing="5px">
-          <Icon as={KeyboardArrowDownIcon} boxSize="24px" />
-        </HStack>
-      </Button>
+      </HomeClickableCard>
     </>
   );
 };

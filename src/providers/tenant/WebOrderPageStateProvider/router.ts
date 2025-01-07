@@ -1,42 +1,46 @@
 import { useCallback, useMemo } from 'react';
 import { NextRouter, useRouter } from 'next/router';
 
-import { Url, wrapUrl } from '@/utils/url';
+import { isExternalLink, wrapUrl } from '@/utils/url';
 
 import { useTenantIdentifier } from '.';
 
-type AppRouterOption = {
-  isExternal?: boolean;
-};
+type RouterPushFn = NextRouter['push'];
+type RouterReplaceFn = NextRouter['replace'];
 
 type AppRouter = Omit<NextRouter, 'push' | 'replace'> & {
   asPath: string;
-  push: (url: Url, option?: AppRouterOption) => ReturnType<NextRouter['push']>;
-  replace: (url: Url, option?: AppRouterOption) => ReturnType<NextRouter['replace']>;
+  push: RouterPushFn;
+  replace: RouterReplaceFn;
+};
+
+export const useTenantBasePath = (): string => {
+  const tenantIdentifier = useTenantIdentifier();
+  return `/${tenantIdentifier}`;
 };
 
 export const useTenantRouter = (): AppRouter => {
   const router = useRouter();
-  const tenantIdentifier = useTenantIdentifier();
-
-  const basePath = `/${tenantIdentifier}`;
+  const basePath = useTenantBasePath();
 
   const push = useCallback(
-    (url: Url, option?: AppRouterOption) => {
-      if (option?.isExternal) {
-        return router.push(url);
+    (...args: Parameters<RouterPushFn>) => {
+      const [url, as, options] = args;
+      if (isExternalLink(url)) {
+        return router.push(url, as, options);
       }
-      return router.push(wrapUrl(url, basePath));
+      return router.push(wrapUrl(url, basePath), as, options);
     },
     [router, basePath],
   );
 
   const replace = useCallback(
-    (url: Url, option?: AppRouterOption) => {
-      if (option?.isExternal) {
-        return router.replace(url);
+    (...args: Parameters<RouterReplaceFn>) => {
+      const [url, as, options] = args;
+      if (isExternalLink(url)) {
+        return router.replace(url, as, options);
       }
-      return router.replace(wrapUrl(url, basePath));
+      return router.replace(wrapUrl(url, basePath), as, options);
     },
     [router, basePath],
   );

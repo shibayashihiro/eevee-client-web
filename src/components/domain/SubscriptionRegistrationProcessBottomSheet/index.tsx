@@ -7,6 +7,7 @@ import { SubscriptionRegistration } from './SubscriptionRegistration';
 import {
   SubscriptionForRegistrationProcessFragment,
   SubscriptionPlanForRegistrationProcessFragment,
+  TenantForSubscriptionPlanRegistrationProcessFragment,
   UserForSubscriptionPlanRegistrationProcessFragment,
 } from './SubscriptionRegistrationProcess.fragment.generated';
 import { SubscriptionRegistrationCompleted } from './SubscriptionRegistrationCompleted';
@@ -18,6 +19,7 @@ type Props = {
   subscription: SubscriptionForRegistrationProcessFragment;
   plan: SubscriptionPlanForRegistrationProcessFragment;
   user: UserForSubscriptionPlanRegistrationProcessFragment;
+  tenant: TenantForSubscriptionPlanRegistrationProcessFragment;
 };
 
 export const SubscriptionRegistrationProcessBottomSheet = (props: Props) => {

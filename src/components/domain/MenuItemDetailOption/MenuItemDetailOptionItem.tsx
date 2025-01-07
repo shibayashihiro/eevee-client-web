@@ -35,10 +35,10 @@ export const MenuItemDetailOptionItem = (props: Props) => {
   const subOptionItemsSelected = selectedItem && selectedItem.subOptionItems.length > 0;
 
   return (
-    <VStack py="7px" w="full" align="stretch" spacing="7px">
+    <VStack py="4px" pr="12px" w="full" align="stretch" spacing="0">
       <OptionItemInput {...props} />
       {subOptionItemsSelected && (
-        <VStack align="stretch" spacing="4px">
+        <VStack align="stretch" spacing="0">
           {item.subOptions.map((subOption) => (
             <OptionItemSubOptionPreviewListItem
               key={subOption.id}

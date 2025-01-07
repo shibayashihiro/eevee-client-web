@@ -72,6 +72,14 @@ npm run codegen
 - `src/graphql/generated/types.ts`: 全てのコードから共通で扱う Type
 - `src/**/*.generated.ts`: 各 query を利用するコード。その query が不要な箇所から import されないように、`.graphql`ファイルの隣に生成されます。
 
+## Styling
+
+以下のコマンドを実行することで、Chakra UIのStylingのコード補完が有効になります。
+
+```sh
+npm run codegen:theme-typings
+```
+
 ## Tests
 
 ```sh
@@ -101,6 +109,16 @@ Production環境はサーバーがない（静的ホスティング）ため、�
 
 > [!TIP]
 > 画面遷移の場合はNext.jsのルーティングによって画面表示が可能で、firebase.jsonの設定をしなくても動きます。そのため、LINEミニアプリの場合は（必ずLIFFの1つのエンドポイントから画面遷移するため）この設定は不要です。
+
+#### 本番環境にテストデプロイする
+
+上記の通り、StagingとProductionの間には明確に環境差分があります。それ以外にも、まだテスト中のコードをProduction環境でテストしたい場合などには、Firebase Hostingのプレビューチャネル機能を使ってデプロイすると実現できます。
+
+```bash
+npm run deploy:prod-test
+```
+
+デプロイ後に出力されるベースURLとして利用すると、Production環境のテスト環境でテストできます。
 
 ## URL
 

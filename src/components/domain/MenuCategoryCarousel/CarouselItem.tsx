@@ -1,9 +1,7 @@
-import { Box, Text, Image, LinkBox } from '@chakra-ui/react';
+import { Box, Text, Image } from '@chakra-ui/react';
 
 import { safeImage } from '@/utils/image';
 import { NoImage } from '@/components/ui/NoImage';
-
-import { TenantPageLinkOverlay } from '../TenantPageLink';
 
 import { CarouselItemPrice } from './CarouselItemPrice';
 
@@ -13,8 +11,8 @@ type Props = {
   priceExcludingTax?: number;
   priceIsRange?: boolean;
   image: string | null;
-  pathToDetail: string;
   unavailableReason?: string | null;
+  onClick?: () => void; 
 };
 
 export const CarouselItem = ({
@@ -24,10 +22,20 @@ export const CarouselItem = ({
   priceIsRange,
   image,
   unavailableReason,
-  pathToDetail,
+  onClick,
 }: Props) => {
+  const Wrapper = Box;
   return (
-    <LinkBox as="li" mr="12px" w={{ base: '120px', md: '200px' }} flexShrink={0} listStyleType="none">
+    
+    <Wrapper
+      as="li"
+      mr="12px"
+      w={{ base: '120px', md: '200px' }}
+      flexShrink={0}
+      listStyleType="none"
+      onClick={onClick} 
+      cursor="pointer" 
+    >
       <Image
         src={safeImage(image)}
         alt={name}
@@ -37,7 +45,7 @@ export const CarouselItem = ({
         objectFit="cover"
       />
       <Text mt="8px" className="bold-small">
-        <TenantPageLinkOverlay href={pathToDetail}>{name}</TenantPageLinkOverlay>
+        {name}
       </Text>
       <Box mt="4px">
         <CarouselItemPrice
@@ -47,6 +55,6 @@ export const CarouselItem = ({
           unavailableReason={unavailableReason}
         />
       </Box>
-    </LinkBox>
+    </Wrapper>
   );
 };

@@ -1,21 +1,13 @@
-query GetCoupon($cartID: ID, $after: String) {
-    viewer {
-        coupons(cartID: $cartID, after: $after) {
-            nodes {
-                id
-                title
-                subTitle
-                statusLabel
-                image
-                details {
-                    name
-                    value
-                }
-            }
-            pageInfo {
-                hasNextPage
-                endCursor
-            }
-        }
+query GetCoupon($cartID: ID, $after: String, $isAvailable: Boolean) {
+  viewer {
+    coupons(cartID: $cartID, after: $after, isAvailable: $isAvailable) {
+      nodes {
+        ...CouponCardForList
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
     }
+  }
 }
