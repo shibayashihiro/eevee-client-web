@@ -7,7 +7,7 @@
     "node": ">=18"
   },
   "scripts": {
-    "prepare": "./prepare.sh",
+
     "dev": "next dev & tsc --watch",
     "dev:stg": "APP_ENV=staging npm run dev",
     "dev:ssl": "APP_ENV=staging next dev & local-ssl-proxy --config local-ssl-proxy.config.json",
