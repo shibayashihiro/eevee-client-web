@@ -1,11 +1,11 @@
 import { Box, Center, Checkbox, HStack, ListItem, Text, UnorderedList, useDisclosure, VStack } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { TableNumberMainHeader } from '@/components/domain/TableNumberMainHeader';
 import { NavigationHeaderLayout } from '@/components/layouts/NavigationHeaderLayout';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { OrderType } from '@/graphql/generated/types';
-import { useFacilityId, useTenantRouter } from '@/providers/tenant/WebOrderPageStateProvider';
+import { useFacilityId } from '@/providers/tenant/WebOrderPageStateProvider';
 import { NextPageWithLayout } from '@/types';
 import { CartSubHeader } from '@/components/domain/Cart/CartSubHeader';
 import { CartOrderItemList } from '@/components/domain/Cart/CartOrderItemList';
@@ -20,10 +20,11 @@ import {
 } from '@/providers/CourseMenusCartProvider';
 import { CartOrderItem } from '@/components/domain/Cart/CartOrderItem';
 import { CartOrderItemActions } from '@/components/domain/Cart/CartOrderItemActions';
-import { courseMenuPage } from '@/utils/paths/facilityPages';
 import { ModalDialog } from '@/components/ui/ModalDialog';
 import { formatPrice } from '@/utils/formatUtils';
 import { OrderPrivacyPolicyAgreement } from '@/components/domain/OrderPrivacyPolicyAgreement';
+import { SwipeableBottomModal } from '@/components/ui/SwipeableBottomModalDialog';
+import { CourseMenuDetailModalContent } from '@/components/domain/CourseMenuDetailModalContent';
 import { PrimaryButton } from '@/components/ui/Button';
 import variables from '@/styles/variables.module.scss';
 import { isFacility, isTable } from '@/graphql/helper';
@@ -151,26 +152,48 @@ const CartItem = ({
 
   onClickDelete: (item: CourseMenusCartItem) => void;
 }) => {
-  const facilityId = useFacilityId();
-  const tableId = useTableIdFromQuery();
-  const router = useTenantRouter();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleOnClickEdit = () => {
-    router.push(courseMenuPage(facilityId, tableId, item.courseMenuId));
-  };
+  const openModal = useCallback(() => {
+    setIsModalOpen(true);
+  }, []);
+
+  const closeModal = useCallback(() => {
+    setIsModalOpen(false);
+  }, []);
 
   const handleOnClickDelete = () => {
     onClickDelete(item);
   };
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = ''; // クリーンアップ
+    };
+  }, [isModalOpen]);
   return (
-    <CartOrderItem
-      itemName={item.courseMenuName}
-      quantity={item.quantity}
-      price={item.price * item.quantity}
-      orderType={OrderType.EatIn} // コースメニューはEatInのみ対応。他のOrderTypeは未対応
-      options={<Text className="text-extra-small">{item.courseMenuEntryName}</Text>}
-      actions={<CartOrderItemActions onClickEdit={handleOnClickEdit} onClickDelete={handleOnClickDelete} />}
-    />
+    <>
+      <CartOrderItem
+        itemName={item.courseMenuName}
+        quantity={item.quantity}
+        price={item.price * item.quantity}
+        orderType={OrderType.EatIn} // コースメニューはEatInのみ対応。他のOrderTypeは未対応
+        options={<Text className="text-extra-small">{item.courseMenuEntryName}</Text>}
+        actions={<CartOrderItemActions onClickEdit={openModal} onClickDelete={handleOnClickDelete} />}
+      />
+      <SwipeableBottomModal
+        isOpen={isModalOpen && !!item.courseMenuId}
+        onClose={closeModal}
+        title={item.courseMenuName || ''}
+        footer={null}
+      >
+        {item.courseMenuId && <CourseMenuDetailModalContent courseMenuId={item.courseMenuId} closeModal={closeModal} />}
+      </SwipeableBottomModal>
+    </>
   );
 };
 

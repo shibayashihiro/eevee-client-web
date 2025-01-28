@@ -127,27 +127,38 @@ export type GetWebEatInHomeSectionsQuery = {
   };
   viewer: {
     __typename: 'User';
-    cart: { __typename: 'Cart'; totalPrice: number; totalQuantity: number };
-    table?: {
-      __typename: 'Table';
-      cartRawId: string;
-      name: string;
-      mainCourseMenu?: {
-        __typename: 'TableCourseMenu';
-        lastOrderAt?: DateTime | null;
-        noticeReadStatus: Types.NoticeReadStatus;
-        courseMenu: {
-          __typename: 'CourseMenu';
-          name: string;
-          ruleDescriptions: Array<string>;
-          category?: { __typename: 'CourseMenuCategory'; name: string } | null;
-        };
-      } | null;
-      subCourseMenus: Array<{ __typename: 'TableCourseMenu'; courseMenu: { __typename: 'CourseMenu'; name: string } }>;
-    } | null;
     profile?: { __typename: 'Profile'; imageUrl: string } | null;
     loyaltyCard?: { __typename: 'UserLoyaltyCard' } | null;
-  };
+  } & (
+    | { __typename: 'User'; cart: { __typename: 'Cart'; totalPrice: number; totalQuantity: number } }
+    | { __typename: 'User'; cart?: never }
+  ) &
+    (
+      | {
+          __typename: 'User';
+          table?: {
+            __typename: 'Table';
+            cartRawId: string;
+            name: string;
+            mainCourseMenu?: {
+              __typename: 'TableCourseMenu';
+              lastOrderAt?: DateTime | null;
+              noticeReadStatus: Types.NoticeReadStatus;
+              courseMenu: {
+                __typename: 'CourseMenu';
+                name: string;
+                ruleDescriptions: Array<string>;
+                category?: { __typename: 'CourseMenuCategory'; name: string } | null;
+              };
+            } | null;
+            subCourseMenus: Array<{
+              __typename: 'TableCourseMenu';
+              courseMenu: { __typename: 'CourseMenu'; name: string };
+            }>;
+          } | null;
+        }
+      | { __typename: 'User'; table?: never }
+    );
   facility?:
     | { __typename: 'Cart' }
     | { __typename: 'Coupon' }
@@ -200,15 +211,17 @@ export const GetWebEatInHomeSectionsDocument = gql`
       }
     }
     viewer {
-      cart(facilityID: $facilityID, orderType: $orderType) {
-        ...CartFooterButtonParts
-      }
-      table(facilityID: $facilityID) {
-        cartRawId
-        ...HomeEatInFacilityInfoSectionTable
-        ...TableCourseMenuStatsHeader
-        mainCourseMenu {
-          ...HomeLastOrderPassedBanner
+      ... @defer {
+        cart(facilityID: $facilityID, orderType: $orderType) {
+          ...CartFooterButtonParts
+        }
+        table(facilityID: $facilityID) {
+          cartRawId
+          ...HomeEatInFacilityInfoSectionTable
+          ...TableCourseMenuStatsHeader
+          mainCourseMenu {
+            ...HomeLastOrderPassedBanner
+          }
         }
       }
       ...NavbarViewerParts

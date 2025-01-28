@@ -1,5 +1,3 @@
-import { UrlObject } from 'url';
-
 import React from 'react';
 import { Box, HStack, Text, VStack } from '@chakra-ui/react';
 
@@ -33,7 +31,8 @@ export const MenuItemDetailActions = ({
   shouldRegisterAddress,
   viewerCanAddToCart,
   scrollToOptionById,
-  backTo,
+  closeModal,
+  closeCategoryModal,
 }: {
   orderType: OrderType;
   cartId: string;
@@ -42,7 +41,8 @@ export const MenuItemDetailActions = ({
   shouldRegisterAddress: boolean;
   viewerCanAddToCart: boolean;
   scrollToOptionById: (optionId: string) => void;
-  backTo?: UrlObject;
+  closeModal?: () => void;
+  closeCategoryModal?: () => void;
 }) => {
   const router = useTenantRouter();
   const state = useCartItemEditState();
@@ -118,9 +118,7 @@ export const MenuItemDetailActions = ({
       handleErrorWithAlertDialog(result.error);
       return;
     }
-    if (isUpdate) {
-      await router.push(backTo ?? home);
-    } else {
+    if (!isUpdate) {
       const isCodeSearchSelected = isItemSearchMethodItemCodeForm();
       //デリバリーは商品コード検索非対応
       if (isCodeSearchSelected && orderType != OrderType.Delivery) {
@@ -128,6 +126,12 @@ export const MenuItemDetailActions = ({
       } else {
         router.push(home);
       }
+    }
+    if (closeModal) {
+      closeModal();
+    }
+    if (closeCategoryModal) {
+      closeCategoryModal();
     }
   };
 
@@ -162,7 +166,7 @@ export const MenuItemDetailActions = ({
               </Box>
               <HStack spacing="4px" alignItems="center">
                 <Text>{formatPrice(showPriceExcludingTax ? subtotalPriceExcludingTax : subtotalPrice)}</Text>
-                {showPriceExcludingTax && <Text className="text-micro">{`(税抜${formatPrice(subtotalPriceExcludingTax)})`}</Text>}
+                {showPriceExcludingTax && <Text className="text-micro">{`(税込${formatPrice(subtotalPrice)})`}</Text>}
               </HStack>
             </VStack>
           </PrimaryButton>

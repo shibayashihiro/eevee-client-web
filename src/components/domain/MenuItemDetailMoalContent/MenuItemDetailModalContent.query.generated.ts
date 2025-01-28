@@ -230,7 +230,9 @@ export const GetMenuItemDetailModalContentDocument = gql`
   ${FeatureFlagsForProviderFragmentDoc}
 `;
 
-export function useGetMenuItemDetailModalContentQuery(options: Omit<Urql.UseQueryArgs<GetMenuItemDetailModalContentQueryVariables>, 'query'>) {
+export function useGetMenuItemDetailModalContentQuery(
+  options: Omit<Urql.UseQueryArgs<GetMenuItemDetailModalContentQueryVariables>, 'query'>,
+) {
   return Urql.useQuery<GetMenuItemDetailModalContentQuery, GetMenuItemDetailModalContentQueryVariables>({
     query: GetMenuItemDetailModalContentDocument,
     ...options,

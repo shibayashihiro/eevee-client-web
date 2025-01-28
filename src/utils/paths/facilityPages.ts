@@ -61,11 +61,6 @@ export const menuItemDetailPage = (
   return `${PREFIX}/${facilityId}/menuitem/${menuItemId}?${params.toString()}`;
 };
 
-export const menuCategoryDetailPage = (facilityId: string, menuCategoryId: string, orderType: OrderType): string => {
-  const params = new URLSearchParams({ orderType: orderType });
-  return `${PREFIX}/${facilityId}/menucategory/${menuCategoryId}?${params.toString()}`;
-};
-
 export const orderDetailPage = (facilityId: string, orderId: string, orderType: OrderType): UrlObject => ({
   pathname: `${PREFIX}/${facilityId}/order/${orderId}`,
   query: {
@@ -96,24 +91,6 @@ export const courseMenusSuggestionsPage = (facilityId: string, tableId: string, 
 
 export const courseMenusCartPage = (facilityId: string, tableId: string): string => {
   return `${courseMenusPage(facilityId, tableId)}/cart`;
-};
-
-export const courseMenuAsMenuItemDetailPage = (
-  facilityId: string,
-  courseMenuId: string,
-  // 編集画面で初期値を設定するための情報
-  selectedQuantityByEntryId?: { [entryId: string]: number },
-): string => {
-  const path = `${PREFIX}/${facilityId}/coursemenu/${courseMenuId}`;
-  if (!selectedQuantityByEntryId) {
-    return path;
-  }
-  const params = new URLSearchParams();
-  for (const [entryId, quantity] of Object.entries(selectedQuantityByEntryId)) {
-    params.append('selectedEntryIds', entryId);
-    params.append('selectedEntryQuantities', quantity.toString());
-  }
-  return `${path}?${params.toString()}`;
 };
 
 export const searchItemPage = (facilityId: string, orderType: OrderType): UrlObject => {

@@ -675,6 +675,7 @@ export type Mutation = {
   submitOrder: SubmitOrderPayload;
   submitTableOrder: SubmitTableOrderPayload;
   subscribe: SubscribePayload;
+  suspendUser: SuspendUserPayload;
   unsubscribe: UnsubscribePayload;
   updateDefaultPayment: UpdateDefaultPaymentPayload;
   updateDeliveryAddressMemo: UpdateDeliveryAddressMemoPayload;
@@ -792,10 +793,6 @@ export type MutationSignUpArgs = {
   input: SignUpInput;
 };
 
-export type MutationSuspendUserArgs = {
-  input: SuspendUserInput;
-};
-
 export type MutationSubmitCourseMenusArgs = {
   input: SubmitCourseMenusInput;
 };
@@ -810,6 +807,10 @@ export type MutationSubmitTableOrderArgs = {
 
 export type MutationSubscribeArgs = {
   input: SubscribeInput;
+};
+
+export type MutationSuspendUserArgs = {
+  input: SuspendUserInput;
 };
 
 export type MutationUnsubscribeArgs = {
@@ -1362,15 +1363,6 @@ export type SignUpPayload = {
   clientMutationId?: Maybe<Scalars['String']['output']>;
 };
 
-export type SuspendUserInput = {
-  clientMutationId?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type SuspendUserPayload = {
-  __typename: 'SuspendUserPayload';
-  clientMutationId?: Maybe<Scalars['String']['output']>;
-};
-
 export type StampCard = {
   __typename: 'StampCard';
   currentPage: Scalars['Int']['output'];
@@ -1491,6 +1483,15 @@ export type SurveyFormRow = {
   order: Scalars['Int']['output'];
   question: Scalars['String']['output'];
   required: Scalars['Boolean']['output'];
+};
+
+export type SuspendUserInput = {
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type SuspendUserPayload = {
+  __typename: 'SuspendUserPayload';
+  clientMutationId?: Maybe<Scalars['String']['output']>;
 };
 
 export type Table = Node & {

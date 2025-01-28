@@ -1,8 +1,9 @@
-import React, { FC, useCallback, useState } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import { Box, Text, SimpleGrid, Image } from '@chakra-ui/react';
 
 import { OrderType } from '@/graphql/generated/types';
 import { useFeatureFlags } from '@/providers/FeatureFlagsProvider';
+import { safeImage } from '@/utils/image';
 import { NoImage } from '@/components/ui/NoImage';
 import { SwipeableBottomModal } from '@/components/ui/SwipeableBottomModalDialog';
 
@@ -31,6 +32,16 @@ export const HomeMenuItemsSection: FC<Props> = ({ menuItemsSection, orderType }:
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
   }, []);
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = ''; // クリーンアップ
+    };
+  }, [isModalOpen]);
 
   const imageSize = { base: '160px', md: '272px' };
   const { showPriceExcludingTax } = useFeatureFlags();
@@ -41,9 +52,9 @@ export const HomeMenuItemsSection: FC<Props> = ({ menuItemsSection, orderType }:
       </Box>
       <SimpleGrid mt="16px" columns={2} spacing="16px">
         {items.map((item, i) => (
-          <Box key={i} onClick={() => openModal(item)} >
+          <Box key={i} onClick={() => openModal(item)}>
             <Image
-              src={item.image?.includes('img_placeholder_') ? undefined : item.image}
+              src={safeImage(item.image)}
               alt={item.name}
               boxSize={imageSize}
               fallback={<NoImage rounded="4px" boxSize={imageSize} />}
@@ -71,10 +82,10 @@ export const HomeMenuItemsSection: FC<Props> = ({ menuItemsSection, orderType }:
         title={selectedItem?.name || ''}
         footer={null}
       >
-      {selectedItem?.id && (
-        <MenuItemDetailModalContent menuItemId={selectedItem.id} orderType={orderType} /> 
-      )}
-    </SwipeableBottomModal>
+        {selectedItem?.id && (
+          <MenuItemDetailModalContent menuItemId={selectedItem.id} orderType={orderType} closeModal={closeModal} />
+        )}
+      </SwipeableBottomModal>
     </>
   );
 };

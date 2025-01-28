@@ -133,6 +133,7 @@ const productionIdentifiers = [
   'ryumi',
   'taiyo-compass',
   'napoli-pizza',
+  'popolamama',
 ] as const;
 
 export type ProductionIdentifier = (typeof productionIdentifiers)[number];
@@ -148,11 +149,11 @@ const productionConfigs: Record<ProductionIdentifier, AppConfig> = {
     // demoを行うときはこれをコピペして増やす
     tenantUidHeader: demoTenantUid,
     pageMeta: {
-      title: 'PISOLA 豊川インター店',
+      title: 'PISOLA 横須賀三春店',
       favicon: '/favicons/chompy-house.ico',
     },
     appColor: buildAppColor('#997525', '#8F6B1B'),
-    liffId: '2006530706-WGRVZnz8',
+    liffId: '2006693825-rBOnmnmX',
   },
   'chompy-demo-2': {
     tenantUidHeader: demoTenantUid,
@@ -1182,7 +1183,7 @@ const productionConfigs: Record<ProductionIdentifier, AppConfig> = {
     tenantUidHeader: 'DHRJih5i3q9BFbF0RC1B', // FCテナント
     appColor: buildAppColor('#997525', '#8F6B1B'),
     pageMeta: {
-      title: 'PISOLA 横須賀店',
+      title: 'PISOLA 横須賀三春店',
       favicon: '/favicons/chompy-house.ico',
     },
     liffId: '2006693826-Dpp7V7VO',
@@ -1291,6 +1292,14 @@ const productionConfigs: Record<ProductionIdentifier, AppConfig> = {
     firebaseAuthProject: 'napoli-pizza',
     promotionEnabled: true,
   },
+  'popolamama': {
+    tenantUidHeader: 'jyIRhAgLUrz8rxMgBUpq',
+    appColor: buildAppColor('#E60012', '#DC0008'),
+    pageMeta: {
+      title: 'ポポラマーマ',
+      favicon: '/favicons/chompy-house.ico',
+    },
+  }
 } as const;
 
 export const productionApps = makeAppDefinition(productionIdentifiers, productionConfigs);

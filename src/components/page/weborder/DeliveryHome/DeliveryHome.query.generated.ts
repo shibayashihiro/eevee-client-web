@@ -129,21 +129,29 @@ export type GetWebDeliveryHomeSectionsQuery = {
   };
   viewer: {
     __typename: 'User';
-    cart: { __typename: 'Cart'; totalPrice: number; totalQuantity: number };
-    deliveryAddresses: Array<{
-      __typename: 'DeliveryAddress';
-      id: string;
-      prefecture: string;
-      addressLine: string;
-      buildingName: string;
-      memo?: string | null;
-      isUsing: boolean;
-      latLng: { __typename: 'LatLng'; latitude: number; longitude: number };
-    }>;
     profile?: { __typename: 'Profile'; lastNameKana?: string | null; imageUrl: string } | null;
     coupons: { __typename: 'CouponConnection'; nodes: Array<{ __typename: 'Coupon'; id: string }> };
     loyaltyCard?: { __typename: 'UserLoyaltyCard' } | null;
-  };
+  } & (
+    | { __typename: 'User'; cart: { __typename: 'Cart'; totalPrice: number; totalQuantity: number } }
+    | { __typename: 'User'; cart?: never }
+  ) &
+    (
+      | {
+          __typename: 'User';
+          deliveryAddresses: Array<{
+            __typename: 'DeliveryAddress';
+            id: string;
+            prefecture: string;
+            addressLine: string;
+            buildingName: string;
+            memo?: string | null;
+            isUsing: boolean;
+            latLng: { __typename: 'LatLng'; latitude: number; longitude: number };
+          }>;
+        }
+      | { __typename: 'User'; deliveryAddresses?: never }
+    );
   facility?:
     | { __typename: 'Cart' }
     | { __typename: 'Coupon' }
@@ -201,14 +209,16 @@ export const GetWebDeliveryHomeSectionsDocument = gql`
       }
     }
     viewer {
-      cart(facilityID: $facilityID, orderType: $orderType) {
-        ...CartFooterButtonParts
-      }
-      deliveryAddresses {
-        ...DeliveryAddressIndicatorParts
-        latLng {
-          latitude
-          longitude
+      ... @defer {
+        cart(facilityID: $facilityID, orderType: $orderType) {
+          ...CartFooterButtonParts
+        }
+        deliveryAddresses {
+          ...DeliveryAddressIndicatorParts
+          latLng {
+            latitude
+            longitude
+          }
         }
       }
       ...HomeHeader

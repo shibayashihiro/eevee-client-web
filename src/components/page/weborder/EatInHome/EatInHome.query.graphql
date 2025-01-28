@@ -22,16 +22,18 @@ query GetWebEatInHomeSections($facilityID: ID!, $orderType: OrderType!) {
   }
 
   viewer {
-    cart(facilityID: $facilityID, orderType: $orderType) {
-      ...CartFooterButtonParts
-    }
+    ... @defer {
+      cart(facilityID: $facilityID, orderType: $orderType) {
+        ...CartFooterButtonParts
+      }
 
-    table(facilityID: $facilityID) {
-      cartRawId
-      ...HomeEatInFacilityInfoSectionTable
-      ...TableCourseMenuStatsHeader
-      mainCourseMenu {
-        ...HomeLastOrderPassedBanner
+      table(facilityID: $facilityID) {
+        cartRawId
+        ...HomeEatInFacilityInfoSectionTable
+        ...TableCourseMenuStatsHeader
+        mainCourseMenu {
+          ...HomeLastOrderPassedBanner
+        }
       }
     }
 

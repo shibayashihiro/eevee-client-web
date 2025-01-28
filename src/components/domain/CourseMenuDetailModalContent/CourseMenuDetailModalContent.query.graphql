@@ -1,8 +1,5 @@
 query GetCourseMenuForMenuItemDetail($courseId: ID!, $facilityId: ID!, $orderType: OrderType!) {
-  tenant: viewing {
-    ...NavbarViewingParts
-  }
-
+  
   courseMenu: node(id: $courseId) {
     ... on CourseMenu {
       id

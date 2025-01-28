@@ -1,18 +1,20 @@
 fragment HomeMenuCategoriesSectionParts on MenuCategoriesSection {
   title
-  categories {
-    id
-    name
-    items(orderType: $orderType) {
-      nodes {
-        id
-        name
-        price(orderType: $orderType)
-        priceExcludingTax(orderType: $orderType)
-        image
-        status {
-          available
-          labelUnavailable
+  ... @defer {
+    categories {
+      id
+      name
+      items(orderType: $orderType) {
+        nodes {
+          id
+          name
+          price(orderType: $orderType)
+          priceExcludingTax(orderType: $orderType)
+          image
+          status {
+            available
+            labelUnavailable
+          }
         }
       }
     }

@@ -14,25 +14,29 @@ export const signUpPage = (srcPageUrl: string) => `/auth/signup?src=${encodeURIC
 export const passwordResetPage = '/password_reset';
 
 export const creditCardAddPage = '/credit_card_add';
-export const deliveryAddressAddPage = (srcPageUrl?: string): Url => ({
+export const deliveryAddressAddPage = (srcPageUrl?: string, placeName?: string): Url => ({
   pathname: `/delivery/address_add`,
   query: {
     src: srcPageUrl,
+    pla: placeName,
   },
 });
 export const deliveryCurrentAddressAddPage = ({
   latitude,
   longitude,
   srcPageUrl,
+  placeName,
 }: {
   latitude?: number;
   longitude?: number;
   srcPageUrl?: string;
+  placeName?: string;
 }): Url => {
   const query: Record<string, string | undefined> = {
     src: srcPageUrl,
     lat: latitude?.toString(),
     lng: longitude?.toString(),
+    pla: placeName,
   };
 
   Object.keys(query).forEach((key) => query[key] === undefined && delete query[key]);

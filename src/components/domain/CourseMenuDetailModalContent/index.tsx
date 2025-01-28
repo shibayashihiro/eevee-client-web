@@ -1,14 +1,10 @@
-import { ParsedUrlQuery } from 'querystring';
+import { FC } from 'react';
+import { Box, HStack, Text, VStack } from '@chakra-ui/react';
 
-import { useRouter } from 'next/router';
-import { Box, Flex, HStack, Text, VStack } from '@chakra-ui/react';
-
-import { NextPageWithLayout } from '@/types';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { OrderType, TaxRateType } from '@/graphql/generated/types';
 import { useFacilityId, useTenantRouter } from '@/providers/tenant/WebOrderPageStateProvider';
 import { generateMutationId, isCourseMenu, isFacility } from '@/graphql/helper';
-import { NavigationHeaderLayout } from '@/components/layouts/NavigationHeaderLayout';
 import {
   CourseMenuEntriesFormProvider,
   CourseMenuEntryMasterItem,
@@ -22,50 +18,36 @@ import { PrimaryButton } from '@/components/ui/Button';
 import { formatPrice } from '@/utils/formatUtils';
 import { useHandleErrorWithAlertDialog } from '@/providers/tenant/GlobalModalDialogProvider/hooks';
 import { useHomePath } from '@/hooks/domain/useHomePath';
-import { cartPage } from '@/utils/paths/facilityPages';
+import { tableOrderCartPage } from '@/utils/paths/facilityPages';
 import { FeatureFlagsProvider, useFeatureFlags } from '@/providers/FeatureFlagsProvider';
 import { getPriceExcludingTax, taxRoundTypes } from '@/utils/domain/tax';
 
-import { useGetCourseMenuForMenuItemDetailQuery } from './CourseMenuAsMenuItemDetail.query.generated';
+import { useGetCourseMenuForMenuItemDetailQuery } from './CourseMenuDetailModalContent.query.generated';
 import { CourseMenuInfo } from './CourseMenuInfo';
 import { CourseMenuEntriesInput } from './CourseMenuEntriesInput';
-import { useAddCourseMenuMutation, useUpdateCourseMenuMutation } from './CourseMenuAsMenuItemDetail.mutation.generated';
+import {
+  useAddCourseMenuMutation,
+  useUpdateCourseMenuMutation,
+} from './CourseMenuDetailModalContent.mutation.generated';
 
 // コースメニューは現状、EatInのみ対応
 const orderType = OrderType.EatIn;
 
-const isArrayInQuery = (value: string | string[]): value is string[] => {
-  return Array.isArray(value) && value.every((v) => typeof v === 'string');
-};
-
 // queryパラメータを参照して、entryId: quantity の形式を返す
-const getInitialQuantitiesFromQuery = (query: ParsedUrlQuery): { [entryId: string]: number } | null => {
-  const { selectedEntryIds, selectedEntryQuantities } = query;
-  if (!selectedEntryIds || !selectedEntryQuantities) {
+const getInitialQuantities = (quantities: { [entryId: string]: number }): { [entryId: string]: number } | null => {
+  if (!quantities || Object.keys(quantities).length === 0) {
     return null;
   }
 
-  // NOTE: 1個の場合はstringになる
-  if (typeof selectedEntryIds === 'string' && typeof selectedEntryQuantities === 'string') {
-    const quantity = parseInt(selectedEntryQuantities, 10);
-    return {
-      [selectedEntryIds]: !isNaN(quantity) ? quantity : 0,
-    };
-  }
-
-  if (!isArrayInQuery(selectedEntryIds) || !isArrayInQuery(selectedEntryQuantities)) {
-    return null;
-  }
-  if (selectedEntryIds.length !== selectedEntryQuantities.length) {
-    return null;
-  }
   const result: { [entryId: string]: number } = {};
-  for (let i = 0; i < selectedEntryIds.length; i++) {
-    const entryId = selectedEntryIds[i];
-    const quantityStr = selectedEntryQuantities[i] ?? 0;
-    const quantity = parseInt(quantityStr, 10);
-    result[entryId] = !isNaN(quantity) ? quantity : 0;
+
+  for (const entryId in quantities) {
+    if (quantities.hasOwnProperty(entryId)) {
+      const quantity = quantities[entryId];
+      result[entryId] = !isNaN(quantity) ? quantity : 0;  
+    }
   }
+
   return result;
 };
 
@@ -73,20 +55,24 @@ const getInitialQuantitiesFromQuery = (query: ParsedUrlQuery): { [entryId: strin
  * コースメニューを商品として追加するためのページ
  * @returns
  */
-export const CourseMenuAsMenuItemDetail: NextPageWithLayout = () => {
-  const router = useRouter();
+type Props = {
+  courseMenuId: string;
+  quantities?: { [entryId: string]: number };
+  closeModal?: () => void;
+};
+
+export const CourseMenuDetailModalContent: FC<Props> = ({ courseMenuId, quantities = {}, closeModal }: Props) => {
   const facilityId = useFacilityId();
-  const { id: courseId } = router.query;
-  if (typeof courseId !== 'string') {
+  if (typeof courseMenuId !== 'string') {
     throw new Error('invalid query');
   }
 
-  const initialQuantitiesByEntryId = getInitialQuantitiesFromQuery(router.query);
+  const initialQuantitiesByEntryId = getInitialQuantities(quantities);  
 
   const [{ data, error, fetching }] = useGetCourseMenuForMenuItemDetailQuery({
     variables: {
       facilityId,
-      courseId,
+      courseId: courseMenuId,
       orderType,
     },
   });
@@ -101,7 +87,7 @@ export const CourseMenuAsMenuItemDetail: NextPageWithLayout = () => {
     throw new Error('データが見つかりませんでした。');
   }
 
-  const { tenant, courseMenu, viewer } = data;
+  const { courseMenu, viewer } = data;
   if (!courseMenu || !isCourseMenu(courseMenu)) {
     throw new Error('invalid course menu');
   }
@@ -119,26 +105,19 @@ export const CourseMenuAsMenuItemDetail: NextPageWithLayout = () => {
   });
 
   return (
-    <FeatureFlagsProvider featureFlags={data.facility.featureFlags}>
-      <NavigationHeaderLayout viewing={tenant} viewer={viewer} facility={data.facility} orderType={orderType}>
-        <Flex direction="column" align="stretch" h="full" pt="40px" gap="40px">
+    <FeatureFlagsProvider featureFlags={data.facility.featureFlags}>      
+        <CourseMenuEntriesFormProvider courseMenuEntries={entriesForProvider}>          
           <CourseMenuInfo courseMenu={courseMenu} />
-
-          <CourseMenuEntriesFormProvider courseMenuEntries={entriesForProvider}>
-            <Box
-              mx={containerMarginX}
-              mb="120px" // 画面下部にカート追加ボタンが固定されるので、大きめに余白をとる
-            >
-              <CourseMenuEntriesInput courseMenu={courseMenu} />
-            </Box>
+          <CourseMenuEntriesInput courseMenu={courseMenu} />
+          <Box mb="112px">
             <CourseMenuEntriesSubmit
               cartId={viewer.cart.id}
-              courseMenuId={courseId}
+              courseMenuId={courseMenuId}
               isUpdate={initialQuantitiesByEntryId !== null}
+              closeModal={closeModal}
             />
-          </CourseMenuEntriesFormProvider>
-        </Flex>
-      </NavigationHeaderLayout>
+          </Box>
+        </CourseMenuEntriesFormProvider>
     </FeatureFlagsProvider>
   );
 };
@@ -147,10 +126,12 @@ const CourseMenuEntriesSubmit = ({
   cartId,
   courseMenuId,
   isUpdate,
+  closeModal,
 }: {
   cartId: string;
   courseMenuId: string;
   isUpdate: boolean;
+  closeModal?: () => void;
 }) => {
   const state = useCourseMenuEntriesForm();
   const { validate } = useCourseMenuEntriesFormDispatch();
@@ -218,10 +199,13 @@ const CourseMenuEntriesSubmit = ({
 
     if (isUpdate) {
       await handleUpdateCourseMenu();
-      await router.push(cartPage(facilityId, orderType));
+      await router.push(tableOrderCartPage(facilityId));
     } else {
       await handleAddCourseMenu();
       await router.push(home);
+    }
+    if (closeModal) {
+      closeModal();
     }
   };
 
@@ -229,7 +213,8 @@ const CourseMenuEntriesSubmit = ({
     <Box
       position="fixed"
       bottom={0}
-      py="16px"
+      pt="24px"
+      pb="64px"
       w="full"
       maxW={variables.containerMaxWidth}
       px={containerMarginX}
@@ -239,15 +224,15 @@ const CourseMenuEntriesSubmit = ({
       zIndex="sticky"
     >
       <PrimaryButton onClick={handleSubmit} disabled={buttonDisabled} isLoading={adding || updating} h="56px">
-        <HStack w="full" justify="space-between" align="stretch" alignItems="center">
-          <Text>{isUpdate ? 'カートの内容を更新する' : 'カートに追加する'}</Text>
-          <VStack align="end" spacing={0}>
-            <Text className="bold-normal">
+        <VStack alignItems="center" px="24px" w="full" spacing="0">
+          <Text className="bold-small">{isUpdate ? 'カートの内容を更新する' : 'カートに追加する'}</Text>
+          <HStack spacing="4px" alignItems="center">
+            <Text className="bold-small">
               {formatPrice(showPriceExcludingTax ? subtotalPriceExcludingTax : subtotalPrice)}
             </Text>
             {showPriceExcludingTax && <Text className="text-micro">{`(税込${formatPrice(subtotalPrice)})`}</Text>}
-          </VStack>
-        </HStack>
+          </HStack>
+        </VStack>
       </PrimaryButton>
     </Box>
   );

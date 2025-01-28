@@ -1,14 +1,14 @@
 import gql from 'graphql-tag';
 import * as Urql from 'urql';
 
-import * as Types from '../../../../graphql/generated/types';
+import * as Types from '../../../graphql/generated/types';
 import {
   NavbarViewingPartsFragmentDoc,
   NavbarViewerPartsFragmentDoc,
   NavbarMenuViewerFragmentDoc,
-} from '../../../domain/Navbar/Navbar.fragment.generated';
-import { GeneralNavbarMenuViewerFragmentDoc } from '../../../domain/Navbar/GeneralNavbarMenu.generated';
-import { FeatureFlagsForProviderFragmentDoc } from '../../../../providers/FeatureFlagsProvider/FeatureFlagsProvider.fragment.generated';
+} from '../Navbar/Navbar.fragment.generated';
+import { GeneralNavbarMenuViewerFragmentDoc } from '../Navbar/GeneralNavbarMenu.generated';
+import { FeatureFlagsForProviderFragmentDoc } from '../../../providers/FeatureFlagsProvider/FeatureFlagsProvider.fragment.generated';
 
 import { MenuCategoryItemsFragmentDoc } from './MenuCategoryDetail.fragment.generated';
 

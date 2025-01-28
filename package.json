@@ -1,13 +1,13 @@
 {
   "name": "eevee-client-web",
-  "version": "2.44.0",
+  "version": "2.47.0",
   "main": "firebaseFunctionsSTG.js",
   "private": true,
   "engines": {
     "node": ">=18"
   },
   "scripts": {
-
+    "prepare": "./prepare.sh",
     "dev": "next dev & tsc --watch",
     "dev:stg": "APP_ENV=staging npm run dev",
     "dev:ssl": "APP_ENV=staging next dev & local-ssl-proxy --config local-ssl-proxy.config.json",
@@ -61,7 +61,7 @@
     "graphql": "^16.9.0",
     "graphql-anywhere": "^4.2.8",
     "graphql-tag": "^2.12.6",
-    "next": "14.2.15",
+    "next": "14.2.22",
     "passport": "^0.7.0",
     "passport-http": "^0.3.0",
     "qrcode.react": "^4.0.1",

@@ -12,6 +12,7 @@ const stagingIdentifiers = [
   'chompy-house-suzukenz',
   'spice-theater',
   'napoli-pizza-dev',
+  'popolamama-stg',
 ] as const;
 
 export type StagingIdentifier = (typeof stagingIdentifiers)[number];
@@ -105,6 +106,14 @@ const stagingConfigs: Record<StagingIdentifier, AppConfig> = {
     },
     firebaseAuthProject: 'napoli-pizza',
     promotionEnabled: true,
+  },
+  'popolamama-stg': {
+    tenantUidHeader: '7tdVNojKeAg7nk4ODPSi',
+    appColor: buildAppColor('#E60012', '#DC0008'),
+    pageMeta: {
+      title: 'ポポラマーマ - Staging',
+      favicon: '/favicons/chompy-house.ico',
+    },
   },
 } as const;
 

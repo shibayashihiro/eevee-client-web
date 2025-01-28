@@ -11,7 +11,7 @@ import { useHandleErrorWithAlertDialog } from '@/providers/tenant/GlobalModalDia
 import { useLoadingOverlay } from '@/providers/GlobalLoadingSpinnerProvider';
 import { deliveryHome } from '@/utils/paths/facilityPages';
 import { containerMarginX } from '@/utils/constants';
-import { deliveryCurrentAddressAddPage } from '@/utils/paths/tenantPages';
+import { deliveryAddressSelectPage, deliveryCurrentAddressAddPage } from '@/utils/paths/tenantPages';
 
 import { useGetPlaceDetailsForInputAddressQuery } from './DeliveryAddressAdd.query.generated';
 
@@ -31,6 +31,7 @@ const titles: Record<Step, string> = {
 
 type ExpectedQuery = {
   src?: string;
+  placeName?: string;
 };
 
 const isExpectedQuery = (query: ParsedUrlQuery): query is ExpectedQuery => {
@@ -41,6 +42,7 @@ const DeliveryAddressAddPage: NextPageWithLayout = () => {
   const router = useTenantRouter();
   const [step, setStep] = useState<Step>(initialStep);
   const [selectedPlaceId, setSelectedPlaceId] = useState<string>('');
+  const [placeKeyword, setPlaceKeyword] = useState<string>('');
 
   const [result] = useGetPlaceDetailsForInputAddressQuery({
     variables: { placeId: selectedPlaceId },
@@ -83,34 +85,40 @@ const DeliveryAddressAddPage: NextPageWithLayout = () => {
 
   const handleClickBackIcon = useCallback(() => {
     if (step === initialStep) {
-      router.back();
+      router.replace(deliveryAddressSelectPage);
       return;
     }
     toPrevStep();
   }, [router, step, toPrevStep]);
 
   const handleClickPlacePrediction = useCallback(
-    (placeId: string) => {
+    (placeId: string, keyword: string) => {
       setSelectedPlaceId(placeId);
+      setPlaceKeyword(keyword);
     },
-    [setSelectedPlaceId],
+    [setSelectedPlaceId, setPlaceKeyword],
   );
-  
+
+  const plaFromUrl = router.query.pla as string;
+
   useEffect(() => {
     if (selectedPlaceId && data?.placeAddress?.latLng?.latitude && data?.placeAddress?.latLng?.longitude) {
       const latitude = data.placeAddress.latLng.latitude;
       const longitude = data.placeAddress.latLng.longitude;
-      const addUrl = deliveryCurrentAddressAddPage({ latitude, longitude });
+      const addUrl = deliveryCurrentAddressAddPage({ latitude, longitude, placeName: placeKeyword });
       router.push(addUrl);
     }
-  }, [selectedPlaceId, data, router]);
+  }, [selectedPlaceId, data, router, placeKeyword]);
 
   return (
     <>
       <InsideNavbar title={titles[step]} onClickBackIcon={handleClickBackIcon} />
       <Container as="main" px={containerMarginX}>
         {step === steps.selectPlacePrediction && (
-          <SelectPlacePrediction onClickPlacePrediction={handleClickPlacePrediction} />
+          <SelectPlacePrediction
+            onClickPlacePrediction={handleClickPlacePrediction}
+            initialPlaceKeyword={plaFromUrl || ''}
+          />
         )}
         {step === steps.inputAddresses && !fetching && data?.placeAddress && (
           <InputAddresses initialValue={data.placeAddress} onSubmit={toNextStep} />

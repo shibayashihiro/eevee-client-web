@@ -29,11 +29,11 @@ export const IncrementDecrementButton: FC<Props> = ({ value, onChange, min, max 
           onClick={decrement}
           disabled={min !== undefined && value <= min}
           _disabled={{
-            color:"mono.divider",
+            color: 'mono.divider',
             borderColor: 'mono.divider',
           }}
         />
-        <Text minW="44px" color="brand.primaryText" fontSize="20px" fontWeight="600" textAlign="center" >
+        <Text minW="44px" color="brand.primaryText" fontSize="20px" fontWeight="600" textAlign="center">
           {value}
         </Text>
         <IconButton

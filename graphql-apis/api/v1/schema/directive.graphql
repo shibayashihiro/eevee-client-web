@@ -3,3 +3,8 @@
 現時点ではデータのオーナーとなるユーザーのみを想定している。
 """
 directive @restricted on FIELD_DEFINITION
+
+"""
+@defer が付けられたフラグメントは、クエリの実行時に遅延ロードされる。
+"""
+directive @defer(if: Boolean! = true, label: String) on FRAGMENT_SPREAD | INLINE_FRAGMENT

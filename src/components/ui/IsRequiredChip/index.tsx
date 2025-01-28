@@ -20,7 +20,7 @@ const requiredStyle: ChipStyle = {
 } as const;
 
 const optionalStyle: ChipStyle = {
-  fontColor: 'mono.primary',  
+  fontColor: 'mono.primary',
   fontWeight: '400',
   bgColor: 'mono.backGround',
 } as const;
@@ -36,7 +36,7 @@ export const IsRequiredChip = ({ label, variant }: Props) => {
     <Text
       color={style.fontColor}
       bgColor={style.bgColor}
-      className='text-extra-small'
+      className="text-extra-small"
       fontWeight={style.fontWeight}
       lineHeight="16.8px"
       px="4px"

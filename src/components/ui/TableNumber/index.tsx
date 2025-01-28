@@ -6,9 +6,9 @@ export const TableNumber = ({ tableName }: { tableName: string }) => {
   return (
     <HStack spacing="4px">
       <Text fontSize="12px" color={variables.monoSecondary} fontWeight="600">
-        座席番号
+        席番号
       </Text>
-      <Text fontSize="18px" color={variables.monoPrimary} fontWeight="600">
+      <Text className="bold-normal" color={variables.monoPrimary} fontWeight="600">
         {tableName}
       </Text>
     </HStack>

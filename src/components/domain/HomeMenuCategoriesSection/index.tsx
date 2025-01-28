@@ -1,19 +1,22 @@
-import React, { FC, useState, useCallback } from 'react';
-import { Box, Center, Circle, Icon, LinkBox, Text, VStack } from '@chakra-ui/react';
+import React, { FC, useState, useCallback, useEffect } from 'react';
+import { Box, Center, Circle, Icon, LinkBox, SimpleGrid, Text, VStack, Image } from '@chakra-ui/react';
 import ArrowForwardIos from '@mui/icons-material/ArrowForwardIos';
 
 import { OrderType } from '@/graphql/generated/types';
-import { menuCategoryDetailPage } from '@/utils/paths/facilityPages';
-import { useFacilityId } from '@/providers/tenant/WebOrderPageStateProvider';
 import { containerMarginX } from '@/utils/constants';
 import { useFeatureFlags } from '@/providers/FeatureFlagsProvider';
 import { SwipeableBottomModal } from '@/components/ui/SwipeableBottomModalDialog';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
 import { MenuItemDetailModalContent } from '../MenuItemDetailMoalContent';
 import { MenuCategoryCarousel } from '../MenuCategoryCarousel';
-import { TenantPageLinkOverlay } from '../TenantPageLink';
+import { MenuCategoryDetailModalContent } from '../MenuCategoryDetailModalContent';
 
 import { HomeMenuCategoriesSectionPartsFragment } from './HomeMenuCategoriesSection.fragment.generated';
+import { CarouselItemPrice } from '../MenuCategoryCarousel/CarouselItemPrice';
+import { safeImage } from '@/utils/image';
+import { NoImage } from '@/components/ui/NoImage';
+import FooterNavigation from '../FooterNavigation';
 
 export * from './HomeMenuCategoriesSection.fragment.generated';
 
@@ -26,104 +29,139 @@ type Props = {
 // それが解決するまではClient側で表示件数を制御する
 const maxVisibleMenuItems = 10;
 
-type MenuItem = HomeMenuCategoriesSectionPartsFragment['categories'][0]['items']['nodes'][0];
+type MenuItem = NonNullable<HomeMenuCategoriesSectionPartsFragment['categories']>[0]['items']['nodes'][0];
 
 export const HomeMenuCategoriesSection: FC<Props> = ({ menuCategoriesSection, orderType }: Props) => {
-  const facilityId = useFacilityId();
   const { title, categories } = menuCategoriesSection;
+  return (
+    <> 
+      <Box p="20px">   
+        <MenuCategories categories={categories} orderType={orderType} />
+      </Box>  
+      
+    </>
+  );
+};
 
+// 「すべて見る」を表示する商品数
+const showAllButtonMenuItemCount = 5;
+
+const MenuCategories = ({
+  categories,
+  orderType,
+}: {
+  categories?: HomeMenuCategoriesSectionPartsFragment['categories'];
+  orderType: OrderType;
+}) => {
   const { showPriceExcludingTax } = useFeatureFlags();
-  const showAllButtonMenuItemCount = 5;
 
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+  const [selectedCategoryName, setSelectedCategoryName] = useState<string | null>(null);
+  const [isItemModalOpen, setIsItemModalOpen] = useState(false);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
 
-  const openModal = useCallback((menuItem: MenuItem) => {
+  const openItemModal = useCallback((menuItem: MenuItem) => {
     setSelectedItem(menuItem);
-    setIsModalOpen(true);
+    setIsItemModalOpen(true);
   }, []);
 
-  const closeModal = useCallback(() => {
-    setIsModalOpen(false);
+  const closeItemModal = useCallback(() => {
+    setIsItemModalOpen(false);
+    setSelectedItem(null);
   }, []);
+
+  const openCategoryModal = useCallback((categoryId: string, categoryName: string) => {
+    setSelectedCategoryId(categoryId);
+    setSelectedCategoryName(categoryName);
+    setIsCategoryModalOpen(true);
+  }, []);
+
+  const closeCategoryModal = useCallback(() => {
+    setIsCategoryModalOpen(false);
+    setSelectedCategoryName(null);
+    setSelectedCategoryId(null);
+  }, []);
+  useEffect(() => {
+    if (isItemModalOpen || isCategoryModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = ''; // クリーンアップ
+    };
+  }, [isItemModalOpen, isCategoryModalOpen]);
+
+  // categoriesがundefinedということは、deferによる遅延取得中ということなので、ローディングを表示
+  if (!categories) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <>
-      <Text className="bold-large" mx={containerMarginX} mb="32px">
-        {title}
-      </Text>
-      <VStack align="stretch" spacing="32px">
-        {categories.map((category) => {
+    
+      <VStack spacing="40px" align="stretch">
+        {categories.map((category, index) => {
           if (category.items.nodes.length === 0) {
             return null;
           }
           return (
-            <MenuCategoryCarousel
-              key={category.id}
-              categoryName={category.name}
-              pathToShowAll={menuCategoryDetailPage(facilityId, category.id, orderType)}
-              paddingX={containerMarginX}
-            >
-              {category.items.nodes.slice(0, maxVisibleMenuItems).map((menuItem, i) => (
-                <MenuCategoryCarousel.Item
-                  key={i}
-                  image={menuItem.image || null}
-                  name={menuItem.name}
-                  price={menuItem.price}
-                  priceExcludingTax={showPriceExcludingTax ? menuItem.priceExcludingTax : undefined}
-                  unavailableReason={menuItem.status.available ? null : menuItem.status.labelUnavailable}
-                  onClick={() => openModal(menuItem)} 
-                />
+            <React.Fragment key={index}>   
+            <VStack align="stretch" spacing="15px">
+            <Box>
+              <Text className="bold-large">{category.name}</Text>
+            </Box>
+            <SimpleGrid mt="9px" columns={2} spacing="15px">
+                {category.items.nodes.map((menuItem, i) => (
+                <Box key={i} onClick={() => openItemModal(menuItem)}>
+                  <Image
+                    src={safeImage(menuItem.image)}
+                    alt={menuItem.name}
+                    boxSize={{ base: '160px', md: '272px' }}
+                    fallback={<NoImage rounded="4px" boxSize={{ base: '160px', md: '272px' }} />}
+                    rounded="4px"
+                    objectFit="cover"
+                  />
+                  <Text mt="8px" className="bold-small">
+                    {menuItem.name}
+                  </Text>
+                  <Box mt="4px">
+                    {/* NOTE: ここでCarouselItemPriceを使うのは少し違和感あるが、MenuItemSection自体が現状使われておらず
+                              もし将来頻繁に使われる場合は機能ごと修正されることを想定して楽な方法を取っている。 */}
+                    <CarouselItemPrice
+                      price={menuItem.price}
+                      priceExcludingTax={showPriceExcludingTax ? menuItem.priceExcludingTax : undefined}
+                      unavailableReason={menuItem.status.available ? null : menuItem.status.labelUnavailable}
+                    />
+                  </Box>
+                </Box>
               ))}
-              <>
-                {category.items.nodes.length >= showAllButtonMenuItemCount && (
-                  <LinkBox
-                    as="li"
-                    w={{ base: '120px', md: '200px' }}
-                    h="auto"
-                    flexShrink={0}
-                    listStyleType="none"
-                    display="flex"
-                  >
-                    <TenantPageLinkOverlay
-                      href={menuCategoryDetailPage(facilityId, category.id, orderType)}
-                      display="block"
-                      w="100%"
-                    >
-                      <Box h="100%">
-                        <Center h="100%" bgColor="brand.backgroundSoft" w="100%" borderRadius="md">
-                          <VStack>
-                            <Circle
-                              size="60px"
-                              borderWidth={2}
-                              borderColor="brand.backgroundSoft"
-                              color="brand.primary"
-                            >
-                              <Icon as={ArrowForwardIos} />
-                            </Circle>
-                            <Text className="bold-small" color="brand.primary" whiteSpace="pre-line" textAlign="center">
-                              すべて見る
-                            </Text>
-                          </VStack>
-                        </Center>
-                      </Box>
-                    </TenantPageLinkOverlay>
-                  </LinkBox>
-                )}
-              </>
-            </MenuCategoryCarousel>
+            </SimpleGrid>              
+            </VStack>          
+            </React.Fragment>
+           
           );
+          
         })}
-      </VStack>
+         </VStack>
       <SwipeableBottomModal
-        isOpen={isModalOpen && !!selectedItem?.id}
-        onClose={closeModal}
+        isOpen={isItemModalOpen && !!selectedItem?.id}
+        onClose={closeItemModal}
         title={selectedItem?.name || ''}
         footer={null}
       >
         {selectedItem?.id && (
-          <MenuItemDetailModalContent menuItemId={selectedItem.id} orderType={orderType} />
+          <MenuItemDetailModalContent menuItemId={selectedItem.id} orderType={orderType} closeModal={closeItemModal} />
         )}
+      </SwipeableBottomModal>
+      <SwipeableBottomModal
+        isOpen={isCategoryModalOpen && !!selectedCategoryId}
+        onClose={closeCategoryModal}
+        title={selectedCategoryName ? selectedCategoryName : ''}
+        footer={null}
+      >
+        {selectedCategoryId && <MenuCategoryDetailModalContent categoryId={selectedCategoryId} orderType={orderType} closeCategoryModal={closeCategoryModal}/>}
       </SwipeableBottomModal>
     </>
   );

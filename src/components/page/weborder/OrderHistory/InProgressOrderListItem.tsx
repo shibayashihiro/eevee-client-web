@@ -17,7 +17,11 @@ export const InProgressOrderListItem = ({ order }: Props) => {
     <VStack as="section" align="stretch" spacing="16px">
       <ListItemHeader variant="inProgress" orderType={orderType} shopName={order.facility.shortName} />
       {order.progress && (
-        <PickupInfo scheduledTime={order.progress?.scheduledTime} shortId={order.shortIds.join(', ')} />
+        <ReceiveInfo
+          scheduledTime={order.progress?.scheduledTime}
+          shortId={order.shortIds.join(', ')}
+          orderType={orderType}
+        />
       )}
       <GoDetailsButton orderId={order.id} />
     </VStack>
@@ -36,16 +40,26 @@ const resolveOrderType = (order: InProgressOrderListItemFragment): OrderType => 
   throw new Error('Unsupported order type');
 };
 
-const PickupInfo = ({ scheduledTime, shortId }: { scheduledTime: string; shortId: string }) => {
+const ReceiveInfo = ({
+  scheduledTime,
+  shortId,
+  orderType,
+}: {
+  scheduledTime: string;
+  shortId: string;
+  orderType: OrderType;
+}) => {
+  const scheduledTimeTitle = orderType === OrderType.Delivery ? 'お届け時間' : '受け取り時間';
+  const shortIdTitle = orderType === OrderType.Delivery ? 'お届け番号' : '受け取り番号';
   return (
     <SimpleGrid columns={2}>
-      <PickupInfoItem title="受け取り時間" value={scheduledTime} />
-      <PickupInfoItem title="受け取り番号" value={shortId} />
+      <ReceiveInfoItem title={scheduledTimeTitle} value={scheduledTime} />
+      <ReceiveInfoItem title={shortIdTitle} value={shortId} />
     </SimpleGrid>
   );
 };
 
-const PickupInfoItem = ({ title, value }: { title: string; value: string }) => {
+const ReceiveInfoItem = ({ title, value }: { title: string; value: string }) => {
   return (
     <VStack align="start" spacing="4px">
       <Text textStyle="bold-extra-small" color="mono.secondary">

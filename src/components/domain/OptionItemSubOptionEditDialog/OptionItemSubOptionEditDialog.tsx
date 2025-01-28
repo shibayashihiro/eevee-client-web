@@ -83,7 +83,7 @@ export const OptionItemSubOptionEditDialog = () => {
       onClose={onClose}
       footer={<PrimaryButton onClick={handleClickSubmit}>{buttonText}</PrimaryButton>}
     >
-      <VStack spacing="0"  align="stretch">
+      <VStack spacing="0" align="stretch">
         {viewingItem.item.subOptions.map((option) => (
           <SubOptionInputForm
             key={option.id}
@@ -103,7 +103,14 @@ const SubOptionInputForm = forwardRef<HTMLDivElement, { option: SubOption; error
   function SubOptionInputForm(props, ref) {
     const { option, error } = props;
     return (
-      <VStack ref={ref} spacing="16px" px="20px" py="16px" align="stretch" bg={error ? 'mono.errorBackground' : 'transparent'}>
+      <VStack
+        ref={ref}
+        spacing="16px"
+        px="20px"
+        py="16px"
+        align="stretch"
+        bg={error ? 'mono.errorBackground' : 'transparent'}
+      >
         <SubOptionTitle option={option} error={error} />
         <SubOptionItems option={option} />
       </VStack>
@@ -136,7 +143,7 @@ const SubOptionItems = ({ option }: { option: SubOption }) => {
               item={item}
               maxSelectCount={option.maxSelectCount}
               maxSelectCountPerItem={option.maxSelectCountPerItem}
-            />          
+            />
           </ListItem>
           <Divider />
         </React.Fragment>

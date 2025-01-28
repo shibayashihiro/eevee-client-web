@@ -56,21 +56,20 @@ export const MyCouponsPage: NextPageWithLayout = () => {
     setSortOption(selectedOption);
   };
 
-  const sortedAndFilteredCoupons = coupons
-    .sort((a, b) => {
-      const getExpiryDate = (coupon: CouponCardForListFragment) =>
-        new Date(coupon.details.find((detail) => detail.name === '有効期限')?.value || '').getTime();
+  const sortedAndFilteredCoupons = coupons.sort((a, b) => {
+    const getExpiryDate = (coupon: CouponCardForListFragment) =>
+      new Date(coupon.details.find((detail) => detail.name === '有効期限')?.value || '').getTime();
 
-      if (sortOption === 'newest') {
-        return getExpiryDate(b) - getExpiryDate(a);
-      } else if (sortOption === 'oldest') {
-        return getExpiryDate(a) - getExpiryDate(b);
-      } else if (sortOption === 'expiringSoon') {
-        const now = new Date().getTime();
-        return getExpiryDate(a) - now - (getExpiryDate(b) - now);
-      }
-      return 0;
-    });
+    if (sortOption === 'newest') {
+      return getExpiryDate(b) - getExpiryDate(a);
+    } else if (sortOption === 'oldest') {
+      return getExpiryDate(a) - getExpiryDate(b);
+    } else if (sortOption === 'expiringSoon') {
+      const now = new Date().getTime();
+      return getExpiryDate(a) - now - (getExpiryDate(b) - now);
+    }
+    return 0;
+  });
 
   return (
     <>
@@ -115,17 +114,11 @@ export const MyCouponsPage: NextPageWithLayout = () => {
 
           <TabPanels>
             <TabPanel px={containerMarginX} py="24px">
-              <FilterControls
-                sortOption={sortOption}
-                onSortChange={handleSortChange} 
-              />
+              <FilterControls sortOption={sortOption} onSortChange={handleSortChange} />
               <MyCouponList coupons={sortedAndFilteredCoupons} />
             </TabPanel>
             <TabPanel px={containerMarginX} py="24px">
-              <FilterControls
-                sortOption={sortOption}
-                onSortChange={handleSortChange}                
-              />
+              <FilterControls sortOption={sortOption} onSortChange={handleSortChange} />
               <MyCouponList coupons={sortedAndFilteredCoupons} isExpired />
             </TabPanel>
           </TabPanels>
@@ -162,7 +155,7 @@ const FilterControls = ({
       <option value="newest">最新順</option>
       <option value="oldest">古い順</option>
       <option value="expiringSoon">期限が近い順</option>
-    </Select>    
+    </Select>
   </HStack>
 );
 const MyCouponList = ({

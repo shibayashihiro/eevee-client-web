@@ -1,7 +1,5 @@
-import { ParsedUrlQuery } from 'querystring';
-
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Box, Text, VStack, HStack, Divider, ListItem, OrderedList } from '@chakra-ui/react';
+import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import { Box, Text, VStack, HStack, Divider, ListItem, Image, OrderedList } from '@chakra-ui/react';
 import { useClient } from 'urql';
 import { captureException } from '@sentry/nextjs';
 
@@ -13,59 +11,42 @@ import {
   GetMoreMenuCategoryItemsQuery,
   GetMoreMenuCategoryItemsQueryVariables,
   useGetMenuCategoryQuery,
-} from '@/components/page/weborder/MenuCategoryDetail/MenuCategoryDetail.query.generated';
+} from '@/components/domain/MenuCategoryDetailModalContent/MenuCategoryDetailModalContent.query.generated';
 import { localizedMessages } from '@/utils/errors';
-import { menuItemDetailPage } from '@/utils/paths/facilityPages';
-import { NextPageWithLayout } from '@/types';
+import { safeImage } from '@/utils/image';
 import { useHandleErrorWithAlertDialog } from '@/providers/tenant/GlobalModalDialogProvider/hooks';
-import { MenuItemImage } from '@/components/ui/MenuItemImage';
-import { useFacilityId, useTenantRouter } from '@/providers/tenant/WebOrderPageStateProvider';
+import { NoImage } from '@/components/ui/NoImage';
+import { useFacilityId } from '@/providers/tenant/WebOrderPageStateProvider';
 import { CarouselItemPrice } from '@/components/domain/MenuCategoryCarousel/CarouselItemPrice';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { InfiniteScroll } from '@/components/ui/InfiniteScroll';
-import { NavigationHeaderLayout } from '@/components/layouts/NavigationHeaderLayout';
+import { SwipeableBottomModal } from '@/components/ui/SwipeableBottomModalDialog';
+
+import { MenuItemDetailModalContent } from '../MenuItemDetailMoalContent';
 
 import { MenuCategoryItemsFragment } from './MenuCategoryDetail.fragment.generated';
 
-type ExpectedQuery = {
+type Props = {
+  categoryId: string;
   orderType: OrderType;
+  closeCategoryModal?: () => void;
 };
 
-const isValidQuery = (query: ParsedUrlQuery): query is ExpectedQuery => {
-  if (
-    query.orderType !== OrderType.EatIn &&
-    query.orderType !== OrderType.Delivery &&
-    query.orderType !== OrderType.Takeout
-  ) {
-    return false;
-  }
-  return true;
-};
-
-const MenuCategoryDetail: NextPageWithLayout = () => {
+export const MenuCategoryDetailModalContent: FC<Props> = ({ categoryId, orderType, closeCategoryModal }: Props) => {
   const { handleErrorWithAlertDialog } = useHandleErrorWithAlertDialog();
 
-  const router = useTenantRouter();
   const facilityId = useFacilityId();
-  const { id, ...queryParams } = router.query;
-
-  const valid = isValidQuery(queryParams);
-  if (!valid) {
-    throw new Error('menuCategoryDetail: invalid query');
-  }
-
-  const { orderType } = queryParams;
 
   const context = useAdditionalTypeNamesContext<[ScheduledOrderTime]>(['ScheduledOrderTime']);
   const [result] = useGetMenuCategoryQuery({
     variables: {
       facilityId: facilityId,
-      menuCategoryID: id as string,
+      menuCategoryID: categoryId,
       orderType: orderType,
       after: null, // 初期表示時は常にnull
     },
     context,
-    pause: id === undefined || typeof id !== 'string',
+    pause: categoryId === undefined || typeof categoryId !== 'string',
   });
 
   const { data, fetching, error } = result;
@@ -87,29 +68,13 @@ const MenuCategoryDetail: NextPageWithLayout = () => {
 
   return (
     <>
-      {data && data.facility && isFacility(data.facility) && (
-        <NavigationHeaderLayout
-          viewing={data.viewing}
-          viewer={data.viewer}
-          facility={data.facility}
+      {data && data.facility && isFacility(data.facility) && menuCategory && isMenuCategory(menuCategory) && (
+        <MenuCategoryItemsList
+          category={menuCategory}
+          showPriceExcludingTax={showPriceExcludingTax}
           orderType={orderType}
-        >
-          {menuCategory && isMenuCategory(menuCategory) && (
-            <Box as="main" pt="24px" pb="40px">
-              <VStack ml={containerMarginX} align="left">
-                <Text mr="20px" className="bold-large">
-                  {menuCategory.name}
-                </Text>
-                <Divider pt="12px" />
-              </VStack>
-              <MenuCategoryItemsList
-                category={menuCategory}
-                showPriceExcludingTax={showPriceExcludingTax}
-                orderType={orderType}
-              />
-            </Box>
-          )}
-        </NavigationHeaderLayout>
+          closeCategoryModal={closeCategoryModal}
+        />
       )}
     </>
   );
@@ -119,10 +84,12 @@ const MenuCategoryItemsList = ({
   category,
   showPriceExcludingTax,
   orderType,
+  closeCategoryModal
 }: {
   category: MenuCategoryItemsFragment;
   showPriceExcludingTax: boolean;
   orderType: OrderType;
+  closeCategoryModal?: () => void;
 }) => {
   const { nodes: initialItems, pageInfo: initialPageInfo } = category.items;
   const [pageInfo, setPageInfo] = useState<MenuCategoryItemsFragment['items']['pageInfo']>(initialPageInfo);
@@ -130,21 +97,21 @@ const MenuCategoryItemsList = ({
   const [lastFetchedCursor, setLastFetchedCursor] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const router = useTenantRouter();
-  const facilityId = useFacilityId();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<MenuCategoryItemsFragment['items']['nodes'][0] | null>(null);  
 
   const gqlClient = useClient();
   const { handleErrorWithAlertDialog } = useHandleErrorWithAlertDialog();
 
-  const geneHandleClickMenuItem = useCallback(
-    (menuItemId: string) => {
-      return (e: React.MouseEvent) => {
-        e.preventDefault();
-        router.push(menuItemDetailPage(facilityId, menuItemId, orderType));
-      };
-    },
-    [facilityId, orderType, router],
-  );
+  const openModal = useCallback((menuItem: MenuCategoryItemsFragment['items']['nodes'][0]) => {
+    setSelectedItem(menuItem);
+    setIsModalOpen(true);
+  }, []);
+
+  const closeModal = useCallback(() => {
+    setIsModalOpen(false);
+    setSelectedItem(null);
+  }, []);
 
   const { endCursor: nextCursor } = pageInfo;
   const loadMore = useCallback(async () => {
@@ -181,41 +148,60 @@ const MenuCategoryItemsList = ({
     sendMenuItemSimpleMissingErrReport(category.id, items);
     sendMenuItemMissingErrReport(items);
   }, [category.id, items]);
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = ''; // クリーンアップ
+    };
+  }, [isModalOpen]);
   return (
-    <OrderedList styleType="none" ml={containerMarginX}>
-      <InfiniteScroll hasMore={!isLoading && pageInfo.hasNextPage} loadMore={loadMore} loader={<LoadingSpinner />}>
-        {items.map((menuItem, i) => (
-          <ListItem pt="16px" key={i}>
-            <HStack
-              onClick={geneHandleClickMenuItem(menuItem.id)}
-              _hover={{ cursor: 'pointer' }}
-              mr={containerMarginX}
-              justify="space-between"
-            >
-              <VStack align="left">
-                <Text className="bold-small">{menuItem.name}</Text>
-                <Text className="text-extra-small">{menuItem.description}</Text>
-                {/* NOTE: ここでCarouselItemPriceを使うのは少し違和感あるので直したい */}
-                <CarouselItemPrice
-                  price={menuItem.price}
-                  priceExcludingTax={showPriceExcludingTax ? menuItem.priceExcludingTax : undefined}
-                  unavailableReason={menuItem.status.available ? null : menuItem.status.labelUnavailable}
-                />
-              </VStack>
-              <Box w="80px" flexShrink={0}>
-                <MenuItemImage
-                  href={menuItemDetailPage(facilityId, menuItem.id, orderType)}
-                  image={menuItem.image || undefined}
-                  name={menuItem.name}
-                  boxSize="80px"
-                />
-              </Box>
-            </HStack>
-            <Divider mt="16px" />
-          </ListItem>
-        ))}
-      </InfiniteScroll>
-    </OrderedList>
+    <>
+      <OrderedList styleType="none" ml={containerMarginX}>
+        <InfiniteScroll hasMore={!isLoading && pageInfo.hasNextPage} loadMore={loadMore} loader={<LoadingSpinner />}>
+          {items.map((menuItem, i) => (
+            <ListItem pt="16px" key={i}>
+              <HStack
+                onClick={() => openModal(menuItem)}
+                _hover={{ cursor: 'pointer' }}
+                mr={containerMarginX}
+                justify="space-between"
+              >
+                <VStack align="left">
+                  <Text className="bold-small">{menuItem.name}</Text>
+                  <Text className="text-extra-small">{menuItem.description}</Text>
+                  {/* NOTE: ここでCarouselItemPriceを使うのは少し違和感あるので直したい */}
+                  <CarouselItemPrice
+                    price={menuItem.price}
+                    priceExcludingTax={showPriceExcludingTax ? menuItem.priceExcludingTax : undefined}
+                    unavailableReason={menuItem.status.available ? null : menuItem.status.labelUnavailable}
+                  />
+                </VStack>
+                <Box w="80px" flexShrink={0}>
+                  <Image
+                    src={safeImage(menuItem.image)}
+                    alt={menuItem.name}
+                    boxSize="80px"
+                    fallback={<NoImage rounded="4px" boxSize="80px" />}
+                    rounded="4px"
+                    objectFit="cover"                    
+                  />
+                </Box>
+              </HStack>
+              <Divider mt="16px" />
+            </ListItem>
+          ))}
+        </InfiniteScroll>
+      </OrderedList>
+      <SwipeableBottomModal isOpen={isModalOpen} onClose={closeModal} title={selectedItem?.name || ''} footer={null}>
+        {selectedItem && (
+          <MenuItemDetailModalContent menuItemId={selectedItem.id} orderType={orderType} closeModal={closeModal} closeCategoryModal={closeCategoryModal} />
+        )}
+      </SwipeableBottomModal>
+    </>
   );
 };
 
@@ -298,5 +284,3 @@ function sendMenuItemSimpleMissingErrReport(categoryId: string, items: MenuCateg
     });
   });
 }
-
-export default MenuCategoryDetail;

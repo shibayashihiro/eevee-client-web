@@ -2,6 +2,7 @@ import { HStack, Spacer, Image, VStack, Text } from '@chakra-ui/react';
 import { ComponentProps } from 'react';
 
 import { formatOptionItemPrice } from '@/utils/domain/menuItemOption';
+import { safeImage } from '@/utils/image';
 import { useFeatureFlags } from '@/providers/FeatureFlagsProvider';
 
 import { NoImage } from '../../ui/NoImage';
@@ -66,7 +67,7 @@ const OptionItemContent = ({
       {showImage !== undefined && showImage && (
         <Image
           alt={`${name}の画像`}
-          src={image ? image : undefined}
+          src={safeImage(image)}
           rounded="4px"
           boxSize="80px"
           objectFit="cover"

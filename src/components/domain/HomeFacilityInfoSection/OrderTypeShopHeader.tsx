@@ -1,4 +1,4 @@
-import { Heading, VStack, Text } from '@chakra-ui/react';
+import { Heading, Text } from '@chakra-ui/react';
 
 import { TakeoutIcon } from '@/components/ui/Icons/TakeoutIcon';
 import { OrderType } from '@/graphql/generated/types';
@@ -12,16 +12,13 @@ type Props = {
 
 export const OrderTypeShopHeader = ({ orderType, shopName }: Props) => {
   const meta = orderTypeMeta[orderType];
-  return (
-    <VStack align="start" spacing="4px">
+  return (    
       <Heading as="h2" display="flex" alignItems="center">
         {meta.icon}
-        <Text as="span" textStyle="bold-large" ml="8px" color="brand.primary">
-          {meta.title}
+        <Text as="span" textStyle="bold-normal" ml="4px" color="mono.primary">
+          {shopName}
         </Text>
       </Heading>
-      <Text textStyle="bold-extra-small">{shopName}</Text>
-    </VStack>
   );
 };
 
@@ -33,7 +30,7 @@ type OrderTypeMeta = {
 const orderTypeMeta: Record<OrderType, OrderTypeMeta> = {
   [OrderType.EatIn]: {
     title: 'イートイン',
-    icon: <EatInIcon boxSize="20px" aria-hidden="true" color="brand.primary" />,
+    icon: <EatInIcon boxSize="20px" aria-hidden="true" color="mono.primary" />,
   },
   [OrderType.Takeout]: {
     title: 'お持ち帰り',

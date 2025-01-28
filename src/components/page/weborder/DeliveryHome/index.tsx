@@ -80,7 +80,7 @@ const DeliveryHome: NextPageWithLayout = () => {
 
 const DeliveryHomeView = ({ data }: { data: GetWebDeliveryHomeSectionsQuery }) => {
   const { tenant, viewer, facility } = data;
-  const usingDeliveryAddress = viewer?.deliveryAddresses.find((f) => f.isUsing);
+  const usingDeliveryAddress = viewer?.deliveryAddresses && viewer?.deliveryAddresses.find((f) => f.isUsing);
   const { isAnonymous } = useAuthUser();
   const router = useRouter();
   const cfg = validateQueryTenantIdentifier(router.query) ? apps.getConfig(router.query.tenantIdentifier) : null;

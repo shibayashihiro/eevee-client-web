@@ -117,10 +117,12 @@ export type GetWebTakeoutHomeSectionsQuery = {
   };
   viewer: {
     __typename: 'User';
-    cart: { __typename: 'Cart'; totalPrice: number; totalQuantity: number };
     profile?: { __typename: 'Profile'; imageUrl: string } | null;
     loyaltyCard?: { __typename: 'UserLoyaltyCard' } | null;
-  };
+  } & (
+    | { __typename: 'User'; cart: { __typename: 'Cart'; totalPrice: number; totalQuantity: number } }
+    | { __typename: 'User'; cart?: never }
+  );
   facility?:
     | { __typename: 'Cart' }
     | { __typename: 'Coupon' }
@@ -175,8 +177,10 @@ export const GetWebTakeoutHomeSectionsDocument = gql`
       }
     }
     viewer {
-      cart(facilityID: $facilityID, orderType: $orderType) {
-        ...CartFooterButtonParts
+      ... @defer {
+        cart(facilityID: $facilityID, orderType: $orderType) {
+          ...CartFooterButtonParts
+        }
       }
       ...NavbarViewerParts
     }

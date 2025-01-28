@@ -78,9 +78,7 @@ export const OrderMemoInputDialog: FC<Props> = ({ cartId, tenantUid, initialValu
           backgroundColor="mono.bg"
           borderRadius="4px"
           id="order-memo"
-          placeholder={
-            placeholderByTenantUid[tenantUid] ?? '店舗へのご要望がありましたらこちらに記載してください。'
-          }
+          placeholder={placeholderByTenantUid[tenantUid] ?? '店舗へのご要望がありましたらこちらに記載してください。'}
           onChange={handleChangeOrderMemo}
           value={memo}
         />

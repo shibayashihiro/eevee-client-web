@@ -27,14 +27,16 @@ query GetWebDeliveryHomeSections($facilityID: ID!, $orderType: OrderType!) {
   }
 
   viewer {
-    cart(facilityID: $facilityID, orderType: $orderType) {
-      ...CartFooterButtonParts
-    }
-    deliveryAddresses {
-      ...DeliveryAddressIndicatorParts
-      latLng {
-        latitude
-        longitude
+    ... @defer {
+      cart(facilityID: $facilityID, orderType: $orderType) {
+        ...CartFooterButtonParts
+      }
+      deliveryAddresses {
+        ...DeliveryAddressIndicatorParts
+        latLng {
+          latitude
+          longitude
+        }
       }
     }
     ...HomeHeader

@@ -36,21 +36,21 @@ export const FacilityList: FC<Props> = ({ location, searchText, sortOption }) =>
     if (!data || !data.viewing.facilities) {
       return [];
     }
-    
-    const normalizedSearchText = normalizeText(searchText); 
-  
+
+    const normalizedSearchText = normalizeText(searchText);
+
     const filteredFacilities = data.viewing.facilities.filter((facility) => {
       if (facility.availableOrderTypes.length === 0) {
         return false;
       }
-      const fullAddress = `${facility.address1}${facility.address2}`;      
-      
+      const fullAddress = `${facility.address1}${facility.address2}`;
+
       const normalizedShortName = normalizeText(facility.shortName);
       const normalizedFullAddress = normalizeText(fullAddress);
-      
+
       return normalizedShortName.includes(normalizedSearchText) || normalizedFullAddress.includes(normalizedSearchText);
     });
-  
+
     if (sortOption === 'nearest') {
       return filteredFacilities.sort((a, b) => {
         const aDistance = a.metaByLocation?.distance ?? Infinity;
@@ -64,7 +64,7 @@ export const FacilityList: FC<Props> = ({ location, searchText, sortOption }) =>
         return bDistance - aDistance;
       });
     }
-  
+
     return filteredFacilities;
   }, [data, searchText, sortOption]);
 

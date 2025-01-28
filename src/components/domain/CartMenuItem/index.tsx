@@ -1,12 +1,12 @@
-import React, { FC, useCallback } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 
 import { OrderType } from '@/graphql/generated/types';
-import { menuItemDetailPage } from '@/utils/paths/facilityPages';
-import { useFacilityId, useTenantRouter } from '@/providers/tenant/WebOrderPageStateProvider';
+import { SwipeableBottomModal } from '@/components/ui/SwipeableBottomModalDialog';
 
 import { OrderItemOptionItemsText } from '../OrderItemOptionItemsText';
 import { CartOrderItem } from '../Cart/CartOrderItem';
 import { CartOrderItemActions } from '../Cart/CartOrderItemActions';
+import { MenuItemDetailModalContent } from '../MenuItemDetailMoalContent';
 
 import { CartMenuItemFragment } from './CartMenuItem.fragment.generated';
 
@@ -33,16 +33,50 @@ export const CartMenuItem: FC<Props> = (props: Props) => {
 };
 
 const Actions = ({ item, orderType, onClickDelete }: Props) => {
-  const facilityId = useFacilityId();
   const handleOnclickDelete = () => {
     if (!onClickDelete) return;
     onClickDelete(item.id);
   };
 
-  const router = useTenantRouter();
-  const handleOnClickEdit = useCallback(() => {
-    router.push(menuItemDetailPage(facilityId, item.menuItem.id, orderType, item.id));
-  }, [facilityId, item.id, item.menuItem.id, orderType, router]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  return <CartOrderItemActions onClickEdit={handleOnClickEdit} onClickDelete={handleOnclickDelete} />;
+  const openModal = useCallback(() => {
+    setIsModalOpen(true);
+  }, []);
+
+  const closeModal = useCallback(() => {
+    setIsModalOpen(false);
+  }, []);
+
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = ''; // クリーンアップ
+    };
+  }, [isModalOpen]);
+
+  return (
+    <>
+      <CartOrderItemActions onClickEdit={openModal} onClickDelete={handleOnclickDelete} />
+      <SwipeableBottomModal
+        isOpen={isModalOpen && !!item.menuItem.id}
+        onClose={closeModal}
+        title={item.menuItem.name || ''}
+        footer={null}
+      >
+        {item.menuItem.id && (
+          <MenuItemDetailModalContent
+            menuItemId={item.menuItem.id}
+            orderType={orderType}
+            orderItemId={item.id}
+            closeModal={closeModal}
+          />
+        )}
+      </SwipeableBottomModal>
+    </>
+  );
 };

@@ -11,9 +11,18 @@ import { useGetMenuItemDetailModalContentQuery } from './MenuItemDetailModalCont
 type MenuItemDetailModalContentProps = {
   menuItemId: string;
   orderType: OrderType;
+  orderItemId?: string;
+  closeModal: () => void;
+  closeCategoryModal?: () => void;
 };
 
-export const MenuItemDetailModalContent = ({ menuItemId, orderType }: MenuItemDetailModalContentProps) => {
+export const MenuItemDetailModalContent = ({
+  menuItemId,
+  orderType,
+  orderItemId,
+  closeModal,
+  closeCategoryModal
+}: MenuItemDetailModalContentProps) => {
   const facilityId = useFacilityId();
 
   const [result] = useGetMenuItemDetailModalContentQuery({
@@ -21,18 +30,18 @@ export const MenuItemDetailModalContent = ({ menuItemId, orderType }: MenuItemDe
       facilityID: facilityId,
       menuItemID: menuItemId,
       orderType,
-      withOrderItem: false,
+      withOrderItem: !!orderItemId,
       isEatIn: orderType === OrderType.EatIn,
-      orderItemID: '', 
+      orderItemID: orderItemId ?? '', // 本当はundefinedを渡したいが、GraphQLの都合上できなさそうなので空文字を渡す(withOrderItem=falseであれば使われない)
     },
-    pause: !menuItemId,
+    pause: menuItemId === undefined || typeof menuItemId !== 'string',
   });
 
   const { data, error, fetching } = result;
   useLoadingOverlay(fetching);
 
   if (fetching) {
-    return <LoadingSpinner/>;
+    return <LoadingSpinner />;
   }
 
   if (error) {
@@ -45,14 +54,15 @@ export const MenuItemDetailModalContent = ({ menuItemId, orderType }: MenuItemDe
 
   const { menuItem, viewer } = data;
 
-  return (    
-      <MenuItemDetail
-        menuItem={menuItem}
-        cartId={viewer.cart.id}
-        orderType={orderType}
-        hasDeliveryAddress={viewer.deliveryAddresses.length > 0}
-        initialOrderItem={viewer.cart.item}
-        backTo={undefined} 
-      />    
+  return (
+    <MenuItemDetail
+      menuItem={menuItem}
+      cartId={viewer.cart.id}
+      orderType={orderType}
+      hasDeliveryAddress={viewer.deliveryAddresses.length > 0}
+      initialOrderItem={viewer.cart.item}
+      closeModal={closeModal}
+      closeCategoryModal={closeCategoryModal}
+    />
   );
 };

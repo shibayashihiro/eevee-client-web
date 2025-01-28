@@ -12,7 +12,7 @@ type Props = {
   priceIsRange?: boolean;
   image: string | null;
   unavailableReason?: string | null;
-  onClick?: () => void; 
+  onClick?: () => void;
 };
 
 export const CarouselItem = ({
@@ -24,17 +24,15 @@ export const CarouselItem = ({
   unavailableReason,
   onClick,
 }: Props) => {
-  const Wrapper = Box;
   return (
-    
-    <Wrapper
+    <Box
       as="li"
       mr="12px"
       w={{ base: '120px', md: '200px' }}
       flexShrink={0}
       listStyleType="none"
-      onClick={onClick} 
-      cursor="pointer" 
+      onClick={onClick}
+      cursor="pointer"
     >
       <Image
         src={safeImage(image)}
@@ -55,6 +53,6 @@ export const CarouselItem = ({
           unavailableReason={unavailableReason}
         />
       </Box>
-    </Wrapper>
+    </Box>
   );
 };

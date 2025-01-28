@@ -1,12 +1,12 @@
-import { UrlObject } from 'url';
-
 import React, { FC } from 'react';
 import { Box, Image, Text, VStack } from '@chakra-ui/react';
 
 import { containerMarginX } from '@/utils/constants';
+import { safeImage } from '@/utils/image';
 import { OwnerComment } from '@/components/domain/OwnerComment';
 import { MenuItemDetailOption } from '@/components/domain/MenuItemDetailOption';
 import { SuspendedBanner } from '@/components/ui/SuspendedBanner';
+import { NoImage } from '@/components/ui/NoImage';
 import { OrderType } from '@/graphql/generated/types';
 import { CartItemEditProvider, InitialOrderItemForCartItemEditFragment } from '@/providers/CartItemEditProvider';
 import { useRefMap } from '@/hooks/useRefMap';
@@ -25,7 +25,8 @@ type Props = {
   orderType: OrderType;
   hasDeliveryAddress: boolean;
   initialOrderItem?: InitialOrderItemForCartItemEditFragment | null;
-  backTo?: UrlObject;
+  closeModal?: () => void;
+  closeCategoryModal?: () => void;
 };
 
 export const MenuItemDetail: FC<Props> = ({
@@ -34,7 +35,8 @@ export const MenuItemDetail: FC<Props> = ({
   orderType,
   hasDeliveryAddress,
   initialOrderItem,
-  backTo,
+  closeModal,
+  closeCategoryModal
 }: Props) => {
   const { isAnonymous } = useAuthUser();
 
@@ -47,17 +49,22 @@ export const MenuItemDetail: FC<Props> = ({
     }
   };
   return (
-    <CartItemEditProvider menuItem={menuItem} initialOrderItem={initialOrderItem}>      
+    <CartItemEditProvider menuItem={menuItem} initialOrderItem={initialOrderItem}>
       <Image
-        src={menuItem.image}
+        src={safeImage(menuItem.image)}
         alt={`${menuItem.name}の商品画像`}
         w="100%"
         h={{ base: '249px', md: '426px' }}
         objectFit="cover"
         objectPosition={'50% 50%'}
+        fallback={<NoImage h={{ base: '249px', md: '426px' }} w="full" />}
       />
       <VStack align="stretch" px={containerMarginX} py="16px" spacing="16px">
-        {menuItem.description && <Text className="text-small" whiteSpace="pre-line">{menuItem.description}</Text>}
+        {menuItem.description && (
+          <Text className="text-small" whiteSpace="pre-line">
+            {menuItem.description}
+          </Text>
+        )}
         {menuItem.ownerComment && <OwnerComment ownerComment={menuItem.ownerComment} />}
       </VStack>
       <VStack spacing="24px" align="start">
@@ -83,7 +90,8 @@ export const MenuItemDetail: FC<Props> = ({
           shouldRegisterAddress={orderType == OrderType.Delivery && (isAnonymous || !hasDeliveryAddress)}
           viewerCanAddToCart={menuItem.orderStatus.viewerCanAddToCart}
           scrollToOptionById={scrollToOption}
-          backTo={backTo}
+          closeModal={closeModal}
+          closeCategoryModal={closeCategoryModal}
         />
       </Box>
     </CartItemEditProvider>

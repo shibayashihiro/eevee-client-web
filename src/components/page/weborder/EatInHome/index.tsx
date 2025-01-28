@@ -1,5 +1,5 @@
-import { Box, Image, Spacer, VStack } from '@chakra-ui/react';
-import React from 'react';
+import { Box, HStack, Image, Spacer, TabPanel, Tab, Tooltip, TabList, Tabs, VStack, TabPanels, Button, Flex, Text } from '@chakra-ui/react';
+import React, { useRef, useState } from 'react';
 
 import { FixedCartFooterButton } from '@/components/domain/FixedCartFooterButton';
 import { HomeBannerSection } from '@/components/domain/HomeBannerSection';
@@ -35,7 +35,8 @@ import { ItemSearchMethodButtonType } from '@/components/domain/Navbar/types';
 import { HomeEatInFacilityInfoSection } from '@/components/domain/HomeFacilityInfoSection';
 
 import { GetWebEatInHomeSectionsQuery, useGetWebEatInHomeSectionsQuery } from './EatInHome.query.generated';
-
+import { motion } from "framer-motion";
+import FooterNavigation from '@/components/domain/FooterNavigation';
 const orderType = OrderType.EatIn;
 
 export const EatInHome: NextPageWithLayout = () => {
@@ -81,84 +82,208 @@ const EatInHomeView = ({ data }: { data: GetWebEatInHomeSectionsQuery }) => {
 
   // 店舗の設定がON、かつテーブルが選択されている場合にテーブルオーダーの支払いアイコンを表示する
   const showTableOrderPayment = facility.featureFlags.OnlinePaymentEnabled && viewer.table != null;
+  const menuCategories = data.tenant.layout.webHome?.sections.find(
+    (section) => section.__typename === "MenuCategoriesSection"
+  )?.categories || [];
 
+  const [activeCategoryIndex, setActiveCategoryIndex] = useState(0);
+  const [activeSubcategory, setActiveSubcategory] = useState<{
+    tabIndex: number;
+    subIndex: number | null;
+  }>({ tabIndex: 0, subIndex: null });
+
+  const leftText =
+  activeCategoryIndex > 0
+    ? menuCategories[activeCategoryIndex - 1]?.name
+    : menuCategories[0]?.name || "";
+
+const rightText =
+  activeCategoryIndex < menuCategories.length - 1
+    ? menuCategories[activeCategoryIndex + 1]?.name
+    : menuCategories[menuCategories.length - 1]?.name || "";
+
+  
   return (
-    <FeatureFlagsProvider featureFlags={facility.featureFlags}>
-      <NavigationHeaderLayout
-        viewing={tenant}
-        viewer={viewer}
-        facility={facility}
-        orderType={orderType}
-        showOrderHistory={true}
-        showTableOrderPayment={showTableOrderPayment}
-        itemSearchMethodButtonType={
-          facility?.featureFlags.itemCodeSearchEnabled
-            ? ItemSearchMethodButtonType.ShowItemCodeForm
-            : ItemSearchMethodButtonType.None
-        }
-      >
-        {viewer?.table && <TableCourseMenuStatsHeader table={viewer?.table} />}
+    <FeatureFlagsProvider featureFlags={facility.featureFlags}>      
+        
         {tenant.layout.webHome?.sections.map((section, i) => (
-          <React.Fragment key={i}>
-            {isObjectType<MainVisualSection>(section, 'MainVisualSection') && (
-              <Image
-                src={section.image}
-                alt=""
-                h={{ base: '187px', md: '320px' }}
-                w="100%"
-                objectFit="cover"
-                objectPosition={'50% 50%'}
-              />
-            )}
-            {isObjectType<MembershipCardSection>(section, 'MembershipCardSection') && (
-              <HomeMembershipCardSection membershipCardSection={section} key={i} />
-            )}
-            {isObjectType<HomeBannerSectionPartsFragment>(section, 'BannerSection') && section.banners.length > 0 && (
-              <Box mt="16px">
-                <HomeBannerSection bannerSection={section} />
-              </Box>
-            )}
+          <React.Fragment key={i}>           
+            
             {section.__typename === 'FacilityInfoSection' && (
-              <VStack key={i} align="stretch" mt="32px" mx={containerMarginX} spacing="20px">
-                <HomeEatInFacilityInfoSection section={section} table={viewer?.table || null} />
-                {data.viewer.table?.mainCourseMenu && (
-                  // 本当はsectionにした方が良さそうだが、コースメニュー(食べ飲み放題)用途以外に抽象化できるイメージが現時点でなかったので、
-                  // 一旦ここで直接べた表示している
-                  <HomeLastOrderPassedBanner courseMenu={data.viewer.table?.mainCourseMenu} />
-                )}
+              <>
+              <VStack key={i} p="12px" w="full" align="stretch" borderBottom="1px solid" borderColor="mono.divider">
+                <HomeEatInFacilityInfoSection section={section} table={viewer?.table || null} />                
               </VStack>
+              {menuCategories.length > 0 && (
+                <TabMenu 
+                  categoriesData={menuCategories}
+                  setActiveCategoryIndex={setActiveCategoryIndex}
+                  activeCategoryIndex={activeCategoryIndex}
+                  setActiveSubcategory={setActiveSubcategory}
+                  activeSubcategory={activeSubcategory}
+                />
+              )}
+              </>
             )}
+            
             {isObjectType<StatusSection>(section, 'StatusSection') && (
               <Box mt="40px" mx={containerMarginX} key={i}>
                 <SuspendedBanner title={section.title} />
               </Box>
-            )}
-            {isObjectType<HomeMenuItemsSectionPartsFragment>(section, 'MenuItemsSection') && (
-              <Box mt="40px" mx={containerMarginX} key={i}>
-                <HomeMenuItemsSection menuItemsSection={section} orderType={orderType} />
-              </Box>
-            )}
+            )}            
             {isObjectType<HomeMenuCategoriesSectionPartsFragment>(section, 'MenuCategoriesSection') && (
-              <Box mt="40px">
+              <Box>
                 <HomeMenuCategoriesSection menuCategoriesSection={section} orderType={orderType} />
+                <FooterNavigation leftText={leftText} rightText={rightText} onLeftClick={() => setActiveCategoryIndex((prev) => Math.max(prev - 1, 0))}
+                onRightClick={() => setActiveCategoryIndex((prev) => Math.min(prev + 1, menuCategories.length - 1))}/>
               </Box>
             )}
-            {isObjectType<HomeCourseMenuCategoriesSectionFragment>(section, 'CourseMenuCategoriesSection') && (
-              <Box mt="24px">
-                <HomeCourseMenuCategoriesSection courseMenuCategoriesSection={section} orderType={orderType} />
-              </Box>
-            )}
+            
           </React.Fragment>
         ))}
-        <Spacer mb="40px" />
+        <Spacer mb="40px" />        
         <FixedCartFooterButton
           orderType={orderType}
           cart={viewer?.cart}
           isTableOrder={!!data.viewer.table}
           cartRawIdForWatch={data?.viewer?.table?.cartRawId}
         />
-      </NavigationHeaderLayout>
+      
     </FeatureFlagsProvider>
+  );
+};
+
+const MotionTab = motion(Tab);
+
+// const categories = [
+//   { label: "パスタ",  subcategories: ["OIL", "MEAT", "JAPANESE TASTE", "TOMATO", "ROASTED"] },
+//   { label: "肉料理",  subcategories: ["GRILLED", "FRIED", "ROASTED"] },
+//   { label: "ドルチェ", subcategories: ["CAKES", "PIES", "ICE CREAM"] },
+//   { label: "キッズ", subcategories: ["MEALS", "SNACKS"] },
+//   { label: "プレ",  subcategories: ["SPECIAL DISH", "WINE PAIRINGS"] },
+//   { label: "肉料理",  subcategories: ["GRILLED", "FRIED", "ROASTED"] },
+//   { label: "ドルチェ",  subcategories: ["CAKES", "PIES", "ICE CREAM"] },
+//   { label: "キッズ",  subcategories: ["MEALS", "SNACKS"] },
+// ];
+
+export const TabMenu = ({
+  categoriesData,
+  setActiveCategoryIndex,
+  activeCategoryIndex,
+  setActiveSubcategory,
+  activeSubcategory,
+}: {
+  categoriesData: {
+    name: string;
+    items?: {
+      nodes: { name: string }[];
+    };
+  }[];
+  setActiveCategoryIndex: (index: number) => void;
+  activeCategoryIndex: number;
+  setActiveSubcategory: (subcategory: { tabIndex: number; subIndex: number | null }) => void;
+  activeSubcategory: { tabIndex: number; subIndex: number | null };
+}) => {
+  if (!categoriesData || categoriesData.length === 0) return null;
+
+  return (
+    <Box position="sticky" top="0" zIndex="10" bg="white">
+      <Tabs index={activeCategoryIndex}
+        onChange={(index) => {
+          setActiveCategoryIndex(index);
+          setActiveSubcategory({ tabIndex: index, subIndex: null });
+        }}>
+
+        <Box
+          overflowX="auto"
+          whiteSpace="nowrap"
+          css={{
+            "&::-webkit-scrollbar": {
+              display: "none",
+            },
+          }}
+        >
+          <TabList display="inline-flex" gap={0}>
+            {categoriesData.map((category, index) => (
+              <MotionTab
+                key={index}
+                as="div"
+                _selected={{
+                  bg: "brand.primary",
+                  color: "white",
+                  position: "relative",
+                  "::after": {
+                    content: `""`,
+                    position: "absolute",
+                    bottom: "-6px",
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    width: "0",
+                    height: "0",
+                    borderLeft: "6px solid transparent",
+                    borderRight: "6px solid transparent",
+                    borderTop: "8px solid brown.500",
+                  },
+                }}
+                className="bold-small"
+                color="mono.primary"
+              >
+                {category.name}
+              </MotionTab>
+            ))}
+          </TabList>
+        </Box>
+
+        {/* Subcategory Panels */}
+        <TabPanels borderBottom="1px solid" borderColor="mono.divider">
+          {categoriesData.map((category, tabIndex) => (
+            <TabPanel key={tabIndex} p="0px">
+              <Box
+                overflowX="auto"
+                whiteSpace="nowrap"
+                p="8px"
+                gap="8px"
+                css={{
+                  "&::-webkit-scrollbar": {
+                    display: "none",
+                  },
+                }}
+              >
+                {category.items?.nodes.length > 0 ? (
+                  category.items.nodes.map((menuItem, subIndex) => (
+                    <Button
+                      key={subIndex}
+                      borderRadius="full"
+                      bg={
+                        activeSubcategory.tabIndex === tabIndex &&
+                        activeSubcategory.subIndex === subIndex
+                          ? "brand.primary"
+                          : "mono.backGround"
+                      }
+                      color={
+                        activeSubcategory.tabIndex === tabIndex &&
+                        activeSubcategory.subIndex === subIndex
+                          ? "white"
+                          : "mono.primary"
+                      }
+                      size="md"
+                      mr="8px"
+                      px="18px"
+                      py="8px"
+                      onClick={() => setActiveSubcategory({ tabIndex, subIndex })}
+                    >
+                      {menuItem.name}
+                    </Button>
+                  ))
+                ) : (
+                  <Text color="gray.500">サブカテゴリがありません</Text>
+                )}
+              </Box>
+            </TabPanel>
+          ))}
+        </TabPanels>
+      </Tabs>
+    </Box>
   );
 };
 

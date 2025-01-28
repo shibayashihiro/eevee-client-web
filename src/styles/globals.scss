@@ -3,7 +3,13 @@
 html,
 body {
   color: $mono-primary;
-  font-family: 'SF Hiragino', 'ヒラギノUD角ゴ StdN', 'Noto Sans JP', sans-serif, -apple-system, BlinkMacSystemFont;
+  font-family:
+    'SF Hiragino',
+    'ヒラギノUD角ゴ StdN',
+    'Noto Sans JP',
+    sans-serif,
+    -apple-system,
+    BlinkMacSystemFont;
   font-size: $text-small;
 }
 

@@ -34,18 +34,23 @@ export const MenuItemDetailOption = forwardRef<HTMLDivElement, Props>(function M
     maxSelectCount,
     maxSelectCountPerItem,
   });
-  
 
   return (
     <Box ref={ref} w="full" px={containerMarginX} pb="16px" bg={errorMessage ? 'mono.errorBackground' : 'transparent'}>
-      <VStack align="start" spacing="4px" py="16px" >
+      <VStack align="start" spacing="4px" py="16px">
         <VStack align="start" spacing="4px" position={'sticky'}>
           <Text className="bold-medium">{menuItemOption.name}</Text>
           {!errorMessage && <OptionIsRequiredChip option={menuItemOption} />}
         </VStack>
         {errorMessage && <InputErrorMessage message={errorMessage} />}
       </VStack>
-      <VStack spacing={0} divider={<Divider as="div" borderColor={dividerColor} />} bg="mono.white" borderRadius="4px" pl="12px">
+      <VStack
+        spacing={0}
+        divider={<Divider as="div" borderColor={dividerColor} />}
+        bg="mono.white"
+        borderRadius="4px"
+        pl="12px"
+      >
         {menuItemOption.items.map((item) => (
           <MenuItemDetailOptionItem
             key={item.id}

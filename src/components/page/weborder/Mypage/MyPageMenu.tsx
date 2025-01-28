@@ -121,7 +121,6 @@ const LoginLogOutSection = () => {
   const { signOut } = useAuth();
 
   const handleConfirmWithdrawal = useCallback(async () => {
-
     const { error } = await suspendUser({
       input: {
         clientMutationId: generateMutationId(),

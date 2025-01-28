@@ -1,24 +1,22 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { VStack } from '@chakra-ui/react';
 
-import { OrderType } from '@/graphql/generated/types';
 import { containerMarginX } from '@/utils/constants';
 import { resolvePrice } from '@/utils/domain/courseMenu';
 import { useFeatureFlags } from '@/providers/FeatureFlagsProvider';
 import { SwipeableBottomModal } from '@/components/ui/SwipeableBottomModalDialog';
+import { CourseMenuDetailModalContent } from '@/components/domain/CourseMenuDetailModalContent';
 
 import { MenuCategoryCarousel } from '../MenuCategoryCarousel';
-import { MenuItemDetailModalContent } from '../MenuItemDetailMoalContent';
 
 import { HomeCourseMenuCategoriesSectionFragment } from './HomeCourseMenuCategoriesSection.fragment.generated';
 
 type Props = {
   courseMenuCategoriesSection: HomeCourseMenuCategoriesSectionFragment;
-  orderType: OrderType;
 };
 export type course = HomeCourseMenuCategoriesSectionFragment['categories'][0]['courses'][0];
 
-export const HomeCourseMenuCategoriesSection = ({ courseMenuCategoriesSection, orderType }: Props) => {
+export const HomeCourseMenuCategoriesSection = ({ courseMenuCategoriesSection }: Props) => {
   const [selectedItem, setSelectedItem] = useState<course | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -30,6 +28,16 @@ export const HomeCourseMenuCategoriesSection = ({ courseMenuCategoriesSection, o
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
   }, []);
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = ''; // クリーンアップ
+    };
+  }, [isModalOpen]);
   const { showPriceExcludingTax } = useFeatureFlags();
   return (
     <>
@@ -41,7 +49,7 @@ export const HomeCourseMenuCategoriesSection = ({ courseMenuCategoriesSection, o
               return (
                 <MenuCategoryCarousel.Item
                   key={course.id}
-                  onClick={() => openModal(course)} 
+                  onClick={() => openModal(course)}
                   image={null} // TODO: implement
                   name={course.name}
                   price={price}
@@ -59,10 +67,8 @@ export const HomeCourseMenuCategoriesSection = ({ courseMenuCategoriesSection, o
         title={selectedItem?.name || ''}
         footer={null}
       >
-      {selectedItem?.id && (
-        <MenuItemDetailModalContent menuItemId={selectedItem.id} orderType={orderType} /> 
-      )}
-    </SwipeableBottomModal>
-  </>
+        {selectedItem?.id && <CourseMenuDetailModalContent courseMenuId={selectedItem.id} closeModal={closeModal} />}
+      </SwipeableBottomModal>
+    </>
   );
 };

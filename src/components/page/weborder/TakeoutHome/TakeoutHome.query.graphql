@@ -24,8 +24,10 @@ query GetWebTakeoutHomeSections($facilityID: ID!, $orderType: OrderType!) {
   }
 
   viewer {
-    cart(facilityID: $facilityID, orderType: $orderType) {
-      ...CartFooterButtonParts
+    ... @defer {
+      cart(facilityID: $facilityID, orderType: $orderType) {
+        ...CartFooterButtonParts
+      }
     }
     ...NavbarViewerParts
   }

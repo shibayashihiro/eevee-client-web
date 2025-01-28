@@ -1,12 +1,15 @@
 import { useCallback, useEffect, useState, useMemo } from 'react';
-import { Box, Container, VStack, Text } from '@chakra-ui/react';
+import { Box, Container, VStack, Text, HStack, Icon, useDisclosure } from '@chakra-ui/react';
+import { HelpOutline } from '@mui/icons-material';
 
 import { InsideNavbar } from '@/components/ui/InsideNavbar';
 import { NextPageWithLayout } from '@/types';
 import { useTenantRouter } from '@/providers/tenant/WebOrderPageStateProvider';
 import { DeliveryAddressMap } from '@/components/domain/DeliveryAddressMap';
-import { PrimaryButton } from '@/components/ui/Button';
 import { InputAddresses } from '@/components/domain/DeliveryAddressAdd/InputAddresses';
+import { AddressInfoDialog } from '@/components/domain/AddressInfoDialog';
+import { PrimaryButton } from '@/components/ui/Button';
+import { WrappedLink } from '@/components/ui/WrappedLink';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { deliveryHome } from '@/utils/paths/facilityPages';
 import { containerMarginX } from '@/utils/constants';
@@ -34,6 +37,7 @@ const DeliveryAddressAddPage: NextPageWithLayout = () => {
   const latitude = parseFloat(lat as string);
   const longitude = parseFloat(lng as string);
   const [coordinates, setCoordinates] = useState<Coordinates | null>(null);
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const [address, setAddress] = useState<Address>({
     __typename: '',
     prefecture: '',
@@ -156,6 +160,9 @@ const DeliveryAddressAddPage: NextPageWithLayout = () => {
 
   if (!coordinates) return <LoadingSpinner />;
 
+  const handleAddressInfoClick = () => {
+    onOpen();
+  };
   return (
     <>
       <InsideNavbar
@@ -165,22 +172,26 @@ const DeliveryAddressAddPage: NextPageWithLayout = () => {
       <Container as="main">
         {!showInputForm ? (
           <>
-            <VStack alignItems="start" mx="20px" my="16px" spacing="4px">
-              <Text className="bold-extra-small" color="mono.secondary">
-                お届け先住所
-              </Text>
-              <Box
-                background="mono.bg"
-                borderRadius="4px"
-                px="12px"
-                alignContent="center"
-                minH="56px"
-                className="bold-normal"
-                w="full"
-                pointerEvents="none"
-              >
+            <VStack alignItems="start" mx="20px" my="16px" spacing="8px">
+              <HStack justifyContent="space-between" w="full">
+                <Text className="bold-extra-small" color="mono.secondary">
+                  お届け先住所
+                </Text>
+                <WrappedLink
+                  display="flex"
+                  href="#"
+                  onClick={handleAddressInfoClick}
+                  style={{ textDecoration: 'none' }}
+                >
+                  <HStack spacing="0">
+                    <Icon as={HelpOutline} boxSize="16px" />
+                    <Text className="bold-extra-small">表示される住所情報が異なる場合</Text>
+                  </HStack>
+                </WrappedLink>
+              </HStack>
+              <Text className="bold-normal" w="full" textAlign="start">
                 {`${address.prefecture} ${address.addressLine}`}
-              </Box>
+              </Text>
             </VStack>
             <Box mx="auto" mt="0px" height={{ base: '54vh', md: '60vh' }}>
               <DeliveryAddressMap coordinates={coordinates} onMapClick={handleMapClick} />
@@ -214,6 +225,7 @@ const DeliveryAddressAddPage: NextPageWithLayout = () => {
           </Box>
         )}
       </Container>
+      <AddressInfoDialog isOpen={isOpen} onClose={onClose} />
     </>
   );
 };

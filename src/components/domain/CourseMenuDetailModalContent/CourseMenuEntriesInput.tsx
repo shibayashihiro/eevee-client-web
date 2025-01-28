@@ -1,11 +1,12 @@
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
-import { HStack, VStack, Text, Box, Divider, Icon, IconButton } from '@chakra-ui/react';
+import { HStack, VStack, Text, Divider, Icon, IconButton, Box } from '@chakra-ui/react';
 
 import { useCourseMenuEntriesForm, useCourseMenuEntriesFormDispatch } from '@/providers/CourseMenuEntriesFormProvider';
 import { InputErrorMessage } from '@/components/ui/InputErrorMessage';
 import { IsRequiredChip } from '@/components/ui/IsRequiredChip';
 import { formatOptionItemPrice } from '@/utils/domain/menuItemOption';
+import { containerMarginX } from '@/utils/constants';
 import { useFeatureFlags } from '@/providers/FeatureFlagsProvider';
 
 import { CourseMenuAsMenuItemDetail_CourseMenuEntriesInputFragment } from './CourseMenuEntriesInput.fragment.generated';
@@ -21,28 +22,31 @@ export const CourseMenuEntriesInput = ({ courseMenu }: Props) => {
   const error = state.errorByCourseMenuId[courseMenuId];
 
   return (
-    <VStack align="stretch" spacing="8px">
-      <VStack align="start" spacing="6px">
-        <HStack spacing="6px" alignItems="center">
-          <Text className="bold-small">ご利用人数</Text>
-          {minSelectCount > 0 ? (
-            <IsRequiredChip label={`必須・${minSelectCount}人以上選択してください`} variant="required" />
-          ) : (
-            <IsRequiredChip label="任意" variant="optional" />
-          )}
-        </HStack>
-        {error && <InputErrorMessage message={error} />}
-      </VStack>
-      <Box>
-        <Divider mt="8px" />
-        <VStack align="stretch" spacing={0} divider={<Divider as="div" />}>
-          {entries.map((entry) => (
-            <InputCourseMenuEntry key={entry.id} courseMenuId={courseMenuId} entry={entry} />
-          ))}
+    <Box w="full" px={containerMarginX} pb="16px" bg={error ? 'mono.errorBackground' : 'transparent'}>
+      <VStack align="start" spacing="4px" py="16px">
+        <VStack align="start" spacing="4px" position={'sticky'}>
+          <Text className="bold-normal">ご利用人数</Text>
+          {!error &&
+            (minSelectCount > 0 ? (
+              <IsRequiredChip label={`必須・${minSelectCount}人以上選択してください`} variant="required" />
+            ) : (
+              <IsRequiredChip label="任意" variant="optional" />
+            ))}
         </VStack>
-        <Divider mt="8px" />
-      </Box>
-    </VStack>
+        {error && <InputErrorMessage message={error} />}
+      </VStack>      
+      <VStack
+        spacing={0}
+        divider={<Divider as="div" borderColor="mono.divider" />}
+        bg="mono.white"
+        borderRadius="4px"
+        pl="12px"
+      >
+        {entries.map((entry) => (
+          <InputCourseMenuEntry key={entry.id} courseMenuId={courseMenuId} entry={entry} />
+        ))}
+      </VStack>
+    </Box>
   );
 };
 
@@ -71,12 +75,12 @@ const InputCourseMenuEntry = ({
   };
 
   return (
-    <HStack color="mono.primary" w="full" minH="56px" justify="space-between">
-      <VStack alignItems="start" spacing="3px">
-        <Text className="text-medium">{name}</Text>
+    <HStack color="mono.primary" w="full" justify="space-between" my="12px" spacing="8px">
+      <VStack alignItems="start" spacing="4px">
+        <Text className="text-normal">{name}</Text>
         <PriceText entry={entry} />
       </VStack>
-      <HStack spacing={0}>
+      <HStack spacing={0} mr="12px">
         {currentQuantity > 0 && (
           <>
             <IconButton
@@ -88,7 +92,7 @@ const InputCourseMenuEntry = ({
               _hover={{ bgColor: 'inherit' }}
               _active={{ bgColor: 'inherit' }}
             />
-            <Text className="text-medium" color="brand.primaryText" align="center" minW="32px">
+            <Text className="text-medium" color="brand.primaryText" align="center" minW="16px">
               {currentQuantity}
             </Text>
           </>
@@ -114,8 +118,8 @@ const PriceText = ({ entry }: { entry: CourseMenuAsMenuItemDetail_CourseMenuEntr
   }
 
   return (
-    <HStack alignItems="center" spacing={1}>
-      <Text className="bold-small">
+    <HStack alignItems="center" spacing="8px">
+      <Text className="text-small">
         {formatOptionItemPrice(showPriceExcludingTax ? entry.priceExcludingTax : entry.price)}
       </Text>
       {showPriceExcludingTax && <Text className="text-micro">{`(税込${formatOptionItemPrice(entry.price)})`}</Text>}

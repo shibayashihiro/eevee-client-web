@@ -1,7 +1,6 @@
 import { ParsedUrlQuery } from 'querystring';
-import { UrlObject } from 'url';
 
-import React, { useMemo } from 'react';
+import React from 'react';
 
 import { OrderType } from '@/graphql/generated/types';
 import { useFacilityId, useTenantRouter } from '@/providers/tenant/WebOrderPageStateProvider';
@@ -9,7 +8,6 @@ import { MenuItemDetail } from '@/components/domain/MenuItemDetail';
 import { useHandleErrorWithAlertDialog } from '@/providers/tenant/GlobalModalDialogProvider/hooks';
 import { NextPageWithLayout } from '@/types';
 import { useLoadingOverlay } from '@/providers/GlobalLoadingSpinnerProvider';
-import { cartPage, tableOrderCartPage } from '@/utils/paths/facilityPages';
 import { WithFeatureFlagsProvider } from '@/providers/FeatureFlagsProvider/WithFeatureFlagsProvider';
 import { NavigationHeaderLayout } from '@/components/layouts/NavigationHeaderLayout';
 
@@ -65,30 +63,14 @@ const MenuItemDetailPage: NextPageWithLayout = () => {
   const { data, error, fetching } = result;
   useLoadingOverlay(fetching);
 
-  const isTableOrder = !!data?.viewer.table;
-  const backTo = useMemo(() => {
-    if (orderType == OrderType.EatIn && isTableOrder) {
-      return tableOrderCartPage(facilityId);
-    }
-    return cartPage(facilityId, orderType);
-  }, [facilityId, isTableOrder, orderType]);
-
   if (error) {
     handleErrorWithAlertDialog(error);
   }
 
-  return <>{data && <MenuItemDetailPageLayout data={data} orderType={orderType} backTo={backTo} />}</>;
+  return <>{data && <MenuItemDetailPageLayout data={data} orderType={orderType} />}</>;
 };
 
-const MenuItemDetailPageLayout = ({
-  data,
-  orderType,
-  backTo,
-}: {
-  data: GetMenuItemDetailQuery;
-  orderType: OrderType;
-  backTo: UrlObject;
-}) => {
+const MenuItemDetailPageLayout = ({ data, orderType }: { data: GetMenuItemDetailQuery; orderType: OrderType }) => {
   const { menuItem, tenant, viewer, facility } = data;
 
   if (facility?.__typename !== 'Facility') {
@@ -107,7 +89,6 @@ const MenuItemDetailPageLayout = ({
           orderType={orderType as OrderType}
           hasDeliveryAddress={viewer.deliveryAddresses.length > 0}
           initialOrderItem={viewer.cart.item}
-          backTo={backTo}
         />
       </WithFeatureFlagsProvider>
     </NavigationHeaderLayout>

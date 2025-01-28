@@ -35,7 +35,7 @@ const TenantHome: NextPageWithLayout = () => {
   const router = useTenantRouter();
   const tenantId = useTenantUid();
 
-  const { handleErrorWithAlertDialog } = useHandleErrorWithAlertDialog();  
+  const { handleErrorWithAlertDialog } = useHandleErrorWithAlertDialog();
 
   const cfg = validateQueryTenantIdentifier(router.query) ? apps.getConfig(router.query.tenantIdentifier) : null;
   const promotionEnabled = cfg?.promotionEnabled;
