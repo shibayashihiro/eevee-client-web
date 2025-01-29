@@ -33,10 +33,15 @@ type MenuItem = NonNullable<HomeMenuCategoriesSectionPartsFragment['categories']
 
 export const HomeMenuCategoriesSection: FC<Props> = ({ menuCategoriesSection, orderType }: Props) => {
   const { title, categories } = menuCategoriesSection;
+  if (!categories || categories.length === 0) {
+    return <LoadingSpinner />;
+  }
+
+  const firstCategory = categories[0];
   return (
     <> 
       <Box p="20px">   
-        <MenuCategories categories={categories} orderType={orderType} />
+        <MenuCategories category={firstCategory} orderType={orderType} />
       </Box>  
       
     </>
@@ -47,10 +52,10 @@ export const HomeMenuCategoriesSection: FC<Props> = ({ menuCategoriesSection, or
 const showAllButtonMenuItemCount = 5;
 
 const MenuCategories = ({
-  categories,
+  category,
   orderType,
 }: {
-  categories?: HomeMenuCategoriesSectionPartsFragment['categories'];
+  category: HomeMenuCategoriesSectionPartsFragment['categories'][0];
   orderType: OrderType;
 }) => {
   const { showPriceExcludingTax } = useFeatureFlags();
@@ -61,6 +66,9 @@ const MenuCategories = ({
   const [isItemModalOpen, setIsItemModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
 
+  if (!category || !category.items?.nodes || category.items.nodes.length === 0) {
+    return null;
+  }
   const openItemModal = useCallback((menuItem: MenuItem) => {
     setSelectedItem(menuItem);
     setIsItemModalOpen(true);
@@ -94,20 +102,14 @@ const MenuCategories = ({
   }, [isItemModalOpen, isCategoryModalOpen]);
 
   // categoriesがundefinedということは、deferによる遅延取得中ということなので、ローディングを表示
-  if (!categories) {
+  if (!category) {
     return <LoadingSpinner />;
   }
 
   return (
     <>
     
-      <VStack spacing="40px" align="stretch">
-        {categories.map((category, index) => {
-          if (category.items.nodes.length === 0) {
-            return null;
-          }
-          return (
-            <React.Fragment key={index}>   
+      <VStack spacing="40px" align="stretch">         
             <VStack align="stretch" spacing="15px">
             <Box>
               <Text className="bold-large">{category.name}</Text>
@@ -138,12 +140,7 @@ const MenuCategories = ({
                 </Box>
               ))}
             </SimpleGrid>              
-            </VStack>          
-            </React.Fragment>
-           
-          );
-          
-        })}
+            </VStack> 
          </VStack>
       <SwipeableBottomModal
         isOpen={isItemModalOpen && !!selectedItem?.id}

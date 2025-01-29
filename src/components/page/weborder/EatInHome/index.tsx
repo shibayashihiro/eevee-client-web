@@ -37,6 +37,7 @@ import { HomeEatInFacilityInfoSection } from '@/components/domain/HomeFacilityIn
 import { GetWebEatInHomeSectionsQuery, useGetWebEatInHomeSectionsQuery } from './EatInHome.query.generated';
 import { motion } from "framer-motion";
 import FooterNavigation from '@/components/domain/FooterNavigation';
+import { TabTest } from '@/components/domain/TabTest';
 const orderType = OrderType.EatIn;
 
 export const EatInHome: NextPageWithLayout = () => {
@@ -104,7 +105,7 @@ const rightText =
 
   
   return (
-    <FeatureFlagsProvider featureFlags={facility.featureFlags}>      
+    <FeatureFlagsProvider featureFlags={facility.featureFlags}>     
         
         {tenant.layout.webHome?.sections.map((section, i) => (
           <React.Fragment key={i}>           
@@ -114,6 +115,7 @@ const rightText =
               <VStack key={i} p="12px" w="full" align="stretch" borderBottom="1px solid" borderColor="mono.divider">
                 <HomeEatInFacilityInfoSection section={section} table={viewer?.table || null} />                
               </VStack>
+              <TabTest/>
               {menuCategories.length > 0 && (
                 <TabMenu 
                   categoriesData={menuCategories}
@@ -216,13 +218,12 @@ export const TabMenu = ({
                     content: `""`,
                     position: "absolute",
                     bottom: "-6px",
-                    left: "50%",
-                    transform: "translateX(-50%)",
+                    left: "50%",                    
                     width: "0",
                     height: "0",
                     borderLeft: "6px solid transparent",
                     borderRight: "6px solid transparent",
-                    borderTop: "8px solid brown.500",
+                    borderTop: "6px solid white",
                   },
                 }}
                 className="bold-small"
