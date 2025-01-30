@@ -35,7 +35,6 @@ import { ItemSearchMethodButtonType } from '@/components/domain/Navbar/types';
 import { HomeEatInFacilityInfoSection } from '@/components/domain/HomeFacilityInfoSection';
 
 import { GetWebEatInHomeSectionsQuery, useGetWebEatInHomeSectionsQuery } from './EatInHome.query.generated';
-import { motion } from "framer-motion";
 import FooterNavigation from '@/components/domain/FooterNavigation';
 import { TabTest } from '@/components/domain/TabTest';
 const orderType = OrderType.EatIn;
@@ -87,21 +86,7 @@ const EatInHomeView = ({ data }: { data: GetWebEatInHomeSectionsQuery }) => {
     (section) => section.__typename === "MenuCategoriesSection"
   )?.categories || [];
 
-  const [activeCategoryIndex, setActiveCategoryIndex] = useState(0);
-  const [activeSubcategory, setActiveSubcategory] = useState<{
-    tabIndex: number;
-    subIndex: number | null;
-  }>({ tabIndex: 0, subIndex: null });
-
-  const leftText =
-  activeCategoryIndex > 0
-    ? menuCategories[activeCategoryIndex - 1]?.name
-    : menuCategories[0]?.name || "";
-
-const rightText =
-  activeCategoryIndex < menuCategories.length - 1
-    ? menuCategories[activeCategoryIndex + 1]?.name
-    : menuCategories[menuCategories.length - 1]?.name || "";
+  
 
   
   return (
@@ -115,16 +100,8 @@ const rightText =
               <VStack key={i} p="12px" w="full" align="stretch" borderBottom="1px solid" borderColor="mono.divider">
                 <HomeEatInFacilityInfoSection section={section} table={viewer?.table || null} />                
               </VStack>
-              <TabTest/>
-              {menuCategories.length > 0 && (
-                <TabMenu 
-                  categoriesData={menuCategories}
-                  setActiveCategoryIndex={setActiveCategoryIndex}
-                  activeCategoryIndex={activeCategoryIndex}
-                  setActiveSubcategory={setActiveSubcategory}
-                  activeSubcategory={activeSubcategory}
-                />
-              )}
+              <TabTest orderType={orderType}/>
+              
               </>
             )}
             
@@ -135,9 +112,8 @@ const rightText =
             )}            
             {isObjectType<HomeMenuCategoriesSectionPartsFragment>(section, 'MenuCategoriesSection') && (
               <Box>
-                <HomeMenuCategoriesSection menuCategoriesSection={section} orderType={orderType} />
-                <FooterNavigation leftText={leftText} rightText={rightText} onLeftClick={() => setActiveCategoryIndex((prev) => Math.max(prev - 1, 0))}
-                onRightClick={() => setActiveCategoryIndex((prev) => Math.min(prev + 1, menuCategories.length - 1))}/>
+                {/* <HomeMenuCategoriesSection menuCategoriesSection={section} orderType={orderType} /> */}
+                
               </Box>
             )}
             
@@ -152,139 +128,6 @@ const rightText =
         />
       
     </FeatureFlagsProvider>
-  );
-};
-
-const MotionTab = motion(Tab);
-
-// const categories = [
-//   { label: "パスタ",  subcategories: ["OIL", "MEAT", "JAPANESE TASTE", "TOMATO", "ROASTED"] },
-//   { label: "肉料理",  subcategories: ["GRILLED", "FRIED", "ROASTED"] },
-//   { label: "ドルチェ", subcategories: ["CAKES", "PIES", "ICE CREAM"] },
-//   { label: "キッズ", subcategories: ["MEALS", "SNACKS"] },
-//   { label: "プレ",  subcategories: ["SPECIAL DISH", "WINE PAIRINGS"] },
-//   { label: "肉料理",  subcategories: ["GRILLED", "FRIED", "ROASTED"] },
-//   { label: "ドルチェ",  subcategories: ["CAKES", "PIES", "ICE CREAM"] },
-//   { label: "キッズ",  subcategories: ["MEALS", "SNACKS"] },
-// ];
-
-export const TabMenu = ({
-  categoriesData,
-  setActiveCategoryIndex,
-  activeCategoryIndex,
-  setActiveSubcategory,
-  activeSubcategory,
-}: {
-  categoriesData: {
-    name: string;
-    items?: {
-      nodes: { name: string }[];
-    };
-  }[];
-  setActiveCategoryIndex: (index: number) => void;
-  activeCategoryIndex: number;
-  setActiveSubcategory: (subcategory: { tabIndex: number; subIndex: number | null }) => void;
-  activeSubcategory: { tabIndex: number; subIndex: number | null };
-}) => {
-  if (!categoriesData || categoriesData.length === 0) return null;
-
-  return (
-    <Box position="sticky" top="0" zIndex="10" bg="white">
-      <Tabs index={activeCategoryIndex}
-        onChange={(index) => {
-          setActiveCategoryIndex(index);
-          setActiveSubcategory({ tabIndex: index, subIndex: null });
-        }}>
-
-        <Box
-          overflowX="auto"
-          whiteSpace="nowrap"
-          css={{
-            "&::-webkit-scrollbar": {
-              display: "none",
-            },
-          }}
-        >
-          <TabList display="inline-flex" gap={0}>
-            {categoriesData.map((category, index) => (
-              <MotionTab
-                key={index}
-                as="div"
-                _selected={{
-                  bg: "brand.primary",
-                  color: "white",
-                  position: "relative",
-                  "::after": {
-                    content: `""`,
-                    position: "absolute",
-                    bottom: "-6px",
-                    left: "50%",                    
-                    width: "0",
-                    height: "0",
-                    borderLeft: "6px solid transparent",
-                    borderRight: "6px solid transparent",
-                    borderTop: "6px solid white",
-                  },
-                }}
-                className="bold-small"
-                color="mono.primary"
-              >
-                {category.name}
-              </MotionTab>
-            ))}
-          </TabList>
-        </Box>
-
-        {/* Subcategory Panels */}
-        <TabPanels borderBottom="1px solid" borderColor="mono.divider">
-          {categoriesData.map((category, tabIndex) => (
-            <TabPanel key={tabIndex} p="0px">
-              <Box
-                overflowX="auto"
-                whiteSpace="nowrap"
-                p="8px"
-                gap="8px"
-                css={{
-                  "&::-webkit-scrollbar": {
-                    display: "none",
-                  },
-                }}
-              >
-                {category.items?.nodes.length > 0 ? (
-                  category.items.nodes.map((menuItem, subIndex) => (
-                    <Button
-                      key={subIndex}
-                      borderRadius="full"
-                      bg={
-                        activeSubcategory.tabIndex === tabIndex &&
-                        activeSubcategory.subIndex === subIndex
-                          ? "brand.primary"
-                          : "mono.backGround"
-                      }
-                      color={
-                        activeSubcategory.tabIndex === tabIndex &&
-                        activeSubcategory.subIndex === subIndex
-                          ? "white"
-                          : "mono.primary"
-                      }
-                      size="md"
-                      mr="8px"
-                      px="18px"
-                      py="8px"
-                      onClick={() => setActiveSubcategory({ tabIndex, subIndex })}
-                    >
-                      {menuItem.name}
-                    </Button>
-                  ))
-                ) : (
-                  <Text color="gray.500">サブカテゴリがありません</Text>
-                )}
-              </Box>
-            </TabPanel>
-          ))}
-        </TabPanels>
-      </Tabs>
-    </Box>
   );
 };
 
