@@ -1,5 +1,5 @@
 import React, { FC, useState, useCallback, useEffect } from 'react';
-import { Box, Center, Circle, Icon, LinkBox, SimpleGrid, Text, VStack, Image } from '@chakra-ui/react';
+import { Box, Center, Circle, Icon, LinkBox, Text, VStack } from '@chakra-ui/react';
 import ArrowForwardIos from '@mui/icons-material/ArrowForwardIos';
 
 import { OrderType } from '@/graphql/generated/types';
@@ -13,10 +13,6 @@ import { MenuCategoryCarousel } from '../MenuCategoryCarousel';
 import { MenuCategoryDetailModalContent } from '../MenuCategoryDetailModalContent';
 
 import { HomeMenuCategoriesSectionPartsFragment } from './HomeMenuCategoriesSection.fragment.generated';
-import { CarouselItemPrice } from '../MenuCategoryCarousel/CarouselItemPrice';
-import { safeImage } from '@/utils/image';
-import { NoImage } from '@/components/ui/NoImage';
-import FooterNavigation from '../FooterNavigation';
 
 export * from './HomeMenuCategoriesSection.fragment.generated';
 
@@ -33,17 +29,12 @@ type MenuItem = NonNullable<HomeMenuCategoriesSectionPartsFragment['categories']
 
 export const HomeMenuCategoriesSection: FC<Props> = ({ menuCategoriesSection, orderType }: Props) => {
   const { title, categories } = menuCategoriesSection;
-  if (!categories || categories.length === 0) {
-    return <LoadingSpinner />;
-  }
-
-  const firstCategory = categories[0];
   return (
-    <> 
-      <Box p="20px">   
-        <MenuCategories category={firstCategory} orderType={orderType} />
-      </Box>  
-      
+    <>
+      <Text className="bold-large" mx={containerMarginX} mb="32px">
+        {title}
+      </Text>
+      <MenuCategories categories={categories} orderType={orderType} />
     </>
   );
 };
@@ -52,10 +43,10 @@ export const HomeMenuCategoriesSection: FC<Props> = ({ menuCategoriesSection, or
 const showAllButtonMenuItemCount = 5;
 
 const MenuCategories = ({
-  category,
+  categories,
   orderType,
 }: {
-  category: HomeMenuCategoriesSectionPartsFragment['categories'][0];
+  categories?: HomeMenuCategoriesSectionPartsFragment['categories'];
   orderType: OrderType;
 }) => {
   const { showPriceExcludingTax } = useFeatureFlags();
@@ -66,9 +57,6 @@ const MenuCategories = ({
   const [isItemModalOpen, setIsItemModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
 
-  if (!category || !category.items?.nodes || category.items.nodes.length === 0) {
-    return null;
-  }
   const openItemModal = useCallback((menuItem: MenuItem) => {
     setSelectedItem(menuItem);
     setIsItemModalOpen(true);
@@ -102,46 +90,70 @@ const MenuCategories = ({
   }, [isItemModalOpen, isCategoryModalOpen]);
 
   // categoriesがundefinedということは、deferによる遅延取得中ということなので、ローディングを表示
-  if (!category) {
+  if (!categories) {
     return <LoadingSpinner />;
   }
 
   return (
     <>
-    
-      <VStack spacing="40px" align="stretch">         
-            <VStack align="stretch" spacing="15px">
-            <Box>
-              <Text className="bold-large">{category.name}</Text>
-            </Box>
-            <SimpleGrid mt="9px" columns={2} spacing="15px">
-                {category.items.nodes.map((menuItem, i) => (
-                <Box key={i} onClick={() => openItemModal(menuItem)}>
-                  <Image
-                    src={safeImage(menuItem.image)}
-                    alt={menuItem.name}
-                    boxSize={{ base: '160px', md: '272px' }}
-                    fallback={<NoImage rounded="4px" boxSize={{ base: '160px', md: '272px' }} />}
-                    rounded="4px"
-                    objectFit="cover"
-                  />
-                  <Text mt="8px" className="bold-small">
-                    {menuItem.name}
-                  </Text>
-                  <Box mt="4px">
-                    {/* NOTE: ここでCarouselItemPriceを使うのは少し違和感あるが、MenuItemSection自体が現状使われておらず
-                              もし将来頻繁に使われる場合は機能ごと修正されることを想定して楽な方法を取っている。 */}
-                    <CarouselItemPrice
-                      price={menuItem.price}
-                      priceExcludingTax={showPriceExcludingTax ? menuItem.priceExcludingTax : undefined}
-                      unavailableReason={menuItem.status.available ? null : menuItem.status.labelUnavailable}
-                    />
-                  </Box>
-                </Box>
+      <VStack align="stretch" spacing="32px">
+        {categories.map((category) => {
+          if (category.items.nodes.length === 0) {
+            return null;
+          }
+          return (
+            <MenuCategoryCarousel
+              key={category.id}
+              categoryName={category.name}
+              onShowAllClick={() => openCategoryModal(category.id, category.name)}
+              paddingX={containerMarginX}
+            >
+              {category.items.nodes.slice(0, maxVisibleMenuItems).map((menuItem, i) => (
+                <MenuCategoryCarousel.Item
+                  key={i}
+                  image={menuItem.image || null}
+                  name={menuItem.name}
+                  price={menuItem.price}
+                  priceExcludingTax={showPriceExcludingTax ? menuItem.priceExcludingTax : undefined}
+                  unavailableReason={menuItem.status.available ? null : menuItem.status.labelUnavailable}
+                  onClick={() => openItemModal(menuItem)}
+                />
               ))}
-            </SimpleGrid>              
-            </VStack> 
-         </VStack>
+              <>
+                {category.items.nodes.length >= showAllButtonMenuItemCount && (
+                  <LinkBox
+                    as="li"
+                    w={{ base: '120px', md: '200px' }}
+                    h="auto"
+                    flexShrink={0}
+                    listStyleType="none"
+                    display="flex"
+                  >
+                    <Box
+                      h="100%"
+                      as="a"
+                      onClick={() => openCategoryModal(category.id, category.name)}
+                      display="block"
+                      w="100%"
+                    >
+                      <Center h="100%" bgColor="brand.backgroundSoft" w="100%" borderRadius="md">
+                        <VStack>
+                          <Circle size="60px" borderWidth={2} borderColor="brand.backgroundSoft" color="brand.primary">
+                            <Icon as={ArrowForwardIos} />
+                          </Circle>
+                          <Text className="bold-small" color="brand.primary" whiteSpace="pre-line" textAlign="center">
+                            すべて見る
+                          </Text>
+                        </VStack>
+                      </Center>
+                    </Box>
+                  </LinkBox>
+                )}
+              </>
+            </MenuCategoryCarousel>
+          );
+        })}
+      </VStack>
       <SwipeableBottomModal
         isOpen={isItemModalOpen && !!selectedItem?.id}
         onClose={closeItemModal}
@@ -158,7 +170,13 @@ const MenuCategories = ({
         title={selectedCategoryName ? selectedCategoryName : ''}
         footer={null}
       >
-        {selectedCategoryId && <MenuCategoryDetailModalContent categoryId={selectedCategoryId} orderType={orderType} closeCategoryModal={closeCategoryModal}/>}
+        {selectedCategoryId && (
+          <MenuCategoryDetailModalContent
+            categoryId={selectedCategoryId}
+            orderType={orderType}
+            closeCategoryModal={closeCategoryModal}
+          />
+        )}
       </SwipeableBottomModal>
     </>
   );

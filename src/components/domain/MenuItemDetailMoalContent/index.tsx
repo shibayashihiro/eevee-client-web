@@ -21,7 +21,7 @@ export const MenuItemDetailModalContent = ({
   orderType,
   orderItemId,
   closeModal,
-  closeCategoryModal
+  closeCategoryModal,
 }: MenuItemDetailModalContentProps) => {
   const facilityId = useFacilityId();
 

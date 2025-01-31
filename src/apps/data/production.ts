@@ -1292,14 +1292,14 @@ const productionConfigs: Record<ProductionIdentifier, AppConfig> = {
     firebaseAuthProject: 'napoli-pizza',
     promotionEnabled: true,
   },
-  'popolamama': {
+  popolamama: {
     tenantUidHeader: 'jyIRhAgLUrz8rxMgBUpq',
     appColor: buildAppColor('#E60012', '#DC0008'),
     pageMeta: {
       title: 'ポポラマーマ',
       favicon: '/favicons/chompy-house.ico',
     },
-  }
+  },
 } as const;
 
 export const productionApps = makeAppDefinition(productionIdentifiers, productionConfigs);

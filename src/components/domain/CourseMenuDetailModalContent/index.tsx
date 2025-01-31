@@ -44,7 +44,7 @@ const getInitialQuantities = (quantities: { [entryId: string]: number }): { [ent
   for (const entryId in quantities) {
     if (quantities.hasOwnProperty(entryId)) {
       const quantity = quantities[entryId];
-      result[entryId] = !isNaN(quantity) ? quantity : 0;  
+      result[entryId] = !isNaN(quantity) ? quantity : 0;
     }
   }
 
@@ -67,7 +67,7 @@ export const CourseMenuDetailModalContent: FC<Props> = ({ courseMenuId, quantiti
     throw new Error('invalid query');
   }
 
-  const initialQuantitiesByEntryId = getInitialQuantities(quantities);  
+  const initialQuantitiesByEntryId = getInitialQuantities(quantities);
 
   const [{ data, error, fetching }] = useGetCourseMenuForMenuItemDetailQuery({
     variables: {
@@ -105,19 +105,19 @@ export const CourseMenuDetailModalContent: FC<Props> = ({ courseMenuId, quantiti
   });
 
   return (
-    <FeatureFlagsProvider featureFlags={data.facility.featureFlags}>      
-        <CourseMenuEntriesFormProvider courseMenuEntries={entriesForProvider}>          
-          <CourseMenuInfo courseMenu={courseMenu} />
-          <CourseMenuEntriesInput courseMenu={courseMenu} />
-          <Box mb="112px">
-            <CourseMenuEntriesSubmit
-              cartId={viewer.cart.id}
-              courseMenuId={courseMenuId}
-              isUpdate={initialQuantitiesByEntryId !== null}
-              closeModal={closeModal}
-            />
-          </Box>
-        </CourseMenuEntriesFormProvider>
+    <FeatureFlagsProvider featureFlags={data.facility.featureFlags}>
+      <CourseMenuEntriesFormProvider courseMenuEntries={entriesForProvider}>
+        <CourseMenuInfo courseMenu={courseMenu} />
+        <CourseMenuEntriesInput courseMenu={courseMenu} />
+        <Box mb="112px">
+          <CourseMenuEntriesSubmit
+            cartId={viewer.cart.id}
+            courseMenuId={courseMenuId}
+            isUpdate={initialQuantitiesByEntryId !== null}
+            closeModal={closeModal}
+          />
+        </Box>
+      </CourseMenuEntriesFormProvider>
     </FeatureFlagsProvider>
   );
 };

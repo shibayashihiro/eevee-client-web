@@ -71,7 +71,11 @@ export const CartCourseMenuItem = ({ courseMenuItem: item, onClickDelete, allCar
         footer={null}
       >
         {item.courseMenu.id && (
-          <CourseMenuDetailModalContent courseMenuId={item.courseMenu.id} quantities={quantityByEntryIdInSameCourseMenu} closeModal={closeModal} />
+          <CourseMenuDetailModalContent
+            courseMenuId={item.courseMenu.id}
+            quantities={quantityByEntryIdInSameCourseMenu}
+            closeModal={closeModal}
+          />
         )}
       </SwipeableBottomModal>
     </>

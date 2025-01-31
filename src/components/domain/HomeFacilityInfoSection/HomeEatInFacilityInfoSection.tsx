@@ -2,15 +2,15 @@ import { HStack, VStack, Text, MenuItem, Menu, MenuList, MenuButton, IconButton 
 
 import { OrderType } from '@/graphql/generated/types';
 import { TableNumber } from '@/components/ui/TableNumber';
+import { BellIcon } from '@/components/ui/Icons/BellIcon';
+import { ChevronDownIcon } from '@/components/ui/Icons/ChevronDownIcon';
+import { GlobeIcon } from '@/components/ui/Icons/GlobeIcon';
 
 import { OrderTypeShopHeader } from './OrderTypeShopHeader';
 import {
   HomeEatInFacilityInfoSectionFragment,
   HomeEatInFacilityInfoSectionTableFragment,
 } from './HomeEatInFacilityInfoSection.fragment.generated';
-import { BellIcon } from '@/components/ui/Icons/BellIcon';
-import { ChevronDownIcon } from '@/components/ui/Icons/ChevronDownIcon';
-import { GlobeIcon } from '@/components/ui/Icons/GlobeIcon';
 
 type Props = {
   section: HomeEatInFacilityInfoSectionFragment;
@@ -23,10 +23,10 @@ export const HomeEatInFacilityInfoSection = ({ section, table }: Props) => {
       <VStack spacing="0px" ml="4px" align="start">
         <OrderTypeShopHeader orderType={OrderType.EatIn} shopName={section.facility.shortName} />
         {table && <TableNumber tableName={table.name} />}
-      </VStack>      
+      </VStack>
       <HStack spacing="24px">
         <VStack spacing="0px">
-          <BellIcon boxSize="24px" color="mono.primary"/>
+          <BellIcon boxSize="24px" color="mono.primary" />
           <Text className="text-micro">呼出</Text>
         </VStack>
         <VStack spacing="0px">
@@ -37,9 +37,7 @@ export const HomeEatInFacilityInfoSection = ({ section, table }: Props) => {
               aria-label="Globe dropdown"
               icon={
                 <HStack spacing="2px" px="6px" py="12px">
-                  {/* Globe Icon */}
                   <GlobeIcon boxSize="20px" color="mono.primary" />
-                  {/* Chevron Down Icon */}
                   <ChevronDownIcon boxSize="16px" color="mono.secondary" />
                 </HStack>
               }
@@ -53,7 +51,7 @@ export const HomeEatInFacilityInfoSection = ({ section, table }: Props) => {
             </MenuList>
           </Menu>
         </VStack>
-      </HStack>      
+      </HStack>
     </HStack>
   );
 };

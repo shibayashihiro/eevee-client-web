@@ -34,7 +34,7 @@ export const CourseMenuEntriesInput = ({ courseMenu }: Props) => {
             ))}
         </VStack>
         {error && <InputErrorMessage message={error} />}
-      </VStack>      
+      </VStack>
       <VStack
         spacing={0}
         divider={<Divider as="div" borderColor="mono.divider" />}

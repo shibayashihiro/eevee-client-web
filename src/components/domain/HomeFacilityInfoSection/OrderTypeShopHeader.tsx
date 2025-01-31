@@ -12,13 +12,13 @@ type Props = {
 
 export const OrderTypeShopHeader = ({ orderType, shopName }: Props) => {
   const meta = orderTypeMeta[orderType];
-  return (    
-      <Heading as="h2" display="flex" alignItems="center">
-        {meta.icon}
-        <Text as="span" textStyle="bold-normal" ml="4px" color="mono.primary">
-          {shopName}
-        </Text>
-      </Heading>
+  return (
+    <Heading as="h2" display="flex" alignItems="center">
+      {meta.icon}
+      <Text as="span" textStyle="bold-normal" ml="4px" color="mono.primary">
+        {shopName}
+      </Text>
+    </Heading>
   );
 };
 

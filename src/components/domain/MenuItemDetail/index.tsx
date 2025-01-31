@@ -36,7 +36,7 @@ export const MenuItemDetail: FC<Props> = ({
   hasDeliveryAddress,
   initialOrderItem,
   closeModal,
-  closeCategoryModal
+  closeCategoryModal,
 }: Props) => {
   const { isAnonymous } = useAuthUser();
 

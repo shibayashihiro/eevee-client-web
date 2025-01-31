@@ -84,7 +84,7 @@ const MenuCategoryItemsList = ({
   category,
   showPriceExcludingTax,
   orderType,
-  closeCategoryModal
+  closeCategoryModal,
 }: {
   category: MenuCategoryItemsFragment;
   showPriceExcludingTax: boolean;
@@ -98,7 +98,7 @@ const MenuCategoryItemsList = ({
   const [isLoading, setIsLoading] = useState(false);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<MenuCategoryItemsFragment['items']['nodes'][0] | null>(null);  
+  const [selectedItem, setSelectedItem] = useState<MenuCategoryItemsFragment['items']['nodes'][0] | null>(null);
 
   const gqlClient = useClient();
   const { handleErrorWithAlertDialog } = useHandleErrorWithAlertDialog();
@@ -187,7 +187,7 @@ const MenuCategoryItemsList = ({
                     boxSize="80px"
                     fallback={<NoImage rounded="4px" boxSize="80px" />}
                     rounded="4px"
-                    objectFit="cover"                    
+                    objectFit="cover"
                   />
                 </Box>
               </HStack>
@@ -198,7 +198,12 @@ const MenuCategoryItemsList = ({
       </OrderedList>
       <SwipeableBottomModal isOpen={isModalOpen} onClose={closeModal} title={selectedItem?.name || ''} footer={null}>
         {selectedItem && (
-          <MenuItemDetailModalContent menuItemId={selectedItem.id} orderType={orderType} closeModal={closeModal} closeCategoryModal={closeCategoryModal} />
+          <MenuItemDetailModalContent
+            menuItemId={selectedItem.id}
+            orderType={orderType}
+            closeModal={closeModal}
+            closeCategoryModal={closeCategoryModal}
+          />
         )}
       </SwipeableBottomModal>
     </>

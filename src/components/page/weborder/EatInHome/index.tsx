@@ -1,24 +1,10 @@
-import { Box, HStack, Image, Spacer, TabPanel, Tab, Tooltip, TabList, Tabs, VStack, TabPanels, Button, Flex, Text } from '@chakra-ui/react';
-import React, { useRef, useState } from 'react';
+import { Box, Spacer, VStack } from '@chakra-ui/react';
+import React from 'react';
 
 import { FixedCartFooterButton } from '@/components/domain/FixedCartFooterButton';
-import { HomeBannerSection } from '@/components/domain/HomeBannerSection';
-import { HomeBannerSectionPartsFragment } from '@/components/domain/HomeBannerSection/HomeBannerSection.fragment.generated';
-import { HomeCourseMenuCategoriesSection } from '@/components/domain/HomeCourseMenuCategoriesSection';
-import { HomeCourseMenuCategoriesSectionFragment } from '@/components/domain/HomeCourseMenuCategoriesSection/HomeCourseMenuCategoriesSection.fragment.generated';
-import { HomeLastOrderPassedBanner } from '@/components/domain/HomeLastOrderPassedBanner';
-import { HomeMembershipCardSection } from '@/components/domain/HomeMembershipCardSection';
-import {
-  HomeMenuCategoriesSection,
-  HomeMenuCategoriesSectionPartsFragment,
-} from '@/components/domain/HomeMenuCategoriesSection';
-import { HomeMenuItemsSection, HomeMenuItemsSectionPartsFragment } from '@/components/domain/HomeMenuItemsSection';
-import { TableCourseMenuStatsHeader } from '@/components/domain/TableCourseMenuStatsHeader';
 import { SuspendedBanner } from '@/components/ui/SuspendedBanner';
 import {
   EatInOrder,
-  MainVisualSection,
-  MembershipCardSection,
   OrderType,
   StatusSection,
   UpdateUserCourseMenuNoticeStatusPayload,
@@ -30,13 +16,11 @@ import { useFacilityId } from '@/providers/tenant/WebOrderPageStateProvider';
 import { NextPageWithLayout } from '@/types';
 import { containerMarginX } from '@/utils/constants';
 import { NotFoundError } from '@/utils/errors';
-import { NavigationHeaderLayout } from '@/components/layouts/NavigationHeaderLayout';
-import { ItemSearchMethodButtonType } from '@/components/domain/Navbar/types';
+import { TabTest } from '@/components/domain/TabTest';
 import { HomeEatInFacilityInfoSection } from '@/components/domain/HomeFacilityInfoSection';
 
 import { GetWebEatInHomeSectionsQuery, useGetWebEatInHomeSectionsQuery } from './EatInHome.query.generated';
-import FooterNavigation from '@/components/domain/FooterNavigation';
-import { TabTest } from '@/components/domain/TabTest';
+
 const orderType = OrderType.EatIn;
 
 export const EatInHome: NextPageWithLayout = () => {
@@ -80,53 +64,33 @@ const EatInHomeView = ({ data }: { data: GetWebEatInHomeSectionsQuery }) => {
     throw new Error('店舗情報を取得できませんでした。');
   }
 
-  // 店舗の設定がON、かつテーブルが選択されている場合にテーブルオーダーの支払いアイコンを表示する
-  const showTableOrderPayment = facility.featureFlags.OnlinePaymentEnabled && viewer.table != null;
-  const menuCategories = data.tenant.layout.webHome?.sections.find(
-    (section) => section.__typename === "MenuCategoriesSection"
-  )?.categories || [];
-
-  
-
-  
   return (
-    <FeatureFlagsProvider featureFlags={facility.featureFlags}>     
-        
-        {tenant.layout.webHome?.sections.map((section, i) => (
-          <React.Fragment key={i}>           
-            
-            {section.__typename === 'FacilityInfoSection' && (
-              <>
+    <FeatureFlagsProvider featureFlags={facility.featureFlags}>
+      {tenant.layout.webHome?.sections.map((section, i) => (
+        <React.Fragment key={i}>
+          {section.__typename === 'FacilityInfoSection' && (
+            <>
               <VStack key={i} p="12px" w="full" align="stretch" borderBottom="1px solid" borderColor="mono.divider">
-                <HomeEatInFacilityInfoSection section={section} table={viewer?.table || null} />                
+                <HomeEatInFacilityInfoSection section={section} table={viewer?.table || null} />
               </VStack>
-              <TabTest orderType={orderType}/>
-              
-              </>
-            )}
-            
-            {isObjectType<StatusSection>(section, 'StatusSection') && (
-              <Box mt="40px" mx={containerMarginX} key={i}>
-                <SuspendedBanner title={section.title} />
-              </Box>
-            )}            
-            {isObjectType<HomeMenuCategoriesSectionPartsFragment>(section, 'MenuCategoriesSection') && (
-              <Box>
-                {/* <HomeMenuCategoriesSection menuCategoriesSection={section} orderType={orderType} /> */}
-                
-              </Box>
-            )}
-            
-          </React.Fragment>
-        ))}
-        <Spacer mb="40px" />        
-        <FixedCartFooterButton
-          orderType={orderType}
-          cart={viewer?.cart}
-          isTableOrder={!!data.viewer.table}
-          cartRawIdForWatch={data?.viewer?.table?.cartRawId}
-        />
-      
+              <TabTest orderType={orderType} />
+            </>
+          )}
+
+          {isObjectType<StatusSection>(section, 'StatusSection') && (
+            <Box mt="40px" mx={containerMarginX} key={i}>
+              <SuspendedBanner title={section.title} />
+            </Box>
+          )}
+        </React.Fragment>
+      ))}
+      <Spacer mb="40px" />
+      <FixedCartFooterButton
+        orderType={orderType}
+        cart={viewer?.cart}
+        isTableOrder={!!data.viewer.table}
+        cartRawIdForWatch={data?.viewer?.table?.cartRawId}
+      />
     </FeatureFlagsProvider>
   );
 };

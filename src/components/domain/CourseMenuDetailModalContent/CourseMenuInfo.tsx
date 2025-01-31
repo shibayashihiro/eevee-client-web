@@ -29,8 +29,8 @@ export const CourseMenuInfo = ({ courseMenu }: Props) => {
           <Text className="text-small" whiteSpace="pre-line">
             {description}
           </Text>
-        )}        
-      </VStack>      
+        )}
+      </VStack>
     </>
   );
 };
