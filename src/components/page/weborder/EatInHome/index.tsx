@@ -1,4 +1,4 @@
-import { Box, Spacer, VStack } from '@chakra-ui/react';
+import { Box, Spacer } from '@chakra-ui/react';
 import React from 'react';
 
 import { FixedCartFooterButton } from '@/components/domain/FixedCartFooterButton';
@@ -17,7 +17,6 @@ import { NextPageWithLayout } from '@/types';
 import { containerMarginX } from '@/utils/constants';
 import { NotFoundError } from '@/utils/errors';
 import { TabTest } from '@/components/domain/TabTest';
-import { HomeEatInFacilityInfoSection } from '@/components/domain/HomeFacilityInfoSection';
 
 import { GetWebEatInHomeSectionsQuery, useGetWebEatInHomeSectionsQuery } from './EatInHome.query.generated';
 
@@ -54,7 +53,11 @@ export const EatInHome: NextPageWithLayout = () => {
     return null;
   }
 
-  return <EatInHomeView data={data} />;
+  return (
+    <Box overflow="hidden">
+      <EatInHomeView data={data} />
+    </Box>
+  );
 };
 
 const EatInHomeView = ({ data }: { data: GetWebEatInHomeSectionsQuery }) => {
@@ -65,33 +68,31 @@ const EatInHomeView = ({ data }: { data: GetWebEatInHomeSectionsQuery }) => {
   }
 
   return (
-    <FeatureFlagsProvider featureFlags={facility.featureFlags}>
-      {tenant.layout.webHome?.sections.map((section, i) => (
-        <React.Fragment key={i}>
-          {section.__typename === 'FacilityInfoSection' && (
-            <>
-              <VStack key={i} p="12px" w="full" align="stretch" borderBottom="1px solid" borderColor="mono.divider">
-                <HomeEatInFacilityInfoSection section={section} table={viewer?.table || null} />
-              </VStack>
-              <TabTest orderType={orderType} />
-            </>
-          )}
-
-          {isObjectType<StatusSection>(section, 'StatusSection') && (
-            <Box mt="40px" mx={containerMarginX} key={i}>
-              <SuspendedBanner title={section.title} />
-            </Box>
-          )}
-        </React.Fragment>
-      ))}
-      <Spacer mb="40px" />
-      <FixedCartFooterButton
-        orderType={orderType}
-        cart={viewer?.cart}
-        isTableOrder={!!data.viewer.table}
-        cartRawIdForWatch={data?.viewer?.table?.cartRawId}
-      />
-    </FeatureFlagsProvider>
+    <Box height="100vh">
+      <FeatureFlagsProvider featureFlags={facility.featureFlags}>
+        {tenant.layout.webHome?.sections.map((section, i) => (
+          <React.Fragment key={i}>
+            {section.__typename === 'FacilityInfoSection' && (
+              <Box overflow="hidden">
+                <TabTest section={section} table={viewer?.table || null} orderType={orderType} />
+              </Box>
+            )}
+            {isObjectType<StatusSection>(section, 'StatusSection') && (
+              <Box mt="40px" mx={containerMarginX} key={i}>
+                <SuspendedBanner title={section.title} />
+              </Box>
+            )}
+          </React.Fragment>
+        ))}
+        <Spacer mb="40px" />
+        <FixedCartFooterButton
+          orderType={orderType}
+          cart={viewer?.cart}
+          isTableOrder={!!data.viewer.table}
+          cartRawIdForWatch={data?.viewer?.table?.cartRawId}
+        />
+      </FeatureFlagsProvider>
+    </Box>
   );
 };
 

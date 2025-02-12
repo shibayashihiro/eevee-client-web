@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Box, Flex, Text } from '@chakra-ui/react';
+import { Box, HStack, Text } from '@chakra-ui/react';
 
 import { ChevronLeftIcon } from '@/components/ui/Icons/ChevronLeftIcon';
 import { ChevronRightIcon } from '@/components/ui/Icons/ChevronRightIcon';
@@ -13,7 +13,7 @@ type FooterNavigationProps = {
 
 const FooterNavigation: FC<FooterNavigationProps> = ({ leftText, rightText, onLeftClick, onRightClick }) => {
   return (
-    <Flex justify="space-between" align="stretch" gap="12px">
+    <HStack justify="space-between" align="stretch" gap="12px">
       <Box
         display="flex"
         alignItems="center"
@@ -50,7 +50,7 @@ const FooterNavigation: FC<FooterNavigationProps> = ({ leftText, rightText, onLe
         </Text>
         <ChevronRightIcon boxSize="6" color="brand.primary" />
       </Box>
-    </Flex>
+    </HStack>
   );
 };
 

@@ -11,6 +11,8 @@ import { useFeatureFlags } from '@/providers/FeatureFlagsProvider';
 import FooterNavigation from '../FooterNavigation';
 import { CarouselItemPrice } from '../MenuCategoryCarousel/CarouselItemPrice';
 import { MenuItemDetailModalContent } from '../MenuItemDetailMoalContent';
+import { HomeEatInFacilityInfoSection } from '../HomeFacilityInfoSection/HomeEatInFacilityInfoSection';
+import { HomeEatInFacilityInfoSectionFragment, HomeEatInFacilityInfoSectionTableFragment } from '../HomeFacilityInfoSection/HomeEatInFacilityInfoSection.fragment.generated';
 
 type MenuItemType = {
   id: string;
@@ -32,23 +34,33 @@ type Category = {
 };
 
 type TabTestProps = {
+  table: HomeEatInFacilityInfoSectionTableFragment | null;
+  section: HomeEatInFacilityInfoSectionFragment;
   categoriesData?: {
     id: string;
     name: string;
     subCategories?: {
       name: string;
       items?: {
-        nodes?: { id: string; name: string; price: number; image: string; status: {
-          available: boolean;
-          labelUnavailable?: string | null;
-          __typename: 'MenuItemStatus';
-        }; priceExcludingTax: number }[];
+        nodes?: {
+          id: string;
+          name: string;
+          price: number;
+          image: string;
+          status: {
+            available: boolean;
+            labelUnavailable?: string | null;
+            __typename: 'MenuItemStatus';
+          };
+          priceExcludingTax: number;
+        }[];
       };
     }[];
   }[];
   orderType: OrderType;
 };
-export const TabTest: FC<TabTestProps> = ({ categoriesData = [], orderType }) => {
+
+export const TabTest: FC<TabTestProps> = ({ section, table, categoriesData = [], orderType }) => {
   const [selectedCategory, setSelectedCategory] = useState<number>(0);
   const [selectedSubCategory, setSelectedSubCategory] = useState<number>(0);
 
@@ -648,45 +660,120 @@ export const TabTest: FC<TabTestProps> = ({ categoriesData = [], orderType }) =>
           acc[sub.name] = sub.items?.nodes || [];
           return acc;
         },
-        {} as Record<string, MenuItemType[]>
+        {} as Record<string, MenuItemType[]>,
       ) || {},
   }));
   const { showPriceExcludingTax } = useFeatureFlags();
   const [selectedItem, setSelectedItem] = useState<MenuItemType | null>(null);
   const subCategoryRefs = useRef<{ [key: string]: HTMLElement | null }>({});
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const screenRef = useRef<HTMLDivElement | null>(null);
   const categoryTabListRef = useRef<HTMLDivElement | null>(null);
   const subCategoryFlexRef = useRef<HTMLDivElement | null>(null);
   const [isItemModalOpen, setIsItemModalOpen] = useState(false);
+  const isProgrammaticScroll = useRef(false);
+  const [isManualScrolling, setIsManualScrolling] = useState<boolean>(true);
 
   const handleScroll = useCallback(() => {
-    if (!containerRef.current) return;
-    const containerTop = containerRef.current.getBoundingClientRect().top;
-  
+    if (!screenRef.current || isProgrammaticScroll.current) return;
+
+    const container = screenRef.current;
+    const containerMiddle = container.getBoundingClientRect().top + container.clientHeight / 3;
+    let newIndex = selectedSubCategory;
+
     categories[selectedCategory].subcategories.forEach((sub, index) => {
       const ref = subCategoryRefs.current[sub];
       if (ref) {
         const rect = ref.getBoundingClientRect();
-        if (rect.top >= containerTop && rect.top < containerTop + 200) {
-          setSelectedSubCategory(index);
-  
-          const badge = subCategoryFlexRef.current?.children[index];
-          if (badge) {
-            badge.scrollIntoView({ behavior: 'smooth', inline: 'center' });
-          }
+        if (rect.top <= containerMiddle && rect.bottom > containerMiddle) {
+          newIndex = index;
         }
       }
     });
-  }, [categories, selectedCategory]);  
+
+    if (newIndex !== selectedSubCategory) {
+      requestAnimationFrame(() => {
+        setSelectedSubCategory(newIndex);
+      });
+
+      const badge = subCategoryFlexRef.current?.children[newIndex];
+      const parent = subCategoryFlexRef.current;
+
+      if (badge && parent) {
+        const badgeRect = badge.getBoundingClientRect();
+        const parentRect = parent.getBoundingClientRect();
+
+        if (badgeRect.left < parentRect.left || badgeRect.right > parentRect.right) {
+          requestAnimationFrame(() => {
+            badge.scrollIntoView({
+              behavior: 'smooth',
+              block: 'nearest',
+              inline: 'center',
+            });
+          });
+        }
+      }
+    }
+  }, [categories, selectedCategory, selectedSubCategory]);
+
+  useEffect(() => {
+    const badge = subCategoryFlexRef.current?.children[selectedSubCategory];
+    if (badge) {
+      badge.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'center',
+      });
+    }
+  }, [selectedSubCategory]);
+
+  const handleManualScroll = () => {
+    if (!isProgrammaticScroll.current) {
+      setIsManualScrolling(true);
+    }
+  };
 
   useEffect(() => {
     const container = containerRef.current;
-    if (container) {
-      container.addEventListener('scroll', handleScroll);
-      return () => container.removeEventListener('scroll', handleScroll);
-    }
-  }, [handleScroll]); 
+    if (!container) return;
 
+    const debouncedScroll = debounce(handleScroll, 100);
+
+    container.addEventListener('scroll', debouncedScroll);
+    container.addEventListener('touchstart', handleManualScroll);
+    container.addEventListener('mousedown', handleManualScroll);
+    container.addEventListener('wheel', handleManualScroll);
+
+    return () => {
+      container.removeEventListener('scroll', debouncedScroll);
+      container.removeEventListener('touchstart', handleManualScroll);
+      container.removeEventListener('mousedown', handleManualScroll);
+      container.removeEventListener('wheel', handleManualScroll);
+    };
+  }, [handleScroll]);
+
+  const debounce = <T extends (...args: any[]) => void>(func: T, delay: number): T => {
+    let timer: ReturnType<typeof setTimeout>;
+    return ((...args: Parameters<T>) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => func(...args), delay);
+    }) as T;
+  };
+
+  useEffect(() => {
+    const container = screenRef.current;
+    if (!container) return;
+
+    container.addEventListener('scroll', handleScroll);
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, [handleScroll]);
+  useEffect(() => {
+    if (!categories[selectedCategory]) return;
+
+    categories[selectedCategory].subcategories.forEach((sub) => {
+      subCategoryRefs.current[sub] = document.getElementById(`sub-${sub}`);
+    });
+  }, [categories, selectedCategory]);
   if (categories.length === 0) {
     return <Text>No Categories Available</Text>;
   }
@@ -695,7 +782,7 @@ export const TabTest: FC<TabTestProps> = ({ categoriesData = [], orderType }) =>
   const rightText =
     selectedCategory < categories.length - 1
       ? categories[selectedCategory + 1]?.name
-      : categories[categories.length - 1]?.name || '';  
+      : categories[categories.length - 1]?.name || '';
 
   const handleCategoryChange = (index: number) => {
     setSelectedCategory(index);
@@ -703,12 +790,22 @@ export const TabTest: FC<TabTestProps> = ({ categoriesData = [], orderType }) =>
 
     const tabs = categoryTabListRef.current?.children[index];
     if (tabs) {
-      tabs.scrollIntoView({ behavior: 'smooth', inline: 'center' });
+      tabs.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
     }
-  };
 
+    setTimeout(() => {
+      if (containerRef.current) {
+        containerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }, 100);
+  };
   const handleSubCategoryChange = (index: number) => {
+    setIsManualScrolling(false);
+    isProgrammaticScroll.current = true;
     setSelectedSubCategory(index);
+
+    const subcategoryName = categories[selectedCategory]?.subcategories[index];
+    if (!subcategoryName) return;
 
     const badges = subCategoryFlexRef.current?.children[index];
     if (badges) {
@@ -719,10 +816,25 @@ export const TabTest: FC<TabTestProps> = ({ categoriesData = [], orderType }) =>
       });
     }
 
-    const subcategoryName = categories[selectedCategory]?.subcategories[index] || '';
     const ref = subCategoryRefs.current[subcategoryName];
-    if (ref) {
-      ref.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const container = screenRef.current;
+
+    if (ref && container) {
+      setTimeout(() => {
+        const rect = ref.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+        const tabHeight = categoryTabListRef.current?.offsetHeight || 50;
+        const additionalOffset = 120;
+
+        container.scrollTo({
+          top: container.scrollTop + rect.top - containerRect.top - tabHeight - additionalOffset,
+          behavior: 'smooth',
+        });
+
+        setTimeout(() => {
+          isProgrammaticScroll.current = false;
+        }, 500);
+      }, 200);
     }
   };
 
@@ -734,7 +846,6 @@ export const TabTest: FC<TabTestProps> = ({ categoriesData = [], orderType }) =>
       if (tabs) {
         tabs.scrollIntoView({ behavior: 'smooth', inline: 'center' });
       }
-
       return nextIndex;
     });
   };
@@ -746,148 +857,176 @@ export const TabTest: FC<TabTestProps> = ({ categoriesData = [], orderType }) =>
       if (tabs) {
         tabs.scrollIntoView({ behavior: 'smooth', inline: 'center' });
       }
-
       return prevIndex;
     });
   };
-  const openItemModal = ((menuItem : MenuItemType) => {
+  const openItemModal = (menuItem: MenuItemType) => {
     setSelectedItem(menuItem);
     setIsItemModalOpen(true);
-  });
+  };
 
-  const closeItemModal = (() => {
+  const closeItemModal = () => {
     setIsItemModalOpen(false);
     setSelectedItem(null);
-  });
+  };
 
   return (
-    <>
-      <Box height="100vh" display="flex" flexDirection="column">
-        <Box position="sticky" top="0" zIndex="10" bg="white">
-          <Box
-            overflowX="auto"
-            borderBottom="1px solid"
-            borderColor="mono.divider"
-            whiteSpace="nowrap"
-            sx={{ '&::-webkit-scrollbar': { display: 'none' } }}
-          >
-            <Tabs index={selectedCategory} onChange={handleCategoryChange}>
-              <TabList ref={categoryTabListRef} display="inline-flex" gap={0} pb="0px">
-                {categories.map((category, index) => (
-                  <Tab
-                    key={index}
-                    bg={selectedCategory === index ? 'brand.primary' : 'white'}
-                    color={selectedCategory === index ? 'white' : 'mono.primary'}
-                    className="bold-small"
-                    transition="0.2s"
-                    position="relative"
-                    px="18px"
-                    py="12px"
-                    borderBottom="none"
-                  >
-                    {category.name}
-
-                    {selectedCategory === index && (
-                      <Box position="absolute" bottom="0" textAlign="center" mt="-4">
-                        <motion.div
-                          style={{
-                            width: 0,
-                            height: 0,
-                            borderLeft: '6px solid transparent',
-                            borderRight: '6px solid transparent',
-                            borderBottom: '6px solid white',
-                            margin: 'auto',
-                          }}
-                        />
-                      </Box>
-                    )}
-                  </Tab>
-                ))}
-              </TabList>
-            </Tabs>
-          </Box>
-
-          <Box
-            p="8px"
-            overflowX="auto"
-            whiteSpace="nowrap"
-            borderBottom="1px solid"
-            borderColor="mono.divider"
-            sx={{ '&::-webkit-scrollbar': { display: 'none' } }}
-          >
-            <Flex ref={subCategoryFlexRef} justify="start" gap="8px">
-              {categories[selectedCategory].subcategories.map((sub, i) => (
-                <Box
-                  key={i}
-                  px="18px"
-                  py="8px"
-                  className="bold-small"
-                  borderRadius="full"
-                  cursor="pointer"
-                  bg={i === selectedSubCategory ? 'brand.primary' : 'mono.backGround'}
-                  color={i === selectedSubCategory ? 'white' : 'black'}
-                  onClick={() => handleSubCategoryChange(i)}
+    <Box height="100vh" ref={screenRef} overflowX="hidden" overflowY="auto" position="relative" pb="74px">
+      <VStack
+        zIndex="9"
+        position="sticky"
+        top="0"
+        left="0"
+        p="12px"
+        w="full"
+        align="stretch"
+        background="white"
+        borderBottom="1px solid"
+        borderColor="mono.divider"
+      >
+        <HomeEatInFacilityInfoSection section={section} table={table} />
+      </VStack>
+      <Box
+        position={isManualScrolling ? 'sticky' : 'fixed'}
+        top={isManualScrolling ? '0' : undefined}
+        left="0"
+        zIndex="10"
+        width="100vw"
+        overflowX="auto"
+        sx={{ '&::-webkit-scrollbar': { display: 'none' } }}
+      >
+        <Box overflowX="auto" whiteSpace="nowrap" bg="white">
+          <Box overflowX="auto" borderBottom="1px solid" borderColor="mono.divider">
+            <Box overflowX="auto" whiteSpace="nowrap" sx={{ '&::-webkit-scrollbar': { display: 'none' } }}>
+              <Tabs index={selectedCategory} onChange={handleCategoryChange}>
+                <TabList
+                  ref={categoryTabListRef}
+                  display="inline-flex"
+                  pb="0px"
+                  border="0px"
+                  gap="0"
+                  overflowX="auto"
+                  whiteSpace="nowrap"
+                  sx={{
+                    '&::-webkit-scrollbar': { display: 'none' },
+                    WebkitOverflowScrolling: 'touch',
+                  }}
                 >
-                  {sub}
-                </Box>
-              ))}
-            </Flex>
+                  {categories.map((category, index) => (
+                    <Tab
+                      key={index}
+                      bg={selectedCategory === index ? 'brand.primary' : 'white'}
+                      color={selectedCategory === index ? 'white' : 'mono.primary'}
+                      transition="0.2s"
+                      px="18px"
+                      py="12px"
+                      borderBottom="none"
+                    >
+                      {category.name}
+                      {selectedCategory === index && (
+                        <Box position="absolute" bottom="0" textAlign="center" mt="-4">
+                          <motion.div
+                            style={{
+                              width: 0,
+                              height: 0,
+                              borderLeft: '6px solid transparent',
+                              borderRight: '6px solid transparent',
+                              borderBottom: '6px solid white',
+                              margin: 'auto',
+                            }}
+                          />
+                        </Box>
+                      )}
+                    </Tab>
+                  ))}
+                </TabList>
+              </Tabs>
+            </Box>
           </Box>
         </Box>
-        <Box ref={containerRef} overflowY="auto" sx={{ '&::-webkit-scrollbar': { display: 'none' } }}>
-          <motion.div
-            key={selectedCategory}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.4, ease: 'easeInOut' }}
-          >
+
+        <Box
+          top="48px"
+          zIndex="80"
+          bg="white"
+          p="8px 4px 8px 0px"
+          m="0px 4px 0px 5px"
+          overflowX="auto"
+          whiteSpace="nowrap"
+          borderBottom="1px solid"
+          borderColor="mono.divider"
+          sx={{ '&::-webkit-scrollbar': { display: 'none' } }}
+        >
+          <Flex ref={subCategoryFlexRef} justify="start" gap="8px">
             {categories[selectedCategory].subcategories.map((sub, i) => (
-              <Box key={i} ref={(el) => { subCategoryRefs.current[sub] = el; }} p="20px">
-                <VStack spacing="40px" align="stretch">
-                  <VStack align="stretch" spacing="15px">
-                    <Box>
-                      <Text className="bold-large">{sub}</Text>
-                    </Box>
-                    <SimpleGrid mt="9px" columns={2} spacing="15px">
-                      {categories[selectedCategory].items[sub].map((item, j) => (
-                        <Box key={j} onClick={() => openItemModal(item)}>
-                          <Image
-                            src={safeImage(item.image)}
-                            alt={item.name}
-                            boxSize={{ base: '160px', md: '272px' }}
-                            fallback={<NoImage rounded="4px" boxSize={{ base: '160px', md: '272px' }} />}
-                            rounded="4px"
-                            objectFit="cover"
-                          />
-                          <Text mt="8px" className="bold-small">
-                            {item.name}
-                          </Text>
-                          <Box mt="4px">
-                            {/* NOTE: ここでCarouselItemPriceを使うのは少し違和感あるが、MenuItemSection自体が現状使われておらず
-                                    もし将来頻繁に使われる場合は機能ごと修正されることを想定して楽な方法を取っている。 */}
-                            <CarouselItemPrice
-                              price={item.price}
-                              priceExcludingTax={showPriceExcludingTax ? item.priceExcludingTax : undefined}
-                              unavailableReason={item.status.available ? null : item.status.labelUnavailable}
-                            />
-                          </Box>
-                        </Box>
-                      ))}
-                    </SimpleGrid>
-                  </VStack>
-                </VStack>
+              <Box
+                key={i}
+                px="18px"
+                py="8px"
+                borderRadius="full"
+                cursor="pointer"
+                bg={i === selectedSubCategory ? 'brand.primary' : 'mono.backGround'}
+                color={i === selectedSubCategory ? 'white' : 'black'}
+                flexShrink={0}
+                onClick={() => handleSubCategoryChange(i)}
+              >
+                {sub}
               </Box>
             ))}
-          </motion.div>
-          <FooterNavigation
-            leftText={leftText}
-            rightText={rightText}
-            onLeftClick={handleLeftClick}
-            onRightClick={handleRightClick}
-          />
+          </Flex>
         </Box>
       </Box>
+      <Box
+        ref={containerRef}
+        sx={{ position: 'relative', height: '100%', marginTop: !isManualScrolling && '100px', zIndex: '8' }}
+      >
+        <motion.div
+          key={selectedCategory}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.4, ease: 'easeInOut' }}
+        >
+          {categories[selectedCategory].subcategories.map((sub, i) => (
+            <Box key={i} id={`sub-${sub}`} p="20px">
+              <VStack spacing="30px" align="stretch">
+                <Text className="bold-large">{sub}</Text>
+                <SimpleGrid mt="9px" columns={2} spacing="15px">
+                  {categories[selectedCategory].items[sub].map((item, j) => (
+                    <Box key={j} onClick={() => openItemModal(item)}>
+                      <Image
+                        src={safeImage(item.image)}
+                        alt={item.name}
+                        boxSize={{ base: '160px', md: '272px' }}
+                        fallback={<NoImage rounded="4px" boxSize={{ base: '160px', md: '272px' }} />}
+                        rounded="4px"
+                        objectFit="cover"
+                      />
+                      <Text mt="8px" className="bold-small">
+                        {item.name}
+                      </Text>
+                      <Box mt="4px">
+                        <CarouselItemPrice
+                          price={item.price}
+                          priceExcludingTax={showPriceExcludingTax ? item.priceExcludingTax : undefined}
+                          unavailableReason={item.status.available ? null : item.status.labelUnavailable}
+                        />
+                      </Box>
+                    </Box>
+                  ))}
+                </SimpleGrid>
+              </VStack>
+            </Box>
+          ))}
+        </motion.div>
+        <FooterNavigation
+          leftText={leftText}
+          rightText={rightText}
+          onLeftClick={handleLeftClick}
+          onRightClick={handleRightClick}
+        />
+      </Box>
+
       <SwipeableBottomModal
         isOpen={isItemModalOpen && !!selectedItem?.id}
         onClose={closeItemModal}
@@ -898,6 +1037,6 @@ export const TabTest: FC<TabTestProps> = ({ categoriesData = [], orderType }) =>
           <MenuItemDetailModalContent menuItemId={selectedItem.id} orderType={orderType} closeModal={closeItemModal} />
         )}
       </SwipeableBottomModal>
-    </>
+    </Box>
   );
 };
